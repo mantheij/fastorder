@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Cola",
+    "description": "500ml",
+    "image": "/images/cola.jpeg",
+    "type": "non-alcoholic"
+  },
+  {
+    "id": 2,
+    "name": "Fanta",
+    "description": "500ml",
+    "image": "/images/fanta.jpeg",
+    "type": "non-alcoholic"
+  },
+  {
+    "id": 3,
+    "name": "Sprite",
+    "description": "500ml",
+    "image": "/images/sprite.jpg",
+    "type": "non-alcoholic"
+  },
+  {
+    "id": 4,
+    "name": "Mezzo-Mix",
+    "description": "500ml",
+    "image": "/images/mezzomix.jpeg",
+    "type": "non-alcoholic"
+  },
+  {
+    "id": 5,
+    "name": "Water",
+    "description": "500ml",
+    "image": "/images/water.jpeg",
+    "type": "non-alcoholic"
+  },
+  {
+    "id": 5,
+    "name": "Sparkling Water",
+    "description": "500ml",
+    "image": "/images/watersparkling.jpeg",
+    "type": "non-alcoholic"
+  }
+]
