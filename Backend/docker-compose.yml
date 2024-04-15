@@ -13,3 +13,11 @@ services:
       - POSTGRES_USER=postgres
     healthcheck:
       test: "pg_isready -U postgres"
+
+  admin:
+    image: adminer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "80:8080"
