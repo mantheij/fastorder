@@ -1,7 +1,11 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 public class Product {
@@ -10,6 +14,7 @@ public class Product {
     private Integer productId;
     private String name;
     private double price;
+    private String imgName;
     private boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,38 +27,6 @@ public class Product {
         this.name = name;
         this.price = price;
         this.available = available;
-        this.category = category;
-    }
-
-
-    public Integer getProductId() {
-        return productId;
-    }
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public boolean isAvailable() {
-        return available;
-    }
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-    public ProductCategory getCategory() {
-        return category;
-    }
-    public void setCategory(ProductCategory category) {
         this.category = category;
     }
 }

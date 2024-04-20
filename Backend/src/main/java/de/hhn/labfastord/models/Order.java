@@ -1,11 +1,15 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -14,7 +18,7 @@ public class Order {
     private Integer orderId;
     private Timestamp dateTime;
     private String status;
-    private BigDecimal totalPrice;
+    private double totalPrice;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails = new ArrayList<>();
@@ -25,48 +29,10 @@ public class Order {
 
     public Order() {}
 
-    public Order(Integer orderId, Timestamp dateTime, String status, BigDecimal totalPrice) {
+    public Order(Integer orderId, Timestamp dateTime, String status, double totalPrice) {
         this.orderId = orderId;
         this.dateTime = dateTime;
         this.status = status;
         this.totalPrice = totalPrice;
-    }
-
-    public Integer getOrderId() {
-        return orderId;
-    }
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
-    }
-    public Timestamp getDateTime() {
-        return dateTime;
-    }
-    public void setDateTime(Timestamp dateTime) {
-        this.dateTime = dateTime;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-    public List<OrderDetail> getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(List<OrderDetail> orderDetails) {
-        this.orderDetails = orderDetails;
-    }
-    public Tables getTable() {
-        return table;
-    }
-    public void setTable(Tables table) {
-        this.table = table;
     }
 }

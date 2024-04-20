@@ -1,8 +1,13 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "product_categories")
 public class ProductCategory {
@@ -20,30 +25,5 @@ public class ProductCategory {
     public ProductCategory(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public List<Product> getProducts() {
-        return products;
-    }
-    public void setProducts(List<Product> products) {
-        this.products = products;
     }
 }

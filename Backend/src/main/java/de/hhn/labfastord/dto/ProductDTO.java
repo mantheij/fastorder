@@ -1,7 +1,5 @@
 package de.hhn.labfastord.dto;
 
-import de.hhn.labfastord.models.Product;
-
 
 public class ProductDTO {
     private Integer productId;
@@ -18,6 +16,10 @@ public class ProductDTO {
         this.price = price;
         this.available = available;
         this.categoryId = categoryId;
+    }
+
+    public ProductDTO(Integer productId) {
+        this.productId = productId;
     }
 
     public double getPrice() {
@@ -59,19 +61,6 @@ public class ProductDTO {
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
-
-    public ProductDTO convertToDTO(Product product) {
-        return new ProductDTO(
-                product.getProductId(),
-                product.getName(),
-                product.getPrice(),
-                product.isAvailable(),
-                product.getCategory() != null ? product.getCategory().getCategoryId() : null
-        );
-    }
-
-
-
 
 }
 
