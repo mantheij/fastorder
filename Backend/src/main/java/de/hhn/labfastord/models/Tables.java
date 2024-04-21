@@ -16,7 +16,9 @@ public class Tables {
     @NotNull
     private Integer number;
 
-    public Tables() {}
+    public Tables() {
+    }
+
     public Tables(Integer number) {
         this.number = number;
     }

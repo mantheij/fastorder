@@ -1,7 +1,9 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,5 +29,6 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public OrderDetail() {}
+    public OrderDetail() {
+    }
 }

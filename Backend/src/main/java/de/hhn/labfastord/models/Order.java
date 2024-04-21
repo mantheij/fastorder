@@ -27,7 +27,8 @@ public class Order {
     @JoinColumn(name = "table_id")
     private Tables table;
 
-    public Order() {}
+    public Order() {
+    }
 
     public Order(Integer orderId, Timestamp dateTime, String status, double totalPrice) {
         this.orderId = orderId;

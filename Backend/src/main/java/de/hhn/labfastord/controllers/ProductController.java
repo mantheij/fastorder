@@ -1,5 +1,6 @@
 package de.hhn.labfastord.controllers;
 
+
 import de.hhn.labfastord.dto.ProductDTO;
 import de.hhn.labfastord.models.Product;
 import de.hhn.labfastord.repositories.ProductRepository;
@@ -8,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/products")
@@ -18,22 +19,14 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> dtos = productRepository.findAll().stream()
-                .map(product -> new ProductDTO(
-                        product.getProductId(),
-                        product.getName(),
-                        product.getPrice(),
-                        product.isAvailable(),
-                        product.getCategory() != null ? product.getCategory().getCategoryId() : null))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public List<ProductDTO> getAllProducts() {
+        return productRepository.findAll().stream().map(this::pruductMapper).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer id) {
         return productRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(product -> ResponseEntity.ok(pruductMapper(product)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -48,4 +41,14 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
+    private ProductDTO pruductMapper(Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setProductId(product.getProductId());
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setImgName(product.getImgName());
+        dto.setAvailable(product.isAvailable());
+        dto.setCategoryId(product.getCategory().getCategoryId());
+        return dto;
+    }
 }

@@ -15,11 +15,7 @@ public class ProductCategoryDTO {
     private String description;
     private List<Integer> productsId;
 
-    public ProductCategoryDTO(Integer categoryId, String name, String description, List<Integer> productsId) {
-        this.categoryId = categoryId;
-        this.name = name;
-        this.description = description;
-        this.productsId = productsId;
+    public ProductCategoryDTO() {
     }
 }
 

@@ -22,7 +22,9 @@ public class Product {
     private ProductCategory category;
 
 
-    public Product() {}
+    public Product() {
+    }
+
     public Product(String name, double price, boolean available, ProductCategory category) {
         this.name = name;
         this.price = price;

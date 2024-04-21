@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         order.setDateTime(new Timestamp(System.currentTimeMillis()));
         order.setStatus("offen");
         order.setTable(table1);
-        order.setTotalPrice(new BigDecimal("5.50"));
+        order.setTotalPrice(5.5);
         orderRepository.save(order);
 
         // Erstellen von Bestelldetails

@@ -21,7 +21,9 @@ public class ProductCategory {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 
-    public ProductCategory() {}
+    public ProductCategory() {
+    }
+
     public ProductCategory(String name, String description) {
         this.name = name;
         this.description = description;
