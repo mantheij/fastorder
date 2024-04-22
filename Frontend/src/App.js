@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LabelBottomNavigation from "./navigation";
 import HomeView from "./views/HomeView";
 import CardView from "./views/CardView";
-import TableView from "./views/TableView";
 import SignInView from "./views/SignInView";
 import "./App.css";
+import UserView from "./views/UserView";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/card" element={<CardView />} />
-          <Route path="/table" element={<TableView />} />
+          <Route path="/user" element={<UserView/>} />
           <Route path="/signin" element={<SignInView />} />
         </Routes>
         {/* Konstante Navigation am unteren Rand */}
