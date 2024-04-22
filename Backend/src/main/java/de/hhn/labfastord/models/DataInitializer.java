@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         order.setDateTime(new Timestamp(System.currentTimeMillis()));
         order.setStatus("offen");
         order.setTable(table1);
-        order.setTotalPrice(5.5);
+        order.setTotalPrice(5.50);
         orderRepository.save(order);
 
         // Erstellen von Bestelldetails
@@ -51,7 +51,7 @@ public class DataInitializer implements CommandLineRunner {
         detail.setOrder(order);
         detail.setProduct(product1);
         detail.setQuantity(2);
-        detail.setPrice(new BigDecimal("5.00"));
+        detail.setPrice(5.00);
         order.getOrderDetails().add(detail);
         orderRepository.save(order);
     }
