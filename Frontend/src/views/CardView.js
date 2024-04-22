@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container,
-  Grid,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-  CardActions,
-  Tabs,
-  Tab,
-  Button,
-  Fab,
-  Badge,
-  Alert, // Import der Alert-Komponente
-  Snackbar // Import der Snackbar für temporäre Benachrichtigungen
+  Container, Grid, Card, CardActionArea, CardContent,
+  CardMedia, Typography, CardActions, Tabs, Tab,
+  Button, Fab, Badge, Alert, Snackbar
 } from "@mui/material";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 const CardView = () => {
   const [drinks, setDrinks] = useState([]);
   const [value, setValue] = useState(0);
-  const [cart, setCart] = useState(0);
-  const [alertOpen, setAlertOpen] = useState(false); // Zustandsvariable für den Alert
+  const [cart, setCart] = useState([]); // Nun ein Array von Getränken
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
     fetch(`${process.env.PUBLIC_URL}/drinks.json`)
@@ -35,16 +23,30 @@ const CardView = () => {
     setValue(newValue);
   };
 
-  const handleAddToCart = () => {
-    setCart(cart + 1);
-    setAlertOpen(true); // Aktiviert den Alert beim Hinzufügen eines Getränks
+  const handleAddToCart = (drink) => {
+    fetch('http://localhost:3001/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(drink),
+    })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          setCart(currentCart => [...currentCart, data]);
+          setAlertOpen(true);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
   };
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    setAlertOpen(false); // Schließt den Alert
+    setAlertOpen(false);
   };
 
   return (
@@ -78,14 +80,14 @@ const CardView = () => {
                     </CardContent>
                   </CardActionArea>
                   <CardActions>
-                    <Button onClick={handleAddToCart}>add</Button>
+                    <Button onClick={() => handleAddToCart(drink)}>add</Button>
                   </CardActions>
                 </Card>
               </Grid>
           ))}
         </Grid>
 
-        <Badge badgeContent={cart} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
+        <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
           <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }}>
             <ShoppingCartOutlinedIcon />
           </Fab>
