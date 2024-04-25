@@ -7,6 +7,7 @@ import CardView from "./views/CardView";
 import TableView from "./views/TableView";
 import SignInView from "./views/SignInView";
 import "./App.css";
+import EmployeeView from "./views/EmployeeView";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/card" element={<CardView />} />
           <Route path="/table" element={<TableView />} />
           <Route path="/signin" element={<SignInView />} />
+          <Route path="/employee" element={<EmployeeView />} />
         </Routes>
         {/* Konstante Navigation am unteren Rand */}
         <LabelBottomNavigation />
