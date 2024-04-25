@@ -3,6 +3,8 @@ package de.hhn.labfastord.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -20,7 +22,8 @@ public class Order {
     private String status;
     private double totalPrice;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class OrderDetail {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
