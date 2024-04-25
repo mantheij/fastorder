@@ -3,6 +3,8 @@ package de.hhn.labfastord.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -15,10 +17,12 @@ public class Product {
     private String name;
     private double price;
     private String imgName;
+    private Integer quantity;
     private boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private ProductCategory category;
 
 

@@ -64,6 +64,7 @@ public class ProductController {
                         existingProduct.setName(productDTO.getName());
                         existingProduct.setPrice(productDTO.getPrice());
                         existingProduct.setImgName(productDTO.getImgName());
+                        existingProduct.setQuantity(productDTO.getQuantity());
                         existingProduct.setAvailable(productDTO.isAvailable());
                         return ResponseEntity.ok(productMapper(productRepository.save(existingProduct)));
                     })
@@ -102,6 +103,7 @@ public class ProductController {
         dto.setPrice(product.getPrice());
         dto.setImgName(product.getImgName());
         dto.setAvailable(product.isAvailable());
+        dto.setQuantity(product.getQuantity());
         dto.setCategoryId(product.getCategory().getCategoryId());
         return dto;
     }

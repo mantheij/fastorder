@@ -4,8 +4,6 @@ package de.hhn.labfastord.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class ProductDTO {
@@ -14,6 +12,7 @@ public class ProductDTO {
     private double price;
     private String imgName;
     private boolean available;
+    private Integer quantity;
     private Integer categoryId;
 
     public ProductDTO() {

@@ -22,7 +22,7 @@ public class Order {
     private String status;
     private double totalPrice;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
@@ -31,12 +31,5 @@ public class Order {
     private Tables table;
 
     public Order() {
-    }
-
-    public Order(Integer orderId, Timestamp dateTime, String status, double totalPrice) {
-        this.orderId = orderId;
-        this.dateTime = dateTime;
-        this.status = status;
-        this.totalPrice = totalPrice;
     }
 }
