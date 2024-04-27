@@ -1,13 +1,7 @@
 package de.hhn.labfastord.dto;
 
-
-
 import lombok.Getter;
 import lombok.Setter;
-
-import java.sql.Timestamp;
-
-import java.util.Date;
 import java.util.List;
 
 @Getter

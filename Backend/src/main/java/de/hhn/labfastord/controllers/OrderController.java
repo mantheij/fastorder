@@ -5,7 +5,6 @@ import de.hhn.labfastord.dto.OrderDTO;
 import de.hhn.labfastord.dto.OrderDetailDTO;
 import de.hhn.labfastord.models.Order;
 import de.hhn.labfastord.models.OrderDetail;
-import de.hhn.labfastord.repositories.OrderDetailRepository;
 import de.hhn.labfastord.repositories.OrderRepository;
 
 import de.hhn.labfastord.repositories.ProductRepository;
@@ -29,9 +28,6 @@ public class OrderController {
 
     @Autowired
     private TablesRepository tablesRepository;
-
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -107,9 +103,10 @@ public class OrderController {
                 newOrderDetail.setProduct(orderDetail.getProduct());
                 newOrderDetail.setQuantity(orderDetail.getQuantity());
                 try {
-                    newOrderDetail.setPrice(orderDetail.getQuantity() *
-                            productRepository.findById(orderDetail.getProduct().getProductId()).get().getPrice());
-
+                    Double price = productRepository.findById(orderDetail.getProduct().getProductId())
+                            .map(product -> orderDetail.getQuantity() * product.getPrice())
+                            .orElseThrow(NullPointerException::new);
+                    newOrderDetail.setPrice(price);
                 } catch (NullPointerException e) {
                     return ResponseEntity.internalServerError().build();
                 }

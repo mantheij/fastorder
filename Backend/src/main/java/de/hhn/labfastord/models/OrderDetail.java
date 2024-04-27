@@ -13,13 +13,16 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "order_details")
 public class OrderDetail {
-    @Getter
+
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderDetailId;
     private Integer quantity;
+    @JsonIgnore
     private Double price;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
