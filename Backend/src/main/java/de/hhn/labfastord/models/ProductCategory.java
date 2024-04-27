@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    private Long categoryId;
     @Column(nullable = false)
     private String name;
     private String description;
@@ -24,8 +24,8 @@ public class ProductCategory {
     public ProductCategory() {
     }
 
-    public ProductCategory(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public ProductCategory(String getraenke, String s) {
+        this.name = getraenke;
+        this.description = s;
     }
 }

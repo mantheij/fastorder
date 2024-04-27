@@ -42,7 +42,7 @@ public class ProductCategoryController {
      * @return A ResponseEntity containing the found ProductCategoryDTO, or a not found status if not present, or an internal server error if an exception occurs.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductCategoryDTO> getProductCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<ProductCategoryDTO> getProductCategoryById(@PathVariable Long id) {
         try {
             return productCategoryRepository.findById(id)
                     .map(category -> ResponseEntity.ok(categoryMapper(category)))
@@ -59,7 +59,7 @@ public class ProductCategoryController {
      * @return A ResponseEntity containing the updated product category, or a not found status if no product category is found, or an internal server error if an exception occurs.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ProductCategoryDTO> updateProductCategory(@PathVariable Integer id, @RequestBody ProductCategoryDTO categoryDTO) {
+    public ResponseEntity<ProductCategoryDTO> updateProductCategory(@PathVariable Long id, @RequestBody ProductCategoryDTO categoryDTO) {
         try {
             return productCategoryRepository.findById(id)
                     .map(existingCategory -> {
@@ -80,7 +80,7 @@ public class ProductCategoryController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
             productCategoryRepository.deleteById(id);
             return ResponseEntity.ok("Successfully deleted");

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -35,12 +36,13 @@ public class DataInitializer implements CommandLineRunner {
         productRepository.saveAll(Arrays.asList(product1, product2));
 
         // Erstellen von Tischen
-        Tables table1 = new Tables(1);
+        Tables table1 = new Tables();
+        table1.setNumber(1);
         tablesRepository.save(table1);
 
         // Erstellen von Bestellungen
         Order order = new Order();
-        order.setDateTime(new Timestamp(System.currentTimeMillis()));
+        order.setDatetime(new Date());
         order.setStatus("offen");
         order.setTable(table1);
         order.setTotalPrice(5.50);

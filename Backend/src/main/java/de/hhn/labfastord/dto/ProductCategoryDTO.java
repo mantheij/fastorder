@@ -10,10 +10,10 @@ import java.util.List;
 @Setter
 public class ProductCategoryDTO {
 
-    private Integer categoryId;
+    private Long categoryId;
     private String name;
     private String description;
-    private List<Integer> productsId;
+    private List<Long> productsId;
 
     public ProductCategoryDTO() {
     }

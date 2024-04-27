@@ -31,7 +31,7 @@ public class OrderDetailController {
     public ResponseEntity<List<OrderDetailDTO>> getAllOrderDetails() {
         try {
             List<OrderDetail> orderDetails = orderDetailRepository.findAll();
-            return ResponseEntity.ok(orderDetails.stream().map(this::orderDetailMapper).toList());
+            return ResponseEntity.ok(orderDetails.stream().map(this::toDto).toList());
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -44,54 +44,17 @@ public class OrderDetailController {
      * @return A ResponseEntity containing the found OrderDetailDTO or a not found status if not present, or an internal server error if exception occurs.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDetailDTO> getOrderDetailById(@PathVariable Integer id) {
+    public ResponseEntity<OrderDetailDTO> getOrderDetailById(@PathVariable Long id) {
         try {
             return orderDetailRepository.findById(id)
-                    .map(orderDetail -> ResponseEntity.ok(orderDetailMapper(orderDetail)))
+                    .map(orderDetail -> ResponseEntity.ok(toDto(orderDetail)))
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    /**
-     * Updates an existing order detail identified by ID with provided order detail data.
-     *
-     * @param id             the ID of the order detail to update
-     * @param orderDetailDTO the new order detail data to be applied
-     * @return A ResponseEntity containing the updated order detail, or a not found status if no order detail is found, or an internal server error if exception occurs.
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<OrderDetailDTO> updateOrderDetail(@PathVariable Integer id, @RequestBody OrderDetailDTO orderDetailDTO) {
-        try {
-            return orderDetailRepository.findById(id)
-                    .map(existingOrderDetail -> {
-                        existingOrderDetail.setQuantity(orderDetailDTO.getQuantity());
-                        existingOrderDetail.setPrice(orderDetailDTO.getPrice());
-                        return ResponseEntity.ok(orderDetailMapper(orderDetailRepository.save(existingOrderDetail)));
-                    })
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (DataAccessException e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 
-    @PostMapping
-    public OrderDetail createOrderDetail(@RequestBody OrderDetail orderDetail) {
-        return orderDetailRepository.save(orderDetail);
-    }
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
-        try {
-            orderDetailRepository.deleteById(id);
-            return ResponseEntity.ok("Successfully deleted");
-
-        } catch (DataAccessException e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 
     /**
      * Maps data from OrderDetail to OrderDetailDTO.
@@ -99,16 +62,17 @@ public class OrderDetailController {
      * @param orderDetail the order detail entity
      * @return a new instance of OrderDetailDTO with mapped data
      */
-    private OrderDetailDTO orderDetailMapper(OrderDetail orderDetail) {
+    private OrderDetailDTO toDto(OrderDetail orderDetail) {
         OrderDetailDTO dto = new OrderDetailDTO();
         dto.setOrderDetailId(orderDetail.getOrderDetailId());
         dto.setQuantity(orderDetail.getQuantity());
         dto.setPrice(orderDetail.getPrice());
-        dto.setOrderId(orderDetail.getOrder().getOrderId());
         if (orderDetail.getProduct() != null) {
             dto.setProductId(orderDetail.getProduct().getProductId());
+            dto.setProductName(orderDetail.getProduct().getName());
         } else {
             dto.setProductId(null);
+            dto.setProductName(null);
         }
         return dto;
     }

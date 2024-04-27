@@ -40,7 +40,7 @@ public class ProductController {
      * @return A ResponseEntity containing the found ProductDTO, or a not found status if not present, or an internal server error if an exception occurs.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         try {
             return productRepository.findById(id)
                     .map(product -> ResponseEntity.ok(productMapper(product)))
@@ -57,7 +57,7 @@ public class ProductController {
      * @return A ResponseEntity containing the updated product, or a not found status if no product is found, or an internal server error if an exception occurs.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
         try {
             return productRepository.findById(id)
                     .map(existingProduct -> {
@@ -81,7 +81,7 @@ public class ProductController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
             productRepository.deleteById(id);
             return ResponseEntity.ok("Successfully deleted");

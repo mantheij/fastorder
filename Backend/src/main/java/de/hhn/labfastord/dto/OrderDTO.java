@@ -7,20 +7,21 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 public class OrderDTO {
 
-    private Integer orderId;
-    private Timestamp dateTime;
+    private Long orderId;
     private String status;
-    private double totalPrice;
+    private String datetime;
+    private Double totalPrice;
 
-    private List<Integer> orderDetailsIds;
+    private List<OrderDetailDTO> orderDetails;
 
-    private Integer tableId;
+    private Long tableId;
 
     public OrderDTO() {
     }

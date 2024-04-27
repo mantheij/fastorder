@@ -39,7 +39,7 @@ public class TablesController {
      * @return A ResponseEntity containing the found Tables, or a not found status if not present, or an internal server error if an exception occurs.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Tables> getTableById(@PathVariable Integer id) {
+    public ResponseEntity<Tables> getTableById(@PathVariable Long id) {
         try {
             return tablesRepository.findById(id)
                     .map(ResponseEntity::ok)
@@ -56,7 +56,7 @@ public class TablesController {
      * @return A ResponseEntity containing the updated table, or a not found status if no table is found, or an internal server error if an exception occurs.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Tables> updateTable(@PathVariable Integer id, @RequestBody Tables table) {
+    public ResponseEntity<Tables> updateTable(@PathVariable Long id, @RequestBody Tables table) {
         try {
             return tablesRepository.findById(id)
                     .map(existingTable -> {
@@ -76,7 +76,7 @@ public class TablesController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
             tablesRepository.deleteById(id);
             return ResponseEntity.ok("Successfully deleted");

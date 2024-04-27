@@ -1,5 +1,6 @@
 package de.hhn.labfastord.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class OrderDetail {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer orderDetailId;
+    private Long orderDetailId;
     private Integer quantity;
     private Double price;
 

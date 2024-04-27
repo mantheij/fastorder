@@ -12,14 +12,14 @@ import lombok.Setter;
 public class Tables {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer tableId;
+    private Long tableId;
     @NotNull
     private Integer number;
+    private Integer sizex;
+    private Integer sizey;
+    private Integer locx;
+    private Integer locy;
 
     public Tables() {
-    }
-
-    public Tables(Integer number) {
-        this.number = number;
     }
 }
