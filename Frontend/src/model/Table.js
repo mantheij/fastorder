@@ -4,8 +4,8 @@ export default class Table {
         this.id = id;
         this.area = area;
         this.occupied = occupied;
-        this.width = width;
-        this.height = height;
+        this.width = (width / 768 * 100) + 'vw';
+        this.height = (height / 1024 * 100) + 'vh';
     }
 
     getColor() {
