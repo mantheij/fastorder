@@ -2,43 +2,43 @@
   {
     "id": 1,
     "name": "Cola",
-    "description": "500ml",
-    "image": "/images/cola.jpeg",
+    "description": ["500ml"],
+    "image": "/images/products/cola.jpeg",
     "type": "non-alcoholic"
   },
   {
     "id": 2,
     "name": "Fanta",
-    "description": "500ml",
-    "image": "/images/fanta.jpeg",
+    "description": ["500ml"],
+    "image": "/images/products/fanta.jpeg",
     "type": "non-alcoholic"
   },
   {
     "id": 3,
     "name": "Sprite",
-    "description": "500ml",
-    "image": "/images/sprite.jpg",
+    "description": ["1cl","500ml","1L"],
+    "image": "/images/products/sprite.jpg",
     "type": "non-alcoholic"
   },
   {
     "id": 4,
     "name": "Mezzo-Mix",
-    "description": "500ml",
-    "image": "/images/mezzomix.jpeg",
+    "description": ["500ml"],
+    "image": "/images/products/mezzomix.jpeg",
     "type": "non-alcoholic"
   },
   {
     "id": 5,
     "name": "Water",
-    "description": "500ml",
-    "image": "/images/water.jpeg",
+    "description": ["500ml"],
+    "image": "/images/products/water.jpeg",
     "type": "non-alcoholic"
   },
   {
-    "id": 5,
+    "id": 6,
     "name": "Sparkling Water",
-    "description": "500ml",
-    "image": "/images/watersparkling.jpeg",
+    "description": ["500ml"],
+    "image": "/images/products/watersparkling.jpeg",
     "type": "non-alcoholic"
   }
 ]

@@ -6,6 +6,7 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Login from "@mui/icons-material/LoginOutlined";
 import House from "@mui/icons-material/HouseOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import StoreIcon from '@mui/icons-material/Store';
 import TableBar from "@mui/icons-material/TableBarOutlined";
 
 export default function LabelBottomNavigation() {
@@ -28,6 +29,11 @@ export default function LabelBottomNavigation() {
         label="Card"
         value="/card"
         icon={<ShoppingCartOutlinedIcon />}
+      />
+      <BottomNavigationAction
+          label="Customer"
+          value="/customer"
+          icon={<StoreIcon />}
       />
       <BottomNavigationAction
         label="Table"
