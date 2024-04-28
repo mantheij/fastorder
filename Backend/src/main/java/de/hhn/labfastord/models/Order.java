@@ -26,6 +26,7 @@ public class Order {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id")
     private Tables table;

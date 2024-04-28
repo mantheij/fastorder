@@ -6,7 +6,6 @@ import de.hhn.labfastord.models.ProductCategory;
 import de.hhn.labfastord.models.Product;
 import de.hhn.labfastord.repositories.ProductCategoryRepository;
 
-import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +23,6 @@ public class ProductCategoryController {
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
 
     /**
      * Retrieves all product categories.

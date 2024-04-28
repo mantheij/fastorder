@@ -155,8 +155,11 @@ public class OrderController {
                     orderDetailDTO.setProductName(orderDetail.getProduct().getName());
                     return orderDetailDTO;
                 }).toList());
-        dto.setTableId(order.getTable().getTableId());
-
+        if (order.getTable() != null) {
+            dto.setTableId(order.getTable().getTableId());
+        } else {
+            dto.setTableId(null);
+        }
         return dto;
     }
 }

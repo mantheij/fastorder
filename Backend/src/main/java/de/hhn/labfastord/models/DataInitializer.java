@@ -23,7 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         ProductCategory category = new ProductCategory("Getränke", "Alkoholische und nicht-alkoholische Getränke");
         categoryRepository.save(category);

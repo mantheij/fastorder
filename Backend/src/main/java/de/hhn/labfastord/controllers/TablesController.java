@@ -1,5 +1,6 @@
 package de.hhn.labfastord.controllers;
 
+import de.hhn.labfastord.dto.NewTableDTO;
 import de.hhn.labfastord.models.Tables;
 import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,17 +51,21 @@ public class TablesController {
     }
 
     /**
-     * Updates an existing table identified by ID.
-     * @param id the ID of the table to update
-     * @param table the table data to update
-     * @return A ResponseEntity containing the updated table, or a not found status if no table is found, or an internal server error if an exception occurs.
+     * Updates an existing newTableDto identified by ID.
+     * @param id the ID of the newTableDto to update
+     * @param newTableDto the newTableDto data to update
+     * @return A ResponseEntity containing the updated newTableDto, or a not found status if no newTableDto is found, or an internal server error if an exception occurs.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Tables> updateTable(@PathVariable Long id, @RequestBody Tables table) {
+    public ResponseEntity<Tables> updateTable(@PathVariable Long id, @RequestBody NewTableDTO newTableDto) {
         try {
             return tablesRepository.findById(id)
                     .map(existingTable -> {
-                        existingTable.setNumber(table.getNumber());
+                        existingTable.setNumber(newTableDto.getNumber());
+                        existingTable.setLocx(newTableDto.getLocx());
+                        existingTable.setLocy(newTableDto.getLocy());
+                        existingTable.setSizex(newTableDto.getSizex());
+                        existingTable.setSizey(newTableDto.getSizey());
                         return ResponseEntity.ok(tablesRepository.save(existingTable));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -70,8 +75,18 @@ public class TablesController {
     }
 
     @PostMapping
-    public Tables createTable(@RequestBody Tables table) {
-        return tablesRepository.save(table);
+    public ResponseEntity<Tables> createTable(@RequestBody NewTableDTO newTableDTO) {
+        try {
+            Tables table = new Tables();
+            table.setNumber(newTableDTO.getNumber());
+            table.setLocx(newTableDTO.getLocx());
+            table.setLocy(newTableDTO.getLocy());
+            table.setSizex(newTableDTO.getSizex());
+            table.setSizey(newTableDTO.getSizey());
+            return ResponseEntity.ok(tablesRepository.save(table));
+        } catch (DataAccessException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
