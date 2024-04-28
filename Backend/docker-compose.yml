@@ -14,6 +14,15 @@ services:
     healthcheck:
       test: "pg_isready -U postgres"
 
+  spring:
+    image: gerschdi/fastorderbackend:1
+    container_name: spring
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+
   admin:
     image: adminer
     restart: always
