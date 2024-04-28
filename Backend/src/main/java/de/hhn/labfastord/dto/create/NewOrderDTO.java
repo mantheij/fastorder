@@ -12,5 +12,7 @@ import java.util.List;
 public class NewOrderDTO {
 
     private List<OrderDetail> orderDetails = new ArrayList<>();
-    private Long tablesId;
+    private Long tableId;
+
+    public NewOrderDTO() {}
 }

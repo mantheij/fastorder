@@ -1,7 +1,9 @@
 package de.hhn.labfastord.controllers;
 
 import de.hhn.labfastord.dto.ProductDTO;
+import de.hhn.labfastord.dto.create.NewProductDTO;
 import de.hhn.labfastord.models.Product;
+import de.hhn.labfastord.repositories.ProductCategoryRepository;
 import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +22,13 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
+
     /**
-     * Retrieves all products.
+     * Gets all products.
      *
-     * @return A ResponseEntity containing a list of ProductDTOs or an internal server error if an exception occurs.
+     * @return all products as ResponseEntity.
      */
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -36,10 +41,10 @@ public class ProductController {
     }
 
     /**
-     * Retrieves a specific product by ID.
+     * Gets a product by ID.
      *
-     * @param id the ID of the product to retrieve
-     * @return A ResponseEntity containing the found ProductDTO, or a not found status if not present, or an internal server error if an exception occurs.
+     * @param id the product ID.
+     * @return the product as ResponseEntity.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
@@ -53,22 +58,28 @@ public class ProductController {
     }
 
     /**
-     * Updates an existing product identified by ID.
+     * Updates a product.
      *
-     * @param id         the ID of the product to update
-     * @param productDTO the product data to update
-     * @return A ResponseEntity containing the updated product, or a not found status if no product is found, or an internal server error if an exception occurs.
+     * @param id            the product ID.
+     * @param newProductDTO the product data.
+     * @return the updated product as ResponseEntity.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody NewProductDTO newProductDTO) {
         try {
             return productRepository.findById(id)
                     .map(existingProduct -> {
-                        existingProduct.setName(productDTO.getName());
-                        existingProduct.setPrice(productDTO.getPrice());
-                        existingProduct.setImgName(productDTO.getImgName());
-                        existingProduct.setQuantity(productDTO.getQuantity());
-                        existingProduct.setAvailable(productDTO.isAvailable());
+                        existingProduct.setName(newProductDTO.getName());
+                        existingProduct.setPrice(newProductDTO.getPrice());
+                        existingProduct.setImgName(newProductDTO.getImgName());
+                        existingProduct.setQuantity(newProductDTO.getQuantity());
+                        existingProduct.setAvailable(newProductDTO.getQuantity() > 0);
+                        try {
+                            existingProduct.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
+                                    .orElseThrow(NullPointerException::new));
+                        } catch (NullPointerException e) {
+                            existingProduct.setCategory(null);
+                        }
                         return ResponseEntity.ok(productMapper(productRepository.save(existingProduct)));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -77,12 +88,40 @@ public class ProductController {
         }
     }
 
+    /**
+     * Creates a new product.
+     *
+     * @param newProductDTO the new product data.
+     * @return the created product as ResponseEntity.
+     */
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productRepository.save(product);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody NewProductDTO newProductDTO) {
+        try {
+            Product product = new Product();
+            product.setName(newProductDTO.getName());
+            product.setPrice(newProductDTO.getPrice());
+            product.setImgName(newProductDTO.getImgName());
+            product.setQuantity(newProductDTO.getQuantity());
+            product.setAvailable(newProductDTO.getQuantity() > 0);
+            try {
+                product.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
+                        .orElseThrow(NullPointerException::new));
+            } catch (NullPointerException e) {
+                product.setCategory(null);
+            }
+            return ResponseEntity.ok(productMapper(productRepository.save(product)));
+        } catch (DataAccessException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
+    /**
+     * Deletes a product.
+     *
+     * @param id the product ID.
+     * @return a confirmation message as ResponseEntity.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {

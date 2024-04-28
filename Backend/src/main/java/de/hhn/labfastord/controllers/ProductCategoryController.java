@@ -25,9 +25,9 @@ public class ProductCategoryController {
 
 
     /**
-     * Retrieves all product categories.
+     * Gets all product categories.
      *
-     * @return A ResponseEntity containing a list of ProductCategoryDTOs or an internal server error if an exception occurs.
+     * @return all product categories as ResponseEntity.
      */
     @GetMapping
     public ResponseEntity<List<ProductCategoryDTO>> getAllProductCategories() {
@@ -40,10 +40,10 @@ public class ProductCategoryController {
     }
 
     /**
-     * Retrieves a specific product category by ID.
+     * Gets a product category by ID.
      *
-     * @param id the ID of the product category to retrieve
-     * @return A ResponseEntity containing the found ProductCategoryDTO, or a not found status if not present, or an internal server error if an exception occurs.
+     * @param id the category ID.
+     * @return the product category as ResponseEntity.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ProductCategoryDTO> getProductCategoryById(@PathVariable Long id) {
@@ -57,11 +57,11 @@ public class ProductCategoryController {
     }
 
     /**
-     * Updates an existing product category identified by ID.
+     * Updates a product category.
      *
-     * @param id                    the ID of the product category to update
-     * @param newProductCategoryDTO the product category data to update
-     * @return A ResponseEntity containing the updated product category, or a not found status if no product category is found, or an internal server error if an exception occurs.
+     * @param id                    the category ID.
+     * @param newProductCategoryDTO the category data.
+     * @return the updated category as ResponseEntity.
      */
     @PutMapping("/{id}")
     public ResponseEntity<ProductCategoryDTO> updateProductCategory(@PathVariable Long id, @RequestBody NewProductCategoryDTO newProductCategoryDTO) {
@@ -78,6 +78,12 @@ public class ProductCategoryController {
         }
     }
 
+    /**
+     * Creates a new product category.
+     *
+     * @param newProductCategoryDTO the new category data.
+     * @return the created category as ResponseEntity.
+     */
     @PostMapping
     public ResponseEntity<ProductCategoryDTO> createProductCategory(@RequestBody NewProductCategoryDTO newProductCategoryDTO) {
         try {
@@ -91,8 +97,14 @@ public class ProductCategoryController {
     }
 
 
+    /**
+     * Deletes a product category.
+     *
+     * @param id the category ID.
+     * @return a confirmation message as ResponseEntity.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<String> deleteProductCategory(@PathVariable Long id) {
         try {
             productCategoryRepository.deleteById(id);
             return ResponseEntity.ok("Successfully deleted");

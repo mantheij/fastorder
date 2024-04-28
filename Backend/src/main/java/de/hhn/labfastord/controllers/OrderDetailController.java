@@ -23,9 +23,9 @@ public class OrderDetailController {
     private OrderDetailRepository orderDetailRepository;
 
     /**
-     * Retrieves all order details.
+     * Gets all order details.
      *
-     * @return A ResponseEntity containing a list of OrderDetailDTOs or an internal server error if exception occurs.
+     * @return all order details as ResponseEntity.
      */
     @GetMapping
     public ResponseEntity<List<OrderDetailDTO>> getAllOrderDetails() {
@@ -38,10 +38,10 @@ public class OrderDetailController {
     }
 
     /**
-     * Retrieves a specific order detail by ID.
+     * Gets order detail by ID.
      *
-     * @param id the ID of the order detail to retrieve
-     * @return A ResponseEntity containing the found OrderDetailDTO or a not found status if not present, or an internal server error if exception occurs.
+     * @param id the order detail ID.
+     * @return the order detail as ResponseEntity.
      */
     @GetMapping("/{id}")
     public ResponseEntity<OrderDetailDTO> getOrderDetailById(@PathVariable Long id) {
@@ -53,8 +53,6 @@ public class OrderDetailController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
 
     /**
      * Maps data from OrderDetail to OrderDetailDTO.

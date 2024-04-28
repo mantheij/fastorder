@@ -25,13 +25,16 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        ProductCategory category = new ProductCategory("Getränke", "Alkoholische und nicht-alkoholische Getränke");
-        categoryRepository.save(category);
+        ProductCategory categoryBeer = new ProductCategory("Biere", "Alkoholische und nicht-alkoholische Biere");
+        ProductCategory categorySoft = new ProductCategory("Softtrinks", "Softtrinks");
+        categoryRepository.save(categoryBeer);
+        categoryRepository.save(categorySoft);
 
         // Erstellen von Produkten
-        Product product1 = new Product("Cola", 2.50, true, category);
-        Product product2 = new Product("Bier", 3.00, true, category);
-        productRepository.saveAll(Arrays.asList(product1, product2));
+        Product product1 = new Product("Cola", 2.50, 50, true, categorySoft);
+        Product product2 = new Product("Fanta", 2.50, 50, true, categorySoft);
+        Product product3 = new Product("Bier", 3.00, 50, true, categoryBeer);
+        productRepository.saveAll(Arrays.asList(product1, product2, product3));
 
         // Erstellen von Tischen
         Tables table1 = new Tables();
@@ -41,18 +44,22 @@ public class DataInitializer implements CommandLineRunner {
         // Erstellen von Bestellungen
         Order order = new Order();
         order.setDatetime(new Date());
-        order.setStatus("offen");
+        order.setStatus("open");
         order.setTable(table1);
-        order.setTotalPrice(5.50);
+        order.setTotalPrice(10.00);
         orderRepository.save(order);
-
-        // Erstellen von Bestelldetails
         OrderDetail detail = new OrderDetail();
         detail.setOrder(order);
         detail.setProduct(product1);
         detail.setQuantity(2);
         detail.setPrice(5.00);
         order.getOrderDetails().add(detail);
+        OrderDetail detail1 = new OrderDetail();
+        detail1.setOrder(order);
+        detail1.setProduct(product2);
+        detail1.setQuantity(2);
+        detail1.setPrice(5.00);
+        order.getOrderDetails().add(detail1);
         orderRepository.save(order);
     }
 }

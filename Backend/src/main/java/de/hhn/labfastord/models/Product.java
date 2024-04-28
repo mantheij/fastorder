@@ -29,17 +29,20 @@ public class Product {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private ProductCategory category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
 
     public Product() {
     }
 
-    public Product(String cola, double v, boolean b, ProductCategory category) {
+    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category) {
         this.name = cola;
-        this.price = v;
-        this.available = b;
+        this.price = price;
+        this.quantity = quantity;
         this.category = category;
+        this.available = available;
     }
 }

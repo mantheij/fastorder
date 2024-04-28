@@ -21,8 +21,9 @@ public class TablesController {
     private TablesRepository tablesRepository;
 
     /**
-     * Retrieves all tables.
-     * @return A ResponseEntity containing a list of Tables or an internal server error if an exception occurs.
+     * Gets all tables.
+     *
+     * @return all tables as ResponseEntity.
      */
     @GetMapping
     public ResponseEntity<List<Tables>> getAllTables() {
@@ -36,6 +37,7 @@ public class TablesController {
 
     /**
      * Retrieves a specific table by ID.
+     *
      * @param id the ID of the table to retrieve
      * @return A ResponseEntity containing the found Tables, or a not found status if not present, or an internal server error if an exception occurs.
      */
@@ -50,11 +52,13 @@ public class TablesController {
         }
     }
 
+
     /**
-     * Updates an existing newTableDto identified by ID.
-     * @param id the ID of the newTableDto to update
+     * Updates a table
+     *
+     * @param id          the ID of the newTableDto to update
      * @param newTableDto the newTableDto data to update
-     * @return A ResponseEntity containing the updated newTableDto, or a not found status if no newTableDto is found, or an internal server error if an exception occurs.
+     * @return the updated table as ResponseEntity.
      */
     @PutMapping("/{id}")
     public ResponseEntity<Tables> updateTable(@PathVariable Long id, @RequestBody NewTableDTO newTableDto) {
@@ -74,6 +78,12 @@ public class TablesController {
         }
     }
 
+    /**
+     * Creates a new Table.
+     *
+     * @param newTableDTO the new table data.
+     * @return the created product as ResponseEntity.
+     */
     @PostMapping
     public ResponseEntity<Tables> createTable(@RequestBody NewTableDTO newTableDTO) {
         try {
@@ -90,12 +100,17 @@ public class TablesController {
     }
 
 
+    /**
+     * Deletes a Table.
+     *
+     * @param id the Table ID.
+     * @return a confirmation message as ResponseEntity.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
             tablesRepository.deleteById(id);
             return ResponseEntity.ok("Successfully deleted");
-
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
         }

@@ -33,9 +33,9 @@ public class OrderController {
     private ProductRepository productRepository;
 
     /**
-     * Retrieves all orders.
+     * Gets all orders.
      *
-     * @return A ResponseEntity containing a list of OrderDTOs or an internal server error if an exception occurs.
+     * @return all orders as ResponseEntity.
      */
     @GetMapping
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
@@ -47,6 +47,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Gets all orders with status open.
+     *
+     * @return all orders as ResponseEntity.
+     */
     @GetMapping("/open")
     public ResponseEntity<List<OrderDTO>> getAllOpenOrders() {
         try {
@@ -60,11 +65,10 @@ public class OrderController {
     }
 
     /**
-     * Retrieves a specific order by ID.
+     * Gets an order by ID.
      *
-     * @param id the ID of the order to retrieve
-     * @return A ResponseEntity containing the found OrderDTO, or a not found status if not present,
-     * or an internal server error if an exception occurs.
+     * @param id the order ID.
+     * @return the order as ResponseEntity.
      */
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
@@ -76,6 +80,13 @@ public class OrderController {
         }
     }
 
+    /**
+     * Updates order status.
+     *
+     * @param id       the order ID.
+     * @param orderDTO the order data.
+     * @return updated order as ResponseEntity.
+     */
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
         try {
@@ -88,13 +99,20 @@ public class OrderController {
         }
     }
 
+    /**
+     * Creates a new order.
+     *
+     * @param newOrderDTO the new order data.
+     * @return the created order as ResponseEntity.
+     */
     @PostMapping
     public ResponseEntity<OrderDTO> createOrder(@RequestBody NewOrderDTO newOrderDTO) {
         try {
             Order order = new Order();
             order.setStatus("open");
             order.setDatetime(new Date());
-            order.setTable(tablesRepository.getReferenceById(newOrderDTO.getTablesId()));
+            order.setTable(tablesRepository.findById(newOrderDTO.getTableId())
+                    .orElseThrow(NullPointerException::new));
             orderRepository.save(order);
 
             for (OrderDetail orderDetail : newOrderDTO.getOrderDetails()) {
@@ -102,14 +120,10 @@ public class OrderController {
                 newOrderDetail.setOrder(order);
                 newOrderDetail.setProduct(orderDetail.getProduct());
                 newOrderDetail.setQuantity(orderDetail.getQuantity());
-                try {
-                    Double price = productRepository.findById(orderDetail.getProduct().getProductId())
-                            .map(product -> orderDetail.getQuantity() * product.getPrice())
-                            .orElseThrow(NullPointerException::new);
-                    newOrderDetail.setPrice(price);
-                } catch (NullPointerException e) {
-                    return ResponseEntity.internalServerError().build();
-                }
+                Double price = productRepository.findById(orderDetail.getProduct().getProductId())
+                        .map(product -> orderDetail.getQuantity() * product.getPrice())
+                        .orElseThrow(NullPointerException::new);
+                newOrderDetail.setPrice(price);
                 order.getOrderDetails().add(newOrderDetail);
                 order.setTotalPrice(order.getTotalPrice() + newOrderDetail.getPrice());
             }
@@ -117,11 +131,19 @@ public class OrderController {
             return ResponseEntity.ok(toDto(order));
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.badRequest().build();
         }
 
     }
 
 
+    /**
+     * Deletes an order.
+     *
+     * @param id the order ID.
+     * @return a confirmation message as ResponseEntity.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
@@ -151,8 +173,13 @@ public class OrderController {
                     orderDetailDTO.setOrderDetailId(orderDetail.getOrderDetailId());
                     orderDetailDTO.setQuantity(orderDetail.getQuantity());
                     orderDetailDTO.setPrice(orderDetail.getPrice());
-                    orderDetailDTO.setProductId(orderDetail.getProduct().getProductId());
-                    orderDetailDTO.setProductName(orderDetail.getProduct().getName());
+                    if (orderDetail.getProduct() != null) {
+                        orderDetailDTO.setProductId(orderDetail.getProduct().getProductId());
+                        orderDetailDTO.setProductName(orderDetail.getProduct().getName());
+                    } else {
+                        orderDetailDTO.setProductId(null);
+                        orderDetailDTO.setProductName(null);
+                    }
                     return orderDetailDTO;
                 }).toList());
         if (order.getTable() != null) {
