@@ -3,7 +3,11 @@ package de.hhn.labfastord.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Getter
@@ -18,14 +22,15 @@ public class ProductCategory {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
     public ProductCategory() {
     }
 
-    public ProductCategory(String getraenke, String s) {
-        this.name = getraenke;
+    public ProductCategory(String g, String s) {
+        this.name = g;
         this.description = s;
     }
 }

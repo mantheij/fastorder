@@ -29,7 +29,7 @@ public class Product {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private ProductCategory category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
 

@@ -22,6 +22,7 @@ public class ProductController {
 
     /**
      * Retrieves all products.
+     *
      * @return A ResponseEntity containing a list of ProductDTOs or an internal server error if an exception occurs.
      */
     @GetMapping
@@ -36,6 +37,7 @@ public class ProductController {
 
     /**
      * Retrieves a specific product by ID.
+     *
      * @param id the ID of the product to retrieve
      * @return A ResponseEntity containing the found ProductDTO, or a not found status if not present, or an internal server error if an exception occurs.
      */
@@ -52,7 +54,8 @@ public class ProductController {
 
     /**
      * Updates an existing product identified by ID.
-     * @param id the ID of the product to update
+     *
+     * @param id         the ID of the product to update
      * @param productDTO the product data to update
      * @return A ResponseEntity containing the updated product, or a not found status if no product is found, or an internal server error if an exception occurs.
      */
@@ -93,6 +96,7 @@ public class ProductController {
 
     /**
      * Maps data from Product to ProductDTO.
+     *
      * @param product the Product entity
      * @return a new instance of ProductDTO with mapped data
      */
@@ -104,7 +108,11 @@ public class ProductController {
         dto.setImgName(product.getImgName());
         dto.setAvailable(product.isAvailable());
         dto.setQuantity(product.getQuantity());
-        dto.setCategoryId(product.getCategory().getCategoryId());
+        if (product.getCategory() != null) {
+            dto.setCategoryId(product.getCategory().getCategoryId());
+        } else {
+            dto.setCategoryId(null);
+        }
         return dto;
     }
 }
