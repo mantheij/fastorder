@@ -1,6 +1,6 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.NewTableDTO;
+import de.hhn.labfastord.dto.create.NewTableDTO;
 import de.hhn.labfastord.models.Tables;
 import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;

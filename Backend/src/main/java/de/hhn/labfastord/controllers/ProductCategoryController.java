@@ -1,6 +1,6 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.NewProductCategoryDTO;
+import de.hhn.labfastord.dto.create.NewProductCategoryDTO;
 import de.hhn.labfastord.dto.ProductCategoryDTO;
 import de.hhn.labfastord.models.ProductCategory;
 import de.hhn.labfastord.models.Product;

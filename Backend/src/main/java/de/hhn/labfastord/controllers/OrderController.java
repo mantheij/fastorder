@@ -1,6 +1,6 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.NewOrderDTO;
+import de.hhn.labfastord.dto.create.NewOrderDTO;
 import de.hhn.labfastord.dto.OrderDTO;
 import de.hhn.labfastord.dto.OrderDetailDTO;
 import de.hhn.labfastord.models.Order;

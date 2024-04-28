@@ -1,4 +1,4 @@
-package de.hhn.labfastord.dto;
+package de.hhn.labfastord.dto.create;
 
 import de.hhn.labfastord.models.OrderDetail;
 import lombok.Getter;
