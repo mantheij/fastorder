@@ -5,7 +5,6 @@ import de.hhn.labfastord.dto.OrderDTO;
 import de.hhn.labfastord.dto.OrderDetailDTO;
 import de.hhn.labfastord.models.Order;
 import de.hhn.labfastord.models.OrderDetail;
-import de.hhn.labfastord.models.Product;
 import de.hhn.labfastord.repositories.OrderRepository;
 
 import de.hhn.labfastord.repositories.ProductRepository;

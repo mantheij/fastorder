@@ -15,7 +15,7 @@ services:
       test: "pg_isready -U postgres"
 
   spring:
-    image: gerschdi/fastorderbackend:1
+    image: gerschdi/fastorderbackend:2
     container_name: spring
     ports:
       - "8080:8080"
