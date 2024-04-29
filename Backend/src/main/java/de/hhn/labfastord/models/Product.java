@@ -22,6 +22,7 @@ public class Product {
     private String imgName;
     private Integer quantity;
     private boolean available;
+    private String sizes;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,7 +31,6 @@ public class Product {
     private ProductCategory category;
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
 
@@ -38,11 +38,12 @@ public class Product {
     public Product() {
     }
 
-    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category) {
+    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category, String sizes) {
         this.name = cola;
         this.price = price;
         this.quantity = quantity;
         this.category = category;
         this.available = available;
+        this.sizes = sizes;
     }
 }

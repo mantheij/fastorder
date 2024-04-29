@@ -81,6 +81,8 @@ public class ProductController {
                         } catch (NullPointerException e) {
                             existingProduct.setCategory(null);
                         }
+                        String[] sizes = newProductDTO.getSize().toArray(new String[0]);
+                        existingProduct.setSizes(String.join(", ", sizes));
                         return ResponseEntity.ok(productMapper(productRepository.save(existingProduct)));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -110,6 +112,9 @@ public class ProductController {
             } catch (NullPointerException e) {
                 product.setCategory(null);
             }
+            String[] sizes = newProductDTO.getSize().toArray(new String[0]);
+            product.setSizes(String.join(", ", sizes));
+
             return ResponseEntity.ok(productMapper(productRepository.save(product)));
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
@@ -152,6 +157,11 @@ public class ProductController {
             dto.setCategoryId(product.getCategory().getCategoryId());
         } else {
             dto.setCategoryId(null);
+        }
+        if (product.getSizes() != null) {
+            dto.setSize(List.of(product.getSizes().split(", ")));
+        } else {
+            dto.setSize(null);
         }
         return dto;
     }

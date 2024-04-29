@@ -528,6 +528,10 @@ components:
         categoryId:
           type: "integer"
           format: "int64"
+        size:
+          type: "array"
+          items:
+            type: "string"
     NewProductDTO:
       type: "object"
       properties:
@@ -544,6 +548,10 @@ components:
         productCategoryId:
           type: "integer"
           format: "int64"
+        size:
+          type: "array"
+          items:
+            type: "string"
     OrderDTO:
       type: "object"
       properties:
@@ -582,6 +590,8 @@ components:
           format: "int32"
         available:
           type: "boolean"
+        sizes:
+          type: "string"
         orderDetails:
           type: "array"
           items:
@@ -601,6 +611,6 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/OrderDetail"
-        tablesId:
+        tableId:
           type: "integer"
           format: "int64"
