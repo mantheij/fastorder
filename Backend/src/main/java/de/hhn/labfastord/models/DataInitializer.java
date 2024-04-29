@@ -4,9 +4,8 @@ import de.hhn.labfastord.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -24,35 +23,43 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
-        ProductCategory category = new ProductCategory("Getränke", "Alkoholische und nicht-alkoholische Getränke");
-        categoryRepository.save(category);
+        ProductCategory categoryBeer = new ProductCategory("Biere", "Alkoholische und nicht-alkoholische Biere");
+        ProductCategory categorySoft = new ProductCategory("Softtrinks", "Softtrinks");
+        categoryRepository.save(categoryBeer);
+        categoryRepository.save(categorySoft);
 
         // Erstellen von Produkten
-        Product product1 = new Product("Cola", 2.50, true, category);
-        Product product2 = new Product("Bier", 3.00, true, category);
-        productRepository.saveAll(Arrays.asList(product1, product2));
+        Product product1 = new Product("Cola", 2.50, 50, true, categorySoft);
+        Product product2 = new Product("Fanta", 2.50, 50, true, categorySoft);
+        Product product3 = new Product("Bier", 3.00, 50, true, categoryBeer);
+        productRepository.saveAll(Arrays.asList(product1, product2, product3));
 
         // Erstellen von Tischen
-        Tables table1 = new Tables(1);
+        Tables table1 = new Tables();
+        table1.setNumber(1);
         tablesRepository.save(table1);
 
         // Erstellen von Bestellungen
         Order order = new Order();
-        order.setDateTime(new Timestamp(System.currentTimeMillis()));
-        order.setStatus("offen");
+        order.setDatetime(new Date());
+        order.setStatus("open");
         order.setTable(table1);
-        order.setTotalPrice(new BigDecimal("5.50"));
+        order.setTotalPrice(10.00);
         orderRepository.save(order);
-
-        // Erstellen von Bestelldetails
         OrderDetail detail = new OrderDetail();
         detail.setOrder(order);
         detail.setProduct(product1);
         detail.setQuantity(2);
-        detail.setPrice(new BigDecimal("5.00"));
+        detail.setPrice(5.00);
         order.getOrderDetails().add(detail);
+        OrderDetail detail1 = new OrderDetail();
+        detail1.setOrder(order);
+        detail1.setProduct(product2);
+        detail1.setQuantity(2);
+        detail1.setPrice(5.00);
+        order.getOrderDetails().add(detail1);
         orderRepository.save(order);
     }
 }

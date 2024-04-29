@@ -1,49 +1,35 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "product_categories")
 public class ProductCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    private Long categoryId;
     @Column(nullable = false)
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
-    public ProductCategory() {}
-    public ProductCategory(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public ProductCategory() {
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public List<Product> getProducts() {
-        return products;
-    }
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public ProductCategory(String g, String s) {
+        this.name = g;
+        this.description = s;
     }
 }
