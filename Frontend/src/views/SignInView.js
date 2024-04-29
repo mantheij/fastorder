@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Box, Button, TextField } from '@mui/material';
+import { Typography, Box, Button, TextField, Snackbar } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
 
@@ -7,6 +7,7 @@ const SignInView = () => {
     // State variables
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
 
     // MUI theme customization
     const theme = createTheme({
@@ -21,19 +22,33 @@ const SignInView = () => {
     });
 
     // Handle sign in
-    const handleSignIn = () => {
+    const handleSignIn = (e) => {
+        e.preventDefault();
+        if (username === '' || password === '') {
+            setOpenSnackbar(true);
+            return;
+        }
         // Implement sign in logic here
         console.log('Username:', username);
         console.log('Password:', password);
     };
 
+    // Close Snackbar
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
     return (
         <div style={{ padding: '20px', minHeight: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, marginBottom: '20px', WebkitTextStroke: '1px black', fontWeight: 'bold' }}>Anmelden</Typography>
+            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, marginBottom: '20px', WebkitTextStroke: '1px black', fontWeight: 'bold' }}>Sign In</Typography>
             <Box
                 component="form"
                 sx={{
                     '& .MuiTextField-root': { m: 1, width: '25ch' },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                 }}
                 noValidate
                 autoComplete="off"
@@ -41,7 +56,7 @@ const SignInView = () => {
             >
                 <TextField
                     id="username"
-                    label="Benutzername"
+                    label="Username"
                     variant="outlined"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -49,15 +64,21 @@ const SignInView = () => {
                 />
                 <TextField
                     id="password"
-                    label="Passwort"
+                    label="Password"
                     type="password"
                     variant="outlined"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <Button variant="contained" size="large" type="submit" sx={{ marginTop: '10px', backgroundColor: theme.palette.primary.main }}>Anmelden</Button>
+                <Button variant="contained" size="large" type="submit" sx={{ marginTop: '10px', backgroundColor: theme.palette.primary.main }}>Sign In</Button>
             </Box>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                message="Please fill in all fields."
+            />
         </div>
     );
 };
