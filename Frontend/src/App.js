@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LabelBottomNavigation from "./navigation";
 import HomeView from "./views/HomeView";
 import CardView from "./views/CardView";
+import CustomerView from "./views/CustomerView";
+import TableView from "./views/TableView";
 import SignInView from "./views/SignInView";
 import "./App.css";
 import UserView from "./views/UserView";
@@ -19,7 +21,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/card" element={<CardView />} />
-          <Route path="/user" element={<UserView/>} />
+          <Route path="/customer" element={<CustomerView />} />
+          <Route path="/table" element={<TableView />} />
           <Route path="/signin" element={<SignInView />} />
           <Route path="/table-selection" element={<TableSelectionView />}/>
         </Routes>

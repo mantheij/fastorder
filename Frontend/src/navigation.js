@@ -4,6 +4,7 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Login from "@mui/icons-material/LoginOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import StoreIcon from '@mui/icons-material/Store';
 import TableBar from "@mui/icons-material/TableBarOutlined";
 import {AccountCircle} from "@mui/icons-material";
 
