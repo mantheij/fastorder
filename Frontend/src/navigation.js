@@ -2,11 +2,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Login from "@mui/icons-material/LoginOutlined";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import StoreIcon from '@mui/icons-material/Store';
 import TableBar from "@mui/icons-material/TableBarOutlined";
-import {AccountCircle} from "@mui/icons-material";
+import {AccountCircle, Settings, SummarizeOutlined} from "@mui/icons-material";
 
 export default function LabelBottomNavigation() {
   const [value, setValue] = React.useState("/");
@@ -32,7 +29,7 @@ export default function LabelBottomNavigation() {
           onChange={handleChange}
       >
         <BottomNavigationAction
-            value="/"
+            value="/chef"
             icon={<img src="/logo.png" alt="Special" style={{ width: 45, height: 45 }}/>}
         />
         <BottomNavigationAction
@@ -42,9 +39,9 @@ export default function LabelBottomNavigation() {
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Karte"
-            value="/card"
-            icon={<ShoppingCartOutlinedIcon />}
+            label="Mitarbeiter"
+            value="/orders"
+            icon={<SummarizeOutlined />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
@@ -54,9 +51,9 @@ export default function LabelBottomNavigation() {
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Anmeldung"
-            value="/signin"
-            icon={<Login />}
+            label="Einstellungen"
+            value="/settings"
+            icon={<Settings />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
       </BottomNavigation>

@@ -10,6 +10,7 @@ import "./App.css";
 import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
+import CustomerStartUpButton from "./views/CustomerView";
 
 function App() {
   return (
@@ -18,12 +19,13 @@ function App() {
         {/* Inhalte über der Navigation */}
         <TablesProvider>
         <Routes>
-          <Route path="/" element={<HomeView />} />
-          <Route path="/card" element={<CardView />} />
+          <Route path="/" element={<SignInView />} />
           <Route path="/customer" element={<CustomerView />} />
-          <Route path="/signin" element={<SignInView />} />
-          <Route path="/table-selection" element={<TableSelectionView />}/>
+          <Route path="/table-selection" element={<TableSelectionView />} />
+          <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
+          <Route path="/customerStart" element ={<CustomerStartUpButton />}/>
+          <Route path="/card" element ={<CardView />}/>
         </Routes>
         </TablesProvider>
         {/* Konstante Navigation am unteren Rand */}
