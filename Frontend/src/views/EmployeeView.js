@@ -4,10 +4,6 @@ import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
 
-/**
- * EmployeeView component displays a list of orders for employees to manage.
- * It allows employees to mark orders as done, in work, or cancelled.
- */
 const EmployeeView = () => {
     // State variables
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -97,7 +93,7 @@ const EmployeeView = () => {
                             }}
                         >
                             {/* Display table number */}
-                            <Typography variant="h6" gutterBottom sx={{ color: theme.palette.primary.main, textShadow: '0 0 0.1em black', padding: '5px', borderRadius: '4px' }}>{item.tableNumber}</Typography>
+                            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, WebkitTextStroke: '1px black', padding: '5px', borderRadius: '4px' }}>{item.tableNumber}</Typography>
 
                             {/* Display timestamp */}
                             <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px' }}>{item.timestamp}</Typography>
@@ -109,7 +105,7 @@ const EmployeeView = () => {
                             <Box sx={{ marginTop: '20px' }}>
                                 <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')}>Done</Button>
                                 <Button variant="contained" size="small" onClick={() => toggleInProgress(index)} sx={{ marginLeft: '8px', marginRight: '8px' }}>
-                                    {item.inProgress ? 'Not in work' : 'In work'}
+                                    {item.inProgress ? 'In work' : 'In work'}
                                 </Button>
                                 <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')}>Cancel</Button>
                             </Box>

@@ -19,7 +19,7 @@ function App() {
           <Route path="/card" element={<CardView />} />
           <Route path="/table" element={<TableView />} />
           <Route path="/signin" element={<SignInView />} />
-          <Route path="/employee" element={<EmployeeView />} />
+          <Route path="/orders" element={<EmployeeView />} />
         </Routes>
         {/* Konstante Navigation am unteren Rand */}
         <LabelBottomNavigation />
