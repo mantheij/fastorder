@@ -32,18 +32,18 @@ export default function LabelBottomNavigation() {
           onChange={handleChange}
       >
         <BottomNavigationAction
-            value="/"
+            value="/chef"
             icon={<img src="/logo.png" alt="Special" style={{ width: 45, height: 45 }}/>}
         />
         <BottomNavigationAction
             label="Auswahl"
-            value="/table-selection"
+            value="/"
             icon={<TableBar />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Karte"
-            value="/card"
+            label="Orders"
+            value="/orders"
             icon={<ShoppingCartOutlinedIcon />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />

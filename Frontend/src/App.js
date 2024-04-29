@@ -18,11 +18,10 @@ function App() {
         {/* Inhalte über der Navigation */}
         <TablesProvider>
         <Routes>
-          <Route path="/" element={<HomeView />} />
-          <Route path="/card" element={<CardView />} />
+          <Route path="/" element={<TableSelectionView />} />
           <Route path="/customer" element={<CustomerView />} />
           <Route path="/signin" element={<SignInView />} />
-          <Route path="/table-selection" element={<TableSelectionView />}/>
+          <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
         </Routes>
         </TablesProvider>
