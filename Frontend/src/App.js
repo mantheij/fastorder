@@ -23,6 +23,7 @@ function App() {
           <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
+          <Route path="/card" element ={<CardView />}/>
         </Routes>
         </TablesProvider>
         {/* Konstante Navigation am unteren Rand */}
