@@ -93,7 +93,7 @@ const EmployeeView = () => {
                             }}
                         >
                             {/* Display table number */}
-                            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, WebkitTextStroke: '1px black', padding: '5px', borderRadius: '4px' }}>{item.tableNumber}</Typography>
+                            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px' }}>{item.tableNumber}</Typography>
 
                             {/* Display timestamp */}
                             <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px' }}>{item.timestamp}</Typography>

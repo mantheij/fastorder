@@ -9,6 +9,7 @@ import SignInView from "./views/SignInView";
 import "./App.css";
 import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
+import EmployeeView from "./views/EmployeeView";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/customer" element={<CustomerView />} />
           <Route path="/signin" element={<SignInView />} />
           <Route path="/table-selection" element={<TableSelectionView />}/>
+          <Route path="/orders" element={<EmployeeView />}/>
         </Routes>
         </TablesProvider>
         {/* Konstante Navigation am unteren Rand */}

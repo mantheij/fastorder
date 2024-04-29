@@ -49,7 +49,7 @@ const SignInView = () => {
 
     return (
         <div style={{ padding: '20px', minHeight: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, marginBottom: '20px', WebkitTextStroke: '1px black', fontWeight: 'bold' }}>Sign In</Typography>
+            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, marginBottom: '20px', fontWeight: 'bold' }}>Sign In</Typography>
             <Box
                 component="form"
                 sx={{
