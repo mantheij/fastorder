@@ -2,9 +2,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import TableBar from "@mui/icons-material/TableBarOutlined";
-import {AccountCircle, Settings} from "@mui/icons-material";
+import {AccountCircle, Settings, SummarizeOutlined} from "@mui/icons-material";
 
 export default function LabelBottomNavigation() {
   const [value, setValue] = React.useState("/");
@@ -42,7 +41,7 @@ export default function LabelBottomNavigation() {
         <BottomNavigationAction
             label="Mitarbeiter"
             value="/orders"
-            icon={<ShoppingCartOutlinedIcon />}
+            icon={<SummarizeOutlined />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
