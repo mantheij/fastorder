@@ -15,6 +15,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/tables")
+@CrossOrigin("http://localhost:3000/")
 public class TablesController {
 
     @Autowired
