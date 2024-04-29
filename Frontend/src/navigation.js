@@ -6,7 +6,7 @@ import Login from "@mui/icons-material/LoginOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import StoreIcon from '@mui/icons-material/Store';
 import TableBar from "@mui/icons-material/TableBarOutlined";
-import {AccountCircle} from "@mui/icons-material";
+import {AccountCircle, Settings} from "@mui/icons-material";
 
 export default function LabelBottomNavigation() {
   const [value, setValue] = React.useState("/");
@@ -37,7 +37,7 @@ export default function LabelBottomNavigation() {
         />
         <BottomNavigationAction
             label="Auswahl"
-            value="/"
+            value="/table-selection"
             icon={<TableBar />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
@@ -54,9 +54,9 @@ export default function LabelBottomNavigation() {
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Anmeldung"
-            value="/signin"
-            icon={<Login />}
+            label="Einstellung"
+            value="/settings"
+            icon={<Settings />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
       </BottomNavigation>

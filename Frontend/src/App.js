@@ -18,9 +18,9 @@ function App() {
         {/* Inhalte über der Navigation */}
         <TablesProvider>
         <Routes>
-          <Route path="/" element={<TableSelectionView />} />
+          <Route path="/" element={<SignInView />} />
           <Route path="/customer" element={<CustomerView />} />
-          <Route path="/signin" element={<SignInView />} />
+          <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
         </Routes>
