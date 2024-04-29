@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+/**
+ * This component represents a button that serves as the starting point for the customer.
+ * It allows the customer to select a language and navigate to another page.
+ */
+import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
+import {styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
+/**
+ * Styled button that displays an image.
+ * It adjusts its size based on the screen width.
+ */
+const ImageButton = styled(ButtonBase)(({theme}) => ({
     position: 'relative',
     height: 250,
     width: 250,
@@ -17,7 +25,11 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
     },
 }));
 
-const Image = styled('span')(({ theme }) => ({
+/**
+ * Styled component for the image within the button.
+ * It positions the image within the button and adjusts its color.
+ */
+const Image = styled('span')(({theme}) => ({
     position: 'absolute',
     left: 0,
     right: 0,
@@ -29,7 +41,11 @@ const Image = styled('span')(({ theme }) => ({
     color: theme.palette.common.white,
 }));
 
-const ImageMarked = styled('span')(({ theme }) => ({
+/**
+ * Styled component for the marking below the image.
+ * It adds a visual marker below the image.
+ */
+const ImageMarked = styled('span')(({theme}) => ({
     height: 3,
     width: 18,
     backgroundColor: theme.palette.common.white,
@@ -39,7 +55,11 @@ const ImageMarked = styled('span')(({ theme }) => ({
     transition: theme.transitions.create('opacity'),
 }));
 
-const LanguageMenu = styled(Menu)(({ theme }) => ({
+/**
+ * Styled menu for language selection.
+ * It customizes the appearance of the language selection menu.
+ */
+const LanguageMenu = styled(Menu)(({theme}) => ({
     '& .MuiPaper-root': {
         boxShadow: '0px 8px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
@@ -48,10 +68,19 @@ const LanguageMenu = styled(Menu)(({ theme }) => ({
     },
 }));
 
+/**
+ * Functional component representing the Customer Startup Button.
+ * It allows the customer to select a language and navigate to another page.
+ */
 const CustomerStartUpButton = () => {
+    // State variables for language selection menu
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('Deutsch');
 
+    /**
+     * Retrieves available languages with their respective flags and texts.
+     * @returns {object} An object containing language options with flags and texts.
+     */
     const getLanguages = () => {
         return {
             Deutsch: {
@@ -82,19 +111,31 @@ const CustomerStartUpButton = () => {
         };
     };
 
+    /**
+     * Opens the language selection menu.
+     * @param {object} event The event object.
+     */
     const handleLanguageMenuOpen = (event) => {
         setLanguageAnchorEl(event.currentTarget);
     };
 
+    /**
+     * Closes the language selection menu.
+     */
     const handleLanguageMenuClose = () => {
         setLanguageAnchorEl(null);
     };
 
+    /**
+     * Handles the selection of a language.
+     * @param {string} language The selected language.
+     */
     const handleLanguageSelect = (language) => {
         setSelectedLanguage(language);
         setLanguageAnchorEl(null);
     };
 
+    // JSX for the component
     return (
         <Box sx={{
             position: 'relative',
@@ -103,9 +144,13 @@ const CustomerStartUpButton = () => {
             justifyContent: 'center',
             height: '100vh'
         }}>
+            {/* Link to card page */}
             <Link to="/card">
+                {/* Image button */}
                 <ImageButton>
+                    {/* Image */}
                     <Image className={"imagineContainer"}>
+                        {/* Text */}
                         <Typography
                             component="span"
                             variant="subtitle1"
@@ -117,6 +162,7 @@ const CustomerStartUpButton = () => {
                                 pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
                             }}
                         >
+                            {/* Logo */}
                             <img src={"images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
@@ -127,30 +173,41 @@ const CustomerStartUpButton = () => {
                                      overflow: 'hidden'
                                  }}
                             />
-                            <ImageMarked className="MuiImageMarked-root" />
+                            {/* Image marker */}
+                            <ImageMarked className="MuiImageMarked-root"/>
                         </Typography>
                     </Image>
                 </ImageButton>
             </Link>
 
-            <Box sx={{ position: 'absolute', bottom: 80, right: 32 }}>
+            {/* Language selection button */}
+            <Box sx={{position: 'absolute', bottom: 80, right: 32}}>
                 <ButtonBase onClick={handleLanguageMenuOpen}>
-                    <img src={languageAnchorEl ? getLanguages()[selectedLanguage].flagOpen : getLanguages()[selectedLanguage].flagClosed} alt={selectedLanguage}
-                         style={{ width: '30px', height: 'auto', marginRight: '8px' }} />
+                    {/* Flag icon */}
+                    <img
+                        src={languageAnchorEl ? getLanguages()[selectedLanguage].flagOpen : getLanguages()[selectedLanguage].flagClosed}
+                        alt={selectedLanguage}
+                        style={{width: '30px', height: 'auto', marginRight: '8px'}}/>
+                    {/* Language text */}
                     <Typography variant="body2">{getLanguages()[selectedLanguage].text}</Typography>
                 </ButtonBase>
+                {/* Language selection menu */}
                 <LanguageMenu
                     anchorEl={languageAnchorEl}
                     open={Boolean(languageAnchorEl)}
                     onClose={handleLanguageMenuClose}
                 >
+                    {/* Menu items for each language */}
                     {Object.keys(getLanguages()).map((language) => (
                         <MenuItem key={language} onClick={() => handleLanguageSelect(language)}>
-                            <img src={languageAnchorEl ? getLanguages()[language].flagOpen : getLanguages()[language].flagClosed} alt={language} style={{
+                            {/* Flag icon */}
+                            <img
+                                src={languageAnchorEl ? getLanguages()[language].flagOpen : getLanguages()[language].flagClosed}
+                                alt={language} style={{
                                 width: '30px',
                                 height: 'auto',
                                 marginRight: '8px'
-                            }} /> {getLanguages()[language].text}
+                            }}/> {getLanguages()[language].text}
                         </MenuItem>
                     ))}
                 </LanguageMenu>
