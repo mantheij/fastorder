@@ -67,7 +67,7 @@ const TableSelectionView = () => {
             </FormControl>
             <Button
                 variant="contained"
-                href="/card"
+                href="/customerStart"
                 sx={{
                     backgroundColor: '#FFFFFF', // Setzt die Hintergrundfarbe auf Weiß
                     color: '#5DADF0',           // Setzt die Textfarbe auf Blau

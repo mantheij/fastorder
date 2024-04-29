@@ -57,7 +57,7 @@ const HomeView = () => {
                                             <div style={{ height: item.height, visibility: 'hidden' }}>Platzhalter</div>
                                         ) : (
                                             <Button
-                                                href="/card"
+                                                href="/customerStart"
                                                 sx={{
                                                     width: item.width,
                                                     height: item.height,

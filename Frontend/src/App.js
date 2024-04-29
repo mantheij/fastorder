@@ -10,6 +10,7 @@ import "./App.css";
 import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
+import CustomerStartUpButton from "./views/CustomerView";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
+          <Route path="/customerStart" element ={<CustomerStartUpButton />}/>
           <Route path="/card" element ={<CardView />}/>
         </Routes>
         </TablesProvider>
