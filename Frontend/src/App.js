@@ -5,10 +5,8 @@ import LabelBottomNavigation from "./navigation";
 import HomeView from "./views/HomeView";
 import CardView from "./views/CardView";
 import CustomerView from "./views/CustomerView";
-import TableView from "./views/TableView";
 import SignInView from "./views/SignInView";
 import "./App.css";
-import UserView from "./views/UserView";
 import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 
@@ -22,7 +20,6 @@ function App() {
           <Route path="/" element={<HomeView />} />
           <Route path="/card" element={<CardView />} />
           <Route path="/customer" element={<CustomerView />} />
-          <Route path="/table" element={<TableView />} />
           <Route path="/signin" element={<SignInView />} />
           <Route path="/table-selection" element={<TableSelectionView />}/>
         </Routes>

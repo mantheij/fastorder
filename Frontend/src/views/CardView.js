@@ -4,7 +4,7 @@ import {
     Container, Grid, Card, CardActionArea, CardContent,
     CardMedia, Typography, CardActions, Tabs, Tab,
     Button, Fab, Badge, Snackbar, Alert,
-    Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText
+    Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Select, MenuItem
 } from "@mui/material";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
@@ -16,6 +16,7 @@ const CardView = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
     const [openDialog, setOpenDialog] = useState(false);
+    const [selectedSizes, setSelectedSizes] = useState({}); // State für ausgewählte Größen
 
     useEffect(() => {
         axios.get("http://localhost:8080/api/products")
@@ -32,6 +33,16 @@ const CardView = () => {
         setAlertMessage('Added drink to cart');
         setAlertSeverity('success');
         setAlertOpen(true);
+    };
+
+    const handleDrinkChange = (drink) => {
+        if (!selectedSizes[drink.id]) {
+            setSelectedSizes({ ...selectedSizes, [drink.id]: "" });
+        }
+    };
+
+    const handleSizeChange = (event, drinkId) => {
+        setSelectedSizes({ ...selectedSizes, [drinkId]: event.target.value });
     };
 
     const handleOpenDialog = () => setOpenDialog(true);
@@ -85,7 +96,7 @@ const CardView = () => {
                 {filteredDrinks(value).map((drink) => (
                     <Grid item xs={12} sm={6} md={3} key={drink.productId}>
                         <Card>
-                            <CardActionArea>
+                            <CardActionArea onClick={() => handleDrinkChange(drink)}>
                                 <CardMedia
                                     component="img"
                                     height="150"
@@ -99,11 +110,26 @@ const CardView = () => {
                                     <Typography variant="body2" color="text.secondary">
                                         Price: ${drink.price}
                                     </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+
+                                    </Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button onClick={() => handleAddToCart(drink)}>Add to Cart</Button>
+                                    <Select
+                                        value={selectedSizes[drink.id] || ""}
+                                        onChange={(e) => handleSizeChange(e, drink.id)}
+                                        disabled={selectedSizes[drink.id] === undefined}
+                                    >
+                                        {drink.size && drink.size.map((size) => (
+                                            <MenuItem key={size} value={size}>
+                                                {size}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                    <Button onClick={() => handleAddToCart(drink)} disabled={!selectedSizes[drink.id]}>Add to Cart</Button>
                                 </CardActions>
                             </CardActionArea>
+
                         </Card>
                     </Grid>
                 ))}
