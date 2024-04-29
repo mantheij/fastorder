@@ -2,9 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Login from "@mui/icons-material/LoginOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import StoreIcon from '@mui/icons-material/Store';
 import TableBar from "@mui/icons-material/TableBarOutlined";
 import {AccountCircle, Settings} from "@mui/icons-material";
 
@@ -42,7 +40,7 @@ export default function LabelBottomNavigation() {
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Orders"
+            label="Mitarbeiter"
             value="/orders"
             icon={<ShoppingCartOutlinedIcon />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
@@ -54,7 +52,7 @@ export default function LabelBottomNavigation() {
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Einstellung"
+            label="Einstellungen"
             value="/settings"
             icon={<Settings />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
