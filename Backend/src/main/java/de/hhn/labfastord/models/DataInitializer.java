@@ -26,13 +26,17 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        ProductCategory category = new ProductCategory("Getränke", "Alkoholische und nicht-alkoholische Getränke");
+        ProductCategory category = new ProductCategory("Getränke", "Alkoholische Getränke");
+        ProductCategory category2 = new ProductCategory("Getränke", "Nicht-alkoholische Getränke");
         categoryRepository.save(category);
+        categoryRepository.save(category2);
 
         // Erstellen von Produkten
         Product product1 = new Product("Cola", 2.50, true, category);
-        Product product2 = new Product("Bier", 3.00, true, category);
-        productRepository.saveAll(Arrays.asList(product1, product2));
+        Product product2 = new Product("Bier", 3.00, true, category2);
+        Product product3 = new Product("Fanta", 2.50, true, category);
+        Product product4 = new Product("Orangensaft", 3.00, true, category);
+        productRepository.saveAll(Arrays.asList(product1, product2, product3, product4));
 
         // Erstellen von Tischen
         Tables table1 = new Tables(1);
@@ -49,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
         // Erstellen von Bestelldetails
         OrderDetail detail = new OrderDetail();
         detail.setOrder(order);
-        detail.setProduct(product1);
+        detail.setProduct(product3);
         detail.setQuantity(2);
         detail.setPrice(new BigDecimal("5.00"));
         order.getOrderDetails().add(detail);

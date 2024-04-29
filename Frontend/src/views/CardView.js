@@ -3,7 +3,8 @@ import axios from 'axios';
 import {
     Container, Grid, Card, CardActionArea, CardContent,
     CardMedia, Typography, CardActions, Tabs, Tab,
-    Button, Fab, Badge, Snackbar, Alert
+    Button, Fab, Badge, Snackbar, Alert,
+    Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText
 } from "@mui/material";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
@@ -12,9 +13,12 @@ const CardView = () => {
     const [value, setValue] = useState(0);
     const [cart, setCart] = useState([]);
     const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/products")  // URL geändert, um Ihre Angabe zu reflektieren
+        axios.get("http://localhost:8080/api/products")
             .then(response => setDrinks(response.data))
             .catch(error => console.error("Error loading the products:", error));
     }, []);
@@ -25,7 +29,29 @@ const CardView = () => {
 
     const handleAddToCart = (drink) => {
         setCart(prev => [...prev, drink]);
+        setAlertMessage('Added drink to cart');
+        setAlertSeverity('success');
         setAlertOpen(true);
+    };
+
+    const handleOpenDialog = () => setOpenDialog(true);
+    const handleCloseDialog = () => setOpenDialog(false);
+
+    const handleOrderNow = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/orders', { items: cart });
+            console.log('Order response:', response);
+            setAlertMessage('Order placed successfully!');
+            setAlertSeverity('success');
+            setCart([]);
+            setOpenDialog(false);
+        } catch (error) {
+            console.error('Error placing order:', error);
+            setAlertMessage('Failed to place order.');
+            setAlertSeverity('error');
+        } finally {
+            setAlertOpen(true);
+        }
     };
 
     const handleCloseAlert = (reason) => {
@@ -41,7 +67,7 @@ const CardView = () => {
         } else if (category === 1) {
             return drinks.filter(drink => drink.categoryId === 1);
         } else if (category === 2) {
-            return drinks.filter(drinks => drink.categoryId === 2);
+            return drinks.filter(drink => drink.categoryId === 2);
         }
         return [];
     };
@@ -63,7 +89,7 @@ const CardView = () => {
                                 <CardMedia
                                     component="img"
                                     height="150"
-                                    image="/placeholder.jpg"  // Fügt einen Platzhalter hinzu
+                                    image="/placeholder.jpg"
                                     alt={drink.name}
                                 />
                                 <CardContent>
@@ -85,14 +111,31 @@ const CardView = () => {
 
             <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                    sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
-                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }}>
+                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }} onClick={handleOpenDialog}>
                     <ShoppingCartOutlinedIcon />
                 </Fab>
             </Badge>
 
-            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => handleCloseAlert('timeout')}>
-                <Alert onClose={() => handleCloseAlert('timeout')} severity="success" sx={{ width: '100%' }}>
-                    Added drink to cart
+            <Dialog open={openDialog} onClose={handleCloseDialog} aria-labelledby="cart-dialog-title">
+                <DialogTitle id="cart-dialog-title">Your Cart</DialogTitle>
+                <DialogContent>
+                    <List>
+                        {cart.map((item, index) => (
+                            <ListItem key={index}>
+                                <ListItemText primary={item.name} secondary={`Price: $${item.price}`} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Close</Button>
+                    <Button onClick={handleOrderNow} color="primary" variant="contained">Order Now</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+                <Alert onClose={handleCloseAlert} severity={alertSeverity} sx={{ width: '100%' }}>
+                    {alertMessage}
                 </Alert>
             </Snackbar>
         </Container>
