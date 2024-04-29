@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import SignInView from './SignInView';
+import SignInView from '../views/SignInView';
 
 describe('SignInView component', () => {
     test('renders sign in form', () => {
@@ -33,13 +33,13 @@ describe('SignInView component', () => {
         const passwordInput = getByLabelText('Password');
         const signInButton = getByText('Sign In');
 
-        fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-        fireEvent.change(passwordInput, { target: { value: 'testpassword' } });
+        fireEvent.change(usernameInput, { target: { value: 'chef' } });
+        fireEvent.change(passwordInput, { target: { value: '123' } });
         fireEvent.click(signInButton);
 
         await waitFor(() => {
-            expect(console.log).toHaveBeenCalledWith('Username:', 'testuser');
-            expect(console.log).toHaveBeenCalledWith('Password:', 'testpassword');
+            // Expectations related to logging username and password
+            // can be omitted as console.log statements are removed
         });
     });
 });

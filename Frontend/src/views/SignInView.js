@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { Typography, Box, Button, TextField, Snackbar } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom"; // Import useNavigate hook
+import EmployeeView from "./EmployeeView";
 
 const SignInView = () => {
     // State variables
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const navigate = useNavigate(); // React Router's useNavigate hook
 
     // MUI theme customization
     const theme = createTheme({
@@ -28,9 +31,15 @@ const SignInView = () => {
             setOpenSnackbar(true);
             return;
         }
+
         // Implement sign in logic here
-        console.log('Username:', username);
-        console.log('Password:', password);
+        if (username === 'chef' && password === '123') {
+            // Redirect to EmployeeView
+            navigate('/orders');
+        } else {
+            // Handle invalid credentials
+            console.log('Invalid credentials');
+        }
     };
 
     // Close Snackbar
