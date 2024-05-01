@@ -83,7 +83,7 @@ const CustomerStartUpButton = () => {
      */
     const getLanguages = () => {
         return {
-            Deutsch: {
+            German: {
                 flagClosed: 'images/language/de_flag_rnd.png',
                 flagOpen: 'images/language/de_flag.png',
                 text: 'Deutsch',
@@ -93,17 +93,17 @@ const CustomerStartUpButton = () => {
                 flagOpen: 'images/language/us_flag.png',
                 text: 'English',
             },
-            Español: {
+            Spanish: {
                 flagClosed: 'images/language/esp_flag_rnd.png',
                 flagOpen: 'images/language/esp_flag.png',
                 text: 'Español',
             },
-            Français: {
+            French: {
                 flagClosed: 'images/language/fra_flag_rnd.png',
                 flagOpen: 'images/language/fra_flag.png',
                 text: 'Français',
             },
-            中国人: {
+            Chinese: {
                 flagClosed: 'images/language/chn_flag_rnd.png',
                 flagOpen: 'images/language/chn_flag.png',
                 text: '中国人',
