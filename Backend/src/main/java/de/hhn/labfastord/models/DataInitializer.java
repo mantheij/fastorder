@@ -38,7 +38,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Erstellen von Tischen
         Tables table1 = new Tables();
-        table1.setNumber(1);
+        table1.setName("1");
         tablesRepository.save(table1);
 
         // Erstellen von Bestellungen
