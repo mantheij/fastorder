@@ -33,25 +33,25 @@ export default function LabelBottomNavigation() {
             icon={<img src="/logo.png" alt="Special" style={{ width: 45, height: 45 }}/>}
         />
         <BottomNavigationAction
-            label="Auswahl"
+            label="Selection"
             value="/table-selection"
             icon={<TableBar />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Mitarbeiter"
+            label="Employee"
             value="/orders"
             icon={<SummarizeOutlined />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Benutzer"
+            label="User"
             value="/user"
             icon={<AccountCircle />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
         />
         <BottomNavigationAction
-            label="Einstellungen"
+            label="Settings"
             value="/settings"
             icon={<Settings />}
             sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt

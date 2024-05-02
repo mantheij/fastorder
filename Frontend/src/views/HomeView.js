@@ -16,7 +16,7 @@ const HomeView = () => {
     return (
         <>
 
-            {/* "Bereich 1" Button */}
+            {/* "Area 1" Button */}
             <Grid container spacing={0.5} justifyContent="space-between" sx={{marginBottom: 5}}>
                 <Grid item xs={6} sm={6}>
                     <Button
@@ -26,12 +26,12 @@ const HomeView = () => {
                         sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh',fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)'}}
                         onClick={() => handleAreaClick(1)}
                     >
-                        Bereich 1
+                        Area 1
                     </Button>
                 </Grid>
 
 
-                {/* "Bereich 2" Button */}
+                {/* "Area 2" Button */}
                 <Grid item xs={6} sm={6}>
                     <Button
                         variant ="contained"
@@ -40,7 +40,7 @@ const HomeView = () => {
                         sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)'}}
                         onClick={() => handleAreaClick(2)}
                     >
-                        Bereich 2
+                        Area 2
                     </Button>
                 </Grid>
             </Grid>

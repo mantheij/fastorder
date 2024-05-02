@@ -20,7 +20,7 @@ const TableSelectionView = () => {
             alignItems: 'center',
             background: "linear-gradient(to top, #0383E2, #5DADF0)"
         }}>
-            <h1 style={{ color: '#FFFFFF',fontSize:"5vh", }}>Tisch auswählen</h1>
+            <h1 style={{ color: '#FFFFFF',fontSize:"5vh", }}>Select table</h1>
             <FormControl variant="outlined" sx={{
                 width: '30vw',
                 marginBottom: '10vh',
@@ -52,7 +52,7 @@ const TableSelectionView = () => {
                     color: '#FFFFFF', // Weißer Pfeil
                 }
             }}>
-                <InputLabel id="table-select-label">Tisch...</InputLabel>
+                <InputLabel id="table-select-label">Table...</InputLabel>
                 <Select
                     labelId="table-select-label"
                     id="table-select"
@@ -79,7 +79,7 @@ const TableSelectionView = () => {
                     }
                 }}
             >
-                bestätigen
+                confirm
             </Button>
         </div>
     );
