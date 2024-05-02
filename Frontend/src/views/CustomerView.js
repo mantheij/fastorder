@@ -166,11 +166,16 @@ const CustomerStartUpButton = () => {
                             <img src={"images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
-                                     maxWidth: '300px',
-                                     maxHeight: '300px',
-                                     border: '1px solid black',
+                                     width: '100%',
+                                     height: '100%',
+                                     border: '1px solid transparent',
                                      borderRadius: '300px',
-                                     overflow: 'hidden'
+                                     overflow: 'hidden',
+                                     padding: '30px',
+                                     objectFit: 'contain',
+                                     objectPosition: 'center',
+                                     boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
+                                     background: '#fff'
                                  }}
                             />
                             {/* Image marker */}
