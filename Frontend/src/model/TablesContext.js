@@ -1,16 +1,34 @@
-// src/contexts/TablesContext.js
 import React, { createContext, useState, useContext } from 'react';
 import Table from '../model/Table'; // Pfad überprüfen
 
-
+/** Helper class to properly visualize the tables in the selection list and on the grid layout
+ *
+ * @type {React.Context<unknown>}
+ */
 const TablesContext = createContext();
 
-
+/**
+ * Custom hook to utilize the TablesContext.
+ * Provides easy access to context values within functional components.
+ *
+ * @returns {*} Context values including tables, selectedTable, and functions to manipulate these values.
+ */
 export const useTables = () => useContext(TablesContext);
 
+/**
+ * Provider component that wraps its children with TablesContext.Provider.
+ * This allows nested components to access the context's values such as tables, selected table, and grid layouts.
+ *
+ * @param {{ children: React.ReactNode }} props - Component's children elements to be wrapped by the context provider.
+ * @returns {JSX.Element} The provider wrapped children components.
+ */
 export const TablesProvider = ({ children }) => {
 
-
+    /**
+     * State holding the array of tables. Each table is an instance of the Table class,
+     * which includes properties like ID, area, occupancy status, and dimensions.
+     * For the selection list
+     */
     const [tables] = useState([
         new Table(1, 1, true, 200, 125),
         new Table(2, 1, false, 200, 125),
@@ -38,6 +56,10 @@ export const TablesProvider = ({ children }) => {
         new Table(17, 2, false, 200, 125),
     ]);
 
+    /**
+     * Defines the layout of tables in area 1, structured as an array of rows.
+     * Each row is an array that may include table objects or placeholders for layout consistency.
+     */
     const area1Grid = [
         [   new Table(1, 1, true, 200, 125),
             new Table(2, 1, false, 200, 125),
@@ -62,6 +84,9 @@ export const TablesProvider = ({ children }) => {
         ]
     ];
 
+    /**
+     * Defines the layout of tables in area 2, similar to area 1 but with its own specific table arrangements.
+     */
     const area2Grid = [
         [
             new Table(10, 2, false, 200, 125),
@@ -91,9 +116,9 @@ export const TablesProvider = ({ children }) => {
     const [grids] = useState({1: area1Grid, 2: area2Grid});
 
 
-
-
-
+    /**
+     * State to keep track of the currently selected table.
+     */
     const [selectedTable, setSelectedTable] = useState('');
 
     return (
