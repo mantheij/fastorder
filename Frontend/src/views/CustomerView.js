@@ -75,7 +75,7 @@ const LanguageMenu = styled(Menu)(({theme}) => ({
 const CustomerStartUpButton = () => {
     // State variables for language selection menu
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
-    const [selectedLanguage, setSelectedLanguage] = useState('Deutsch');
+    const [selectedLanguage, setSelectedLanguage] = useState('German');
 
     /**
      * Retrieves available languages with their respective flags and texts.
