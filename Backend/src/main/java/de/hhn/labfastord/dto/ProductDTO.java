@@ -17,7 +17,7 @@ public class ProductDTO {
     private boolean available;
     private Integer quantity;
     private Long categoryId;
-    private List<String> size = new ArrayList<>();
+    private String size;
 
     public ProductDTO() {
     }

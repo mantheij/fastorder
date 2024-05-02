@@ -527,9 +527,7 @@ components:
           type: "integer"
           format: "int64"
         size:
-          type: "array"
-          items:
-            type: "string"
+          type: "string"
     NewProductDTO:
       type: "object"
       properties:
@@ -547,9 +545,7 @@ components:
           type: "integer"
           format: "int64"
         size:
-          type: "array"
-          items:
-            type: "string"
+          type: "string"
     OrderDTO:
       type: "object"
       properties:

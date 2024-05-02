@@ -14,7 +14,7 @@ public class NewProductDTO {
     private String imgName;
     private Integer quantity;
     private Long productCategoryId;
-    private List<String> size = new ArrayList<>();
+    private String size;
 
     public NewProductDTO() {}
 }

@@ -17,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin("http://localhost:3000/")
+@CrossOrigin
 public class ProductController {
 
     @Autowired
@@ -81,8 +81,7 @@ public class ProductController {
                         } catch (NullPointerException e) {
                             existingProduct.setCategory(null);
                         }
-                        String[] sizes = newProductDTO.getSize().toArray(new String[0]);
-                        existingProduct.setSizes(String.join(", ", sizes));
+                        existingProduct.setSizes(newProductDTO.getSize());
                         return ResponseEntity.ok(productMapper(productRepository.save(existingProduct)));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -112,8 +111,7 @@ public class ProductController {
             } catch (NullPointerException e) {
                 product.setCategory(null);
             }
-            String[] sizes = newProductDTO.getSize().toArray(new String[0]);
-            product.setSizes(String.join(", ", sizes));
+            product.setSizes(newProductDTO.getSize());
 
             return ResponseEntity.ok(productMapper(productRepository.save(product)));
         } catch (DataAccessException e) {
@@ -158,11 +156,7 @@ public class ProductController {
         } else {
             dto.setCategoryId(null);
         }
-        if (product.getSizes() != null) {
-            dto.setSize(List.of(product.getSizes().split(", ")));
-        } else {
-            dto.setSize(null);
-        }
+        dto.setSize(product.getSizes());
         return dto;
     }
 }
