@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class NewTableDTO {
 
-    private Integer number;
+    private String name;
     private Integer sizex;
     private Integer sizey;
     private Integer locx;

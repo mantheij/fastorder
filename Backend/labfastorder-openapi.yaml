@@ -196,7 +196,7 @@ paths:
                 $ref: "#/components/schemas/Tables"
     delete:
       summary: "DELETE api/tables/{id}"
-      operationId: "deleteOrder"
+      operationId: "deleteTables"
       parameters:
         - name: "id"
           in: "path"
@@ -283,7 +283,7 @@ paths:
                 $ref: "#/components/schemas/ProductDTO"
     delete:
       summary: "DELETE api/products/{id}"
-      operationId: "deleteOrder"
+      operationId: "deleteProduct"
       parameters:
         - name: "id"
           in: "path"
@@ -474,9 +474,8 @@ components:
         tableId:
           type: "integer"
           format: "int64"
-        number:
-          type: "integer"
-          format: "int32"
+        name:
+          type: "string"
         sizex:
           type: "integer"
           format: "int32"
@@ -492,9 +491,8 @@ components:
     NewTableDTO:
       type: "object"
       properties:
-        number:
-          type: "integer"
-          format: "int32"
+        name:
+          type: "string"
         sizex:
           type: "integer"
           format: "int32"
