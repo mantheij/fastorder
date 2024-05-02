@@ -17,12 +17,8 @@ import Menu from '@mui/material/Menu';
  */
 const ImageButton = styled(ButtonBase)(({theme}) => ({
     position: 'relative',
-    height: 250,
-    width: 250,
-    [theme.breakpoints.down('sm')]: {
-        width: '100% !important',
-        height: 150,
-    },
+    height: 350,
+    width: 350,
 }));
 
 /**
@@ -175,7 +171,7 @@ const CustomerStartUpButton = () => {
                                      objectFit: 'contain',
                                      objectPosition: 'center',
                                      boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
-                                     background: '#fff'
+                                     background: '#fff',
                                  }}
                             />
                             {/* Image marker */}
@@ -186,7 +182,11 @@ const CustomerStartUpButton = () => {
             </Link>
 
             {/* Language selection button */}
-            <Box sx={{position: 'absolute', bottom: 80, right: 32}}>
+            <Box sx={{
+                position: 'absolute',
+                bottom: 130,  // Responsive bottom margin
+                right: 20   // Responsive right margin
+            }}>
                 <ButtonBase onClick={handleLanguageMenuOpen}>
                     {/* Flag icon */}
                     <img
@@ -211,7 +211,7 @@ const CustomerStartUpButton = () => {
                                 alt={language} style={{
                                 width: '30px',
                                 height: 'auto',
-                                marginRight: '8px'
+                                marginRight: '8px',
                             }}/> {getLanguages()[language].text}
                         </MenuItem>
                     ))}
