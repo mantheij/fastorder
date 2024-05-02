@@ -1,13 +1,26 @@
-// HomeView.js
 import React, { useState} from "react";
 import {Button, Grid} from "@mui/material";
 import {useTables} from "../model/TablesContext";
 
-
+/**
+ * The HomeView component is responsible for displaying area selection options and the corresponding grids of tables.
+ * Users can select an area, and the UI updates to show tables in that area using Material-UI components.
+ */
 const HomeView = () => {
+    /**
+     * State to manage the currently selected area, initialized to area 1.
+     */
     const [selectedArea, setSelectedArea] = useState(1);
+
+    /**
+     * Retrieves the grids data from the useTables context hook, which manages the state of tables and areas.
+     */
     const { grids } = useTables();
 
+    /**
+     * Handles click events on area selection buttons, updating the selectedArea state.
+     * @param {number} area - The area number that was clicked.
+     */
     const handleAreaClick = (area) => {
         setSelectedArea(area);
     };
@@ -16,8 +29,10 @@ const HomeView = () => {
     return (
         <>
 
-            {/* "Area 1" Button */}
+            {/* Grid container for area selection buttons */}
             <Grid container spacing={0.5} justifyContent="space-between" sx={{marginBottom: 5}}>
+
+                {/* Button for selecting Area 1 */}
                 <Grid item xs={6} sm={6}>
                     <Button
                         variant ="contained"
@@ -31,7 +46,7 @@ const HomeView = () => {
                 </Grid>
 
 
-                {/* "Area 2" Button */}
+                {/* Button for selecting Area 2 */}
                 <Grid item xs={6} sm={6}>
                     <Button
                         variant ="contained"
@@ -46,7 +61,7 @@ const HomeView = () => {
             </Grid>
 
 
-
+            {/* Main grid container for displaying grids based on the selected area */}
                 <Grid container spacing={"4vh"} alignItems="center" justifyContent="flex-start">
                     {grids[selectedArea].map((row, rowIndex) => (
                         <Grid item xs={12} key={rowIndex}>
@@ -54,8 +69,10 @@ const HomeView = () => {
                                 {row.map((item, itemIndex) => (
                                     <Grid item key={itemIndex} xs={4} sx={{  justifyContent: 'center', alignItems: 'center' }}>
                                         {item.placeholder ? (
+                                            // Placeholder for visual alignment
                                             <div style={{ height: item.height, visibility: 'hidden' }}>Platzhalter</div>
                                         ) : (
+                                            // Button for each item, colored based on occupation status
                                             <Button
                                                 href="/customerStart"
                                                 sx={{
