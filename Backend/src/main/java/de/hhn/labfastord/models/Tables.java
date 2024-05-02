@@ -14,7 +14,7 @@ public class Tables {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tableId;
     @NotNull
-    private Integer number;
+    private String number;
     private Integer sizex;
     private Integer sizey;
     private Integer locx;
