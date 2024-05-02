@@ -66,7 +66,7 @@ public class TablesController {
         try {
             return tablesRepository.findById(id)
                     .map(existingTable -> {
-                        existingTable.setNumber(newTableDto.getNumber());
+                        existingTable.setName(newTableDto.getName());
                         existingTable.setLocx(newTableDto.getLocx());
                         existingTable.setLocy(newTableDto.getLocy());
                         existingTable.setSizex(newTableDto.getSizex());
@@ -89,7 +89,7 @@ public class TablesController {
     public ResponseEntity<Tables> createTable(@RequestBody NewTableDTO newTableDTO) {
         try {
             Tables table = new Tables();
-            table.setNumber(newTableDTO.getNumber());
+            table.setName(newTableDTO.getName());
             table.setLocx(newTableDTO.getLocx());
             table.setLocy(newTableDTO.getLocy());
             table.setSizex(newTableDTO.getSizex());

@@ -38,12 +38,13 @@ public class Product {
     public Product() {
     }
 
-    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category, String sizes) {
+    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category, String sizes, String imgName) {
         this.name = cola;
         this.price = price;
         this.quantity = quantity;
         this.category = category;
         this.available = available;
         this.sizes = sizes;
+        this.imgName = imgName;
     }
 }
