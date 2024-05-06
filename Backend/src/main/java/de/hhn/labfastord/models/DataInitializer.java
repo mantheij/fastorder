@@ -31,11 +31,16 @@ public class DataInitializer implements CommandLineRunner {
         categoryRepository.save(categorySoft);
 
         // Erstellen von Produkten
-        Product product1 = new Product("Cola", 2.50, 50, true, categorySoft, "0.33L", "cola.jpeg");
-        Product product2 = new Product("Fanta", 2.50, 50, true, categorySoft, "0.33L", "fanta.jpeg");
-        Product product3 = new Product("Fanta", 4.00, 50, true, categorySoft, "0.5L", "fanta.jpeg");
-        Product product4 = new Product("Fanta", 5.00, 50, true, categorySoft, "1L", "fanta.jpeg");
-        Product product5 = new Product("Bier", 3.00, 50, true, categoryBeer, "0.33L", "kellerbier.jpeg");
+        Product product1 = new Product("Cola", 2.50, 50, true, categorySoft,
+                "0.33L", "cola.jpeg", "ingredients", "nutrition", "allergens");
+        Product product2 = new Product("Fanta", 2.50, 50, true, categorySoft,
+                "0.33L", "fanta.jpeg", "ingredients", "nutrition", "allergens");
+        Product product3 = new Product("Fanta", 4.00, 50, true, categorySoft,
+                "0.5L", "fanta.jpeg", "ingredients", "nutrition", "allergens");
+        Product product4 = new Product("Fanta", 5.00, 50, true, categorySoft,
+                "1L", "fanta.jpeg", "ingredients", "nutrition", "allergens");
+        Product product5 = new Product("Bier", 3.00, 50, true, categoryBeer,
+                "0.33L", "kellerbier.jpeg", "ingredients", "nutrition", "allergens");
         productRepository.saveAll(Arrays.asList(product1, product2, product3, product4, product5));
 
         // Erstellen von Tischen

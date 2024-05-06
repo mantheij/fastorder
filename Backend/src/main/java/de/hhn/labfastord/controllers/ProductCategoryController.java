@@ -1,15 +1,14 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.create.NewProductCategoryDTO;
 import de.hhn.labfastord.dto.ProductCategoryDTO;
-import de.hhn.labfastord.models.ProductCategory;
+import de.hhn.labfastord.dto.create.NewProductCategoryDTO;
 import de.hhn.labfastord.models.Product;
+import de.hhn.labfastord.models.ProductCategory;
 import de.hhn.labfastord.repositories.ProductCategoryRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/productCategories")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductCategoryController {
 
     @Autowired

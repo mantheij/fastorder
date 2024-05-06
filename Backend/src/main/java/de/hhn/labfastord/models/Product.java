@@ -23,6 +23,9 @@ public class Product {
     private Integer quantity;
     private boolean available;
     private String sizes;
+    private String allergens;
+    private String ingredients;
+    private String nutrition;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +41,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String cola, double price, Integer quantity, boolean available, ProductCategory category, String sizes, String imgName) {
+    public Product(String cola, double price, Integer quantity, boolean available,
+                   ProductCategory category, String sizes, String imgName,
+                   String ingredients, String nutrition, String allergens) {
         this.name = cola;
         this.price = price;
         this.quantity = quantity;
@@ -46,5 +51,8 @@ public class Product {
         this.available = available;
         this.sizes = sizes;
         this.imgName = imgName;
+        this.ingredients = ingredients;
+        this.nutrition = nutrition;
+        this.allergens = allergens;
     }
 }

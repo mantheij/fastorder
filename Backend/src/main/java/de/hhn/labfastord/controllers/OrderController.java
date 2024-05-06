@@ -1,27 +1,26 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.create.NewOrderDTO;
 import de.hhn.labfastord.dto.OrderDTO;
 import de.hhn.labfastord.dto.OrderDetailDTO;
+import de.hhn.labfastord.dto.create.NewOrderDTO;
 import de.hhn.labfastord.models.Order;
 import de.hhn.labfastord.models.OrderDetail;
 import de.hhn.labfastord.repositories.OrderRepository;
-
 import de.hhn.labfastord.repositories.ProductRepository;
 import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The OrderController class manages the web requests related to orders.
  */
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
 
     @Autowired

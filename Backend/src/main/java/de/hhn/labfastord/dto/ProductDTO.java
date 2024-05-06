@@ -18,6 +18,9 @@ public class ProductDTO {
     private Integer quantity;
     private Long categoryId;
     private String size;
+    private String allergens;
+    private String ingredients;
+    private String nutrition;
 
     public ProductDTO() {
     }
