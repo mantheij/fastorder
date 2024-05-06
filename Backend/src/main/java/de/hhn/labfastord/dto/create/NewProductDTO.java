@@ -3,9 +3,6 @@ package de.hhn.labfastord.dto.create;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 public class NewProductDTO {
