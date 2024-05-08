@@ -17,8 +17,8 @@ const ClockBar = ({ currentTime }) => {
     });
 
     return (
-        <Box sx={{ bgcolor: theme.palette.primary.main, height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography variant="h5" align="center" sx={{ color: 'white' }}>
+        <Box sx={{ background: 'linear-gradient(to right bottom, #430089, #3da7f6)', height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
         </Box>
