@@ -2,29 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
-import { blue } from '@mui/material/colors';
+import { blue, green, red } from '@mui/material/colors';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+
+const ClockBar = ({ currentTime }) => {
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: blue[500],
+            },
+        },
+    });
+
+    return (
+        <Box sx={{ bgcolor: theme.palette.primary.main, height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Typography variant="h5" align="center" sx={{ color: 'white' }}>
+                {currentTime.toLocaleTimeString()}
+            </Typography>
+        </Box>
+    );
+};
 
 const EmployeeView = () => {
-    // State variables
     const [currentTime, setCurrentTime] = useState(new Date());
     const [dialogOpen, setDialogOpen] = useState(false);
     const [actionIndex, setActionIndex] = useState(null);
     const [actionType, setActionType] = useState(null);
     const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder } = useEmployeeController();
 
-    // MUI theme customization
-    const theme = createTheme({
-        palette: {
-            primary: {
-                light: blue[300],
-                main: blue[500],
-                dark: blue[700],
-                darker: blue[900],
-            },
-        },
-    });
-
-    // Update current time every second
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
@@ -33,21 +40,51 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Open dialog for confirmation
+
+    // Put open orders in boxes
+    const handleOpenOrder = (openOrder) => {
+        const { tableId, orderDetails } = openOrder;
+
+        const boxContent = orderDetails.map(detail => `- ${detail.productName} x${detail.quantity}`).join('<br>');
+
+        addOrder(tableId, boxContent);
+    };
+
+
+    useEffect(() => {
+        const fetchOpenOrders = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/orders/open');
+                const data = await response.json();
+                data.forEach(order => {
+                    // Rufe die Methode handleOpenOrder auf, um eine Box für die offene Bestellung zu erstellen
+                    handleOpenOrder(order);
+                });
+            } catch (error) {
+                console.error('Error fetching open orders:', error);
+            }
+        };
+
+        const timer = setInterval(() => {
+            fetchOpenOrders();
+        }, 5000);
+
+        // clear the timer with unmounting of the components
+        return () => clearInterval(timer);
+    }, [addOrder]);
+
     const handleDialogOpen = (index, type) => {
         setActionIndex(index);
         setActionType(type);
         setDialogOpen(true);
     };
 
-    // Close dialog
     const handleDialogClose = () => {
         setDialogOpen(false);
         setActionIndex(null);
         setActionType(null);
     };
 
-    // Execute action based on selected index
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
@@ -61,65 +98,77 @@ const EmployeeView = () => {
         }
     };
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                light: blue[300],
+                main: blue[500],
+                dark: blue[700],
+                darker: blue[900],
+            },
+            green: {
+                light: green[300],
+                main: green[500],
+            },
+            red: {
+                light: red[300],
+                main: red[500],
+            },
+            grey: {
+                dark: '#333333', // Dunkelgrau
+                hover: '#666666', // Hellgrau für Hover
+            },
+        },
+    });
+
     return (
         <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
-            {/* Display current time */}
-            <Typography variant="h5" align="center" gutterBottom>
-                {currentTime.toLocaleTimeString()}
-            </Typography>
+            <ClockBar currentTime={currentTime} />
 
-            {/* Button for testing, will be removed later */}
-            <Typography>
-                <Button onClick={() => addOrder(5, "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
-            </Typography>
+            <Box style={{ marginTop: '56px' }}>
+                <Typography>
+                    <Button onClick={() => addOrder(5, "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
+                </Typography>
 
-            {/* Grid to display orders */}
-            <Grid container spacing={2} justifyContent="center">
-                {boxes.map((item, index) => (
-                    <Grid item key={index}>
-                        <Box
-                            sx={{
-                                bgcolor: item.inProgress ? 'lightgrey' : 'white',
-                                color: 'black',
-                                textAlign: 'center',
-                                padding: '10px',
-                                borderRadius: '8px',
-                                border: '1px solid black',
-                                wordWrap: 'break-word',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                maxWidth: '100%',
-                            }}
-                        >
-                            {/* Display table number */}
-                            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px' }}>{item.tableNumber}</Typography>
-
-                            {/* Display timestamp */}
-                            <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px' }}>{item.timestamp}</Typography>
-
-                            {/* Display order details */}
-                            <Typography dangerouslySetInnerHTML={{ __html: item.text }} />
-
-                            {/* Buttons for managing orders */}
-                            <Box sx={{ marginTop: '20px' }}>
-                                <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')}>Done</Button>
-                                <Button variant="contained" size="small" onClick={() => toggleInProgress(index)} sx={{ marginLeft: '8px', marginRight: '8px' }}>
-                                    {item.inProgress ? 'In work' : 'In work'}
-                                </Button>
-                                <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')}>Cancel</Button>
+                <Grid container spacing={2} justifyContent="center">
+                    {boxes.map((item, index) => (
+                        <Grid item key={index}>
+                            <Box
+                                sx={{
+                                    bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                    color: 'black',
+                                    textAlign: 'center',
+                                    padding: '10px',
+                                    borderRadius: '8px',
+                                    wordWrap: 'break-word',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    maxWidth: '100%',
+                                    boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                }}
+                            >
+                                <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.tableNumber}</Typography>
+                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.timestamp}</Typography>
+                                <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                                <Box sx={{ marginTop: '20px' }}>
+                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`, '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
+                                    <Button variant="contained" size="small" onClick={() => toggleInProgress(index)} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
+                                        {item.inProgress ? <AccessTimeIcon /> : <AccessTimeIcon />}
+                                    </Button>
+                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`, '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Grid>
-                ))}
-            </Grid>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
 
-            {/* Dialog for confirmation */}
             <Dialog open={dialogOpen} onClose={handleDialogClose}>
                 <DialogTitle>Confirmation</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {actionType === 'delete' ? 'Are you sure you want to remove this Order?' : 'Are you sure you want to cancel this Order?'}
+                        {actionType === 'delete' ? 'Are you sure this order is completed?' : 'Are you sure you want to cancel this order?'}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -130,5 +179,4 @@ const EmployeeView = () => {
         </div>
     );
 };
-
 export default EmployeeView;
