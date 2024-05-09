@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -30,6 +30,7 @@ const EmployeeView = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [actionIndex, setActionIndex] = useState(null);
     const [actionType, setActionType] = useState(null);
+    const [progressVisible, setProgressVisible] = useState(false); // State for Circular Progress visibility
     const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder } = useEmployeeController();
 
     useEffect(() => {
@@ -40,24 +41,12 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
-
-    // Put open orders in boxes
-    const handleOpenOrder = (openOrder) => {
-        const { tableId, orderDetails } = openOrder;
-
-        const boxContent = orderDetails.map(detail => `- ${detail.productName} x${detail.quantity}`).join('<br>');
-
-        addOrder(tableId, boxContent);
-    };
-
-
     useEffect(() => {
         const fetchOpenOrders = async () => {
             try {
                 const response = await fetch('http://localhost:8080/api/orders/open');
                 const data = await response.json();
                 data.forEach(order => {
-                    // Rufe die Methode handleOpenOrder auf, um eine Box für die offene Bestellung zu erstellen
                     handleOpenOrder(order);
                 });
             } catch (error) {
@@ -69,9 +58,14 @@ const EmployeeView = () => {
             fetchOpenOrders();
         }, 5000);
 
-        // clear the timer with unmounting of the components
         return () => clearInterval(timer);
     }, [addOrder]);
+
+    const handleOpenOrder = (openOrder) => {
+        const { tableId, orderDetails } = openOrder;
+        const boxContent = orderDetails.map(detail => `- ${detail.productName} x${detail.quantity}`).join('<br>');
+        addOrder(tableId, boxContent);
+    };
 
     const handleDialogOpen = (index, type) => {
         setActionIndex(index);
@@ -98,6 +92,10 @@ const EmployeeView = () => {
         }
     };
 
+    const toggleProgressVisibility = () => {
+        setProgressVisible(!progressVisible);
+    };
+
     const theme = createTheme({
         palette: {
             primary: {
@@ -115,8 +113,8 @@ const EmployeeView = () => {
                 main: red[500],
             },
             grey: {
-                dark: '#333333', // Dunkelgrau
-                hover: '#666666', // Hellgrau für Hover
+                dark: '#333333',
+                hover: '#666666',
             },
         },
     });
@@ -153,8 +151,12 @@ const EmployeeView = () => {
                                 <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`, '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
-                                    <Button variant="contained" size="small" onClick={() => toggleInProgress(index)} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
-                                        {item.inProgress ? <AccessTimeIcon /> : <AccessTimeIcon />}
+                                    <Button variant="contained" size="small" onClick={() => {toggleInProgress(index); toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
+                                        {progressVisible && item.inProgress ? (
+                                            <CircularProgress size={20} sx={{ color: 'black' }} />
+                                        ) : (
+                                            <AccessTimeIcon />
+                                        )}
                                     </Button>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`, '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
