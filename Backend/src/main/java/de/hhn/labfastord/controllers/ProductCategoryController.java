@@ -15,9 +15,9 @@ import java.util.List;
 /**
  * The ProductCategoryController class manages the web requests for product categories.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/productCategories")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductCategoryController {
 
     @Autowired

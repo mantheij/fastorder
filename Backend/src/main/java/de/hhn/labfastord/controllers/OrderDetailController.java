@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * The OrderDetailController class handles the web requests for managing order details.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/orderDetails")
-@CrossOrigin(origins = "http://localhost:3000")
 public class OrderDetailController {
 
     @Autowired

@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * The TablesController class manages the web requests related to tables.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/tables")
-@CrossOrigin(origins = "http://localhost:3000")
 public class TablesController {
 
     @Autowired
