@@ -1,6 +1,6 @@
 // App.js
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes, useParams} from "react-router-dom";
 import LabelBottomNavigation from "./navigation";
 import HomeView from "./views/HomeView";
 import CardView from "./views/CardView";
@@ -11,8 +11,13 @@ import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
 import CustomerStartUpButton from "./views/CustomerView";
+import {Settings} from "@mui/icons-material";
+import SettingsView from "./views/SettingsView";
+import ProductView from "./views/ProductView";
+import ProductSettings from "./views/ProductSettings";
 
 function App() {
+
   return (
     <Router>
       <div className="App">
@@ -24,8 +29,11 @@ function App() {
           <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
-          <Route path="/customerStart" element ={<CustomerStartUpButton />}/>
-          <Route path="/card" element ={<CardView />}/>
+          <Route path="/customerStart/:tableId" element={<CustomerStartUpButton />} />
+          <Route path="/product/:tableId" element={<ProductView />} />
+          <Route path="/product/:tableId/card" element={<CardView />} />
+          <Route path="/settings" element={<SettingsView />} />
+          <Route path="/settings/product" element={<ProductSettings />} />
         </Routes>
         </TablesProvider>
         {/* Konstante Navigation am unteren Rand */}

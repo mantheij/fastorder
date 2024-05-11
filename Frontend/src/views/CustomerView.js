@@ -3,7 +3,7 @@
  * It allows the customer to select a language and navigate to another page.
  */
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -69,7 +69,9 @@ const LanguageMenu = styled(Menu)(({theme}) => ({
  * It allows the customer to select a language and navigate to another page.
  */
 const CustomerStartUpButton = () => {
-    // State variables for language selection menu
+    const { tableId } = useParams();
+    console.log("Table ID received:", tableId);
+
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('German');
 
@@ -80,28 +82,28 @@ const CustomerStartUpButton = () => {
     const getLanguages = () => {
         return {
             German: {
-                flagClosed: 'images/language/de_flag_rnd.png',
-                flagOpen: 'images/language/de_flag.png',
+                flagClosed: '/images/language/de_flag_rnd.png',
+                flagOpen: '/images/language/de_flag.png',
                 text: 'Deutsch',
             },
             English: {
-                flagClosed: 'images/language/us_flag_rnd.png',
-                flagOpen: 'images/language/us_flag.png',
+                flagClosed: '/images/language/us_flag_rnd.png',
+                flagOpen: '/images/language/us_flag.png',
                 text: 'English',
             },
             Spanish: {
-                flagClosed: 'images/language/esp_flag_rnd.png',
-                flagOpen: 'images/language/esp_flag.png',
+                flagClosed: '/images/language/esp_flag_rnd.png',
+                flagOpen: '/images/language/esp_flag.png',
                 text: 'Español',
             },
             French: {
-                flagClosed: 'images/language/fra_flag_rnd.png',
-                flagOpen: 'images/language/fra_flag.png',
+                flagClosed: '/images/language/fra_flag_rnd.png',
+                flagOpen: '/images/language/fra_flag.png',
                 text: 'Français',
             },
             Chinese: {
-                flagClosed: 'images/language/chn_flag_rnd.png',
-                flagOpen: 'images/language/chn_flag.png',
+                flagClosed: '/images/language/chn_flag_rnd.png',
+                flagOpen: '/images/language/chn_flag.png',
                 text: '中国人',
             },
         };
@@ -141,7 +143,7 @@ const CustomerStartUpButton = () => {
             height: '100vh'
         }}>
             {/* Link to card page */}
-            <Link to="/card">
+            <Link to={`/product/${tableId}`}>
                 {/* Image button */}
                 <ImageButton>
                     {/* Image */}
@@ -159,7 +161,7 @@ const CustomerStartUpButton = () => {
                             }}
                         >
                             {/* Logo */}
-                            <img src={"images/logo/logo.png"}
+                            <img src={"/images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
                                      width: '100%',

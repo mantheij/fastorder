@@ -1,170 +1,135 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import {List, ListItem, ListItemText, IconButton, ListItemAvatar, Avatar, Button, Snackbar, Alert} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
-import {
-    Container, Grid, Card, CardActionArea, CardContent,
-    CardMedia, Typography, CardActions, Tabs, Tab,
-    Button, Fab, Badge, Snackbar, Alert,
-    Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Select, MenuItem
-} from "@mui/material";
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 const CardView = () => {
-    const [drinks, setDrinks] = useState([]);
-    const [value, setValue] = useState(0);
+    const { tableId } = useParams();
     const [cart, setCart] = useState([]);
-    const [alertOpen, setAlertOpen] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertSeverity, setAlertSeverity] = useState('success');
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedSizes, setSelectedSizes] = useState({}); // State für ausgewählte Größen
+    const navigate = useNavigate();
+    const [alertOpen, setAlertOpen] = useState(false); // Zustand für Snackbar (Benachrichtigung)
+    const [alertMessage, setAlertMessage] = useState(''); // Zustand für Nachricht der Snackbar
+    const [alertSeverity, setAlertSeverity] = useState('success'); // Zustand für Schweregrad der Snackbar-Nachricht
 
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/products")
-            .then(response => setDrinks(response.data))
-            .catch(error => console.error("Error loading the products:", error));
-    }, []);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
-    const handleAddToCart = (drink) => {
-        setCart(prev => [...prev, drink]);
-        setAlertMessage('Added drink to cart');
-        setAlertSeverity('success');
-        setAlertOpen(true);
-    };
-
-    const handleDrinkChange = (drink) => {
-        if (!selectedSizes[drink.id]) {
-            setSelectedSizes({ ...selectedSizes, [drink.id]: "" });
-        }
-    };
-
-    const handleSizeChange = (event, drinkId) => {
-        setSelectedSizes({ ...selectedSizes, [drinkId]: event.target.value });
-    };
-
-    const handleOpenDialog = () => setOpenDialog(true);
-    const handleCloseDialog = () => setOpenDialog(false);
-
-    const handleOrderNow = async () => {
-        try {
-            const response = await axios.post('http://localhost:8080/api/orders', { items: cart });
-            console.log('Order response:', response);
-            setAlertMessage('Order placed successfully!');
-            setAlertSeverity('success');
-            setCart([]);
-            setOpenDialog(false);
-        } catch (error) {
-            console.error('Error placing order:', error);
-            setAlertMessage('Failed to place order.');
-            setAlertSeverity('error');
-        } finally {
-            setAlertOpen(true);
-        }
-    };
-
-    const handleCloseAlert = (reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+    const handleCloseAlert = () => {
         setAlertOpen(false);
     };
 
-    const filteredDrinks = (category) => {
-        if (category === 0) {
-            return drinks;
-        } else if (category === 1) {
-            return drinks.filter(drink => drink.categoryId === 1);
-        } else if (category === 2) {
-            return drinks.filter(drink => drink.categoryId === 2);
+
+    useEffect(() => {
+        const loadedCart = Cookies.get('cart');
+        if (loadedCart) {
+            setCart(JSON.parse(loadedCart));
         }
-        return [];
+    }, []);
+
+    const handleRemoveFromCart = (index) => {
+        const newCart = [...cart];
+        newCart.splice(index, 1);
+        setCart(newCart);
+        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
+    };
+
+    const handleBackClick = () => {
+        navigate(`/product/${tableId}`);
+    };
+
+    const handleCreateOrder = () => {
+        const orderDetails = cart.map(item => ({
+            quantity: item.quantity,
+            product: {
+                productId: item.productId // Passen Sie dies entsprechend Ihrer Produkt-ID-Struktur an
+            }
+        }));
+
+        const orderData = {
+            orderDetails,
+            tableId: tableId // Setzen Sie die Tisch-ID entsprechend Ihrem Anwendungsfall
+        };
+
+        axios.post('http://localhost:8080/api/orders', orderData)
+            .then(response => {
+                console.log('Order created successfully:', response.data);
+                setAlertMessage('Order created successfully');
+                setAlertSeverity('success');
+                setAlertOpen(true);
+                navigate('/product/${tableId}');
+                setCart([]); // Leeren Sie den Warenkorb
+                Cookies.remove('cart'); // Entfernen Sie den Warenkorb-Cookie
+            })
+            .catch(error => {
+                console.error('Error creating order:', error);
+                setAlertMessage('Failed to create order');
+                setAlertSeverity('error');
+                setAlertOpen(true);
+            });
     };
 
     return (
-        <Container maxWidth={false}>
-            <Tabs value={value} onChange={handleChange} centered>
-                <Tab label="All Drinks"/>
-                <Tab label="Non-Alcoholic"/>
-                <Tab label="Wine"/>
-                <Tab label="Sparkling Wine"/>
-                <Tab label="Cocktails"/>
-            </Tabs>
-            <Grid container spacing={2}>
-                {filteredDrinks(value).map((drink) => (
-                    <Grid item xs={12} sm={6} md={3} key={drink.productId}>
-                        <Card>
-                            <CardActionArea onClick={() => handleDrinkChange(drink)}>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/placeholder.jpg"
-                                    alt={drink.name}
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {drink.name}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Price: ${drink.price}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Select
-                                        value={selectedSizes[drink.id] || ""}
-                                        onChange={(e) => handleSizeChange(e, drink.id)}
-                                        disabled={selectedSizes[drink.id] === undefined}
-                                    >
-                                        {drink.size && drink.size.map((size) => (
-                                            <MenuItem key={size} value={size}>
-                                                {size}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    <Button onClick={() => handleAddToCart(drink)} disabled={!selectedSizes[drink.id]}>Add to Cart</Button>
-                                </CardActions>
-                            </CardActionArea>
-
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                   sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
-                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }} onClick={handleOpenDialog}>
-                    <ShoppingCartOutlinedIcon />
-                </Fab>
-            </Badge>
-
-            <Dialog open={openDialog} onClose={handleCloseDialog} aria-labelledby="cart-dialog-title">
-                <DialogTitle id="cart-dialog-title">Your Cart</DialogTitle>
-                <DialogContent>
-                    <List>
-                        {cart.map((item, index) => (
+        <div>
+            <div style={{ display: "flex" }}>
+                <IconButton onClick={handleBackClick} aria-label="back" style={{ marginLeft: 0 }}>
+                    <ArrowBackIosIcon />
+                    back
+                </IconButton>
+            </div>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                width: '100%'
+            }}>
+                <List style={{ width: '100%' }}>
+                    {cart.length > 0 ? (
+                        cart.map((item, index) => (
                             <ListItem key={index}>
-                                <ListItemText primary={item.name} secondary={`Price: $${item.price}`} />
+                                <ListItemAvatar>
+                                    <Avatar src={`${item.imgName}`} alt={item.name} />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={`${item.name} - ${item.size}`}
+                                    secondary={
+                                        <React.Fragment>
+                                            <div>Quantity: {item.quantity}, Price: ${item.price}</div>
+                                            {item.extras && <div>Extras: {item.extras}</div>}
+                                        </React.Fragment>
+                                    }
+                                />
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
+                                    <DeleteIcon />
+                                </IconButton>
                             </ListItem>
-                        ))}
-                    </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog}>Close</Button>
-                    <Button onClick={handleOrderNow} color="primary" variant="contained">Order Now</Button>
-                </DialogActions>
-            </Dialog>
+                        ))
+                    ) : (
+                        <ListItem>
+                            <ListItemText primary="Your cart is empty" />
+                        </ListItem>
+                    )}
+                </List>
+                <Snackbar
+                    open={alertOpen}
+                    autoHideDuration={6000}
+                    onClose={handleCloseAlert}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Position der Snackbar
+                >
+                    <Alert severity={alertSeverity} sx={{ width: '100%' }}>
+                        {alertMessage}
+                    </Alert>
+                </Snackbar>
+            </div>
+            {cart.length > 0 && (
+                <Button variant="contained" color="primary" onClick={handleCreateOrder}>
+                    Order Now
+                </Button>
+            )}
+        </div>
 
-            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
-                <Alert onClose={handleCloseAlert} severity={alertSeverity} sx={{ width: '100%' }}>
-                    {alertMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
     );
 };
 
