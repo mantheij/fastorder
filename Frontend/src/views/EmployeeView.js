@@ -44,14 +44,11 @@ const EmployeeView = () => {
     }, []);
 
 
-    /**
-     * TODO: implement
-     *
-     */
+
     useEffect(() => {
         const fetchOpenOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders/open')
+                axios.get('http://localhost:8080/api/orders/open')
                     .then(response =>{
                         handleOpenOrder(response.data)
                     })
@@ -72,9 +69,13 @@ const EmployeeView = () => {
         return () => clearInterval(timer);
     }, [addOrder]);
 
+
+    //TODO: this
     const handleOpenOrder = (openOrder) => {
         const { tableId, orderDetails } = openOrder;
-        const boxContent = orderDetails.map(detail => `- ${openOrder.productName} x${openOrder.quantity}`).join('<br>');
+        const productName = openOrder.orderDetails.productName;
+        const quantity = openOrder.orderDetails.quantity;
+        const boxContent = orderDetails.map(detail => `- ${productName} x${quantity}`).join('<br>');
         addOrder(tableId, boxContent);
     };
 
@@ -158,19 +159,32 @@ const EmployeeView = () => {
                                     boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
                                 }}
                             >
-                                <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.tableNumber}</Typography>
-                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.timestamp}</Typography>
-                                <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                                <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
+                                    padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                                    {item.tableNumber}</Typography>
+                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.timestamp}</Typography>
+                                <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
+                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
                                 <Box sx={{ marginTop: '20px' }}>
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`, '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
-                                    <Button variant="contained" size="small" onClick={() => {toggleInProgress(index); toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
+                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
+                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                        border: `2px solid ${theme.palette.green.main}`, '&:hover':
+                                            { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
+                                    <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
+                                        toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px',
+                                        color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                        border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
                                         { item.inProgress ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />
                                         ) : (
                                             <AccessTimeIcon />
                                         )}
                                     </Button>
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`, '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
+                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')}
+                                            sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                                border: `2px solid ${theme.palette.red.main}`, '&:hover':
+                                                    { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
                             </Box>
                         </Grid>
