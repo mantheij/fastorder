@@ -6,6 +6,8 @@ import { blue, green, red } from '@mui/material/colors';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
+
 
 const ClockBar = ({ currentTime }) => {
     const theme = createTheme({
@@ -41,21 +43,30 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
+
+    /**
+     * TODO: implement
+     *
+     */
     useEffect(() => {
         const fetchOpenOrders = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/orders/open');
-                const data = await response.json();
-                data.forEach(order => {
-                    handleOpenOrder(order);
-                });
+                const response = await axios.get('http://localhost:8080/api/orders/open')
+                    .then(response =>{
+                        handleOpenOrder(response.data)
+                    })
+
+                // response.data.forEach(order => {
+                //     handleOpenOrder(order);
+                // });
             } catch (error) {
                 console.error('Error fetching open orders:', error);
             }
         };
 
+
         const timer = setInterval(() => {
-            fetchOpenOrders();
+            handleOpenOrder(fetchOpenOrders())
         }, 5000);
 
         return () => clearInterval(timer);
@@ -63,9 +74,10 @@ const EmployeeView = () => {
 
     const handleOpenOrder = (openOrder) => {
         const { tableId, orderDetails } = openOrder;
-        const boxContent = orderDetails.map(detail => `- ${detail.productName} x${detail.quantity}`).join('<br>');
+        const boxContent = orderDetails.map(detail => `- ${openOrder.productName} x${openOrder.quantity}`).join('<br>');
         addOrder(tableId, boxContent);
     };
+
 
     const handleDialogOpen = (index, type) => {
         setActionIndex(index);
@@ -152,7 +164,7 @@ const EmployeeView = () => {
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`, '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index); toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
-                                        {progressVisible && item.inProgress ? (
+                                        { item.inProgress ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />
                                         ) : (
                                             <AccessTimeIcon />

@@ -20,6 +20,7 @@ const useEmployeeController = () => {
         );
     };
 
+
     const cancelOrder = index => {
         setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
     };
