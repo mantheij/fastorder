@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-    CircularProgress } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -20,9 +19,8 @@ const ClockBar = ({ currentTime }) => {
     });
 
     return (
-        <Box sx={{ background: 'linear-gradient(to right, #5cbff7, #235b7b)', height: '56px', width: '100%', position:
-                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '4px 4px 4px rgba(0, 0, 0, 0.2)' }}>
+        <Box sx={{ background: 'linear-gradient(to right bottom, #430089, #3da7f6)', height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
         </Box>
@@ -47,39 +45,47 @@ const EmployeeView = () => {
 
 
 
-    useEffect(() => {
-        const fetchOpenOrders = async () => {
-            try {
-                axios.get('http://localhost:8080/api/orders/open')
-                    .then(response =>{
-                         response.data.forEach(order => {
-                             handleOpenOrder(order);
-                         });
 
-                    })
+    // Pull open orders from backend using axios, and extract quantity and productName
+    const axios = require('axios');
 
-                            } catch (error) {
-                console.error('Error fetching open orders:', error);
-            }
-        };
+    async function getOpenOrders() {
+        try {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: 'http://localhost:3000/api/orders/open',
+                headers: {
+                    'Accept': '*/*'
+                }
+            };
+
+            const response = await axios.request(config);
+            const openOrders = response.data;
+
+            openOrders.forEach(order => {
+                order.orderDetails.forEach(detail => {
+                    // const productName = detail.productName
+                    // const quantity = detail.quantity
+                    addOrder(order.tableNumber.toString(), '-' + detail.productName + ' ' +
+                        detail.quantity.toString() + '<br/>')
+                });
+
+            });
+        } catch (error) {
+            console.error('Fehler beim Abrufen der offenen Bestellungen:', error);
+        }
+    }
 
 
-        const timer = setInterval(() => {
-            handleOpenOrder(fetchOpenOrders())
-        }, 5000);
+    //every 10 sec, search for new orders
+    function searchForNewOrders() {
+        setInterval(async () => {
+            await getOpenOrders();
+        }, 10000);
+    }
 
-        return () => clearInterval(timer);
-    }, [addOrder]);
-
-
-    //TODO: this
-    const handleOpenOrder = (openOrder) => {
-        const { tableId, orderDetails } = openOrder;
-        const productName = openOrder.orderDetails.productName;
-        const quantity = openOrder.orderDetails.quantity;
-        const boxContent = orderDetails.map(detail => `- ${productName} x${quantity}`).join('<br>');
-        addOrder(tableId, boxContent);
-    };
+    searchForNewOrders();
 
 
     const handleDialogOpen = (index, type) => {
@@ -138,11 +144,10 @@ const EmployeeView = () => {
         <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
             <ClockBar currentTime={currentTime} />
 
-            <AccessTimeIcon sx={{ color: 'white' }} />
-
             <Box style={{ marginTop: '56px' }}>
                 <Typography>
-                    <Button onClick={() => addOrder(5, "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
+                    <Button onClick={() => addOrder(5,
+                        "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
                 </Typography>
 
                 <Grid container spacing={2} justifyContent="center">
@@ -160,7 +165,7 @@ const EmployeeView = () => {
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     maxWidth: '100%',
-                                    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.16)'
+                                    boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
                                 }}
                             >
                                 <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
@@ -172,10 +177,9 @@ const EmployeeView = () => {
                                         '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ?
-                                            'lightgrey' : 'white',
-                                        border: `2px solid ${theme.palette.green.main}`, '&:hover':
-                                            { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
+                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress
+                                            ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`,
+                                        '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
                                         toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px',
                                         color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
@@ -188,8 +192,8 @@ const EmployeeView = () => {
                                     </Button>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
                                         'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
-                                            'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`, '&:hover':
-                                                    { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
+                                            'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`,
+                                        '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
                             </Box>
                         </Grid>
@@ -201,7 +205,8 @@ const EmployeeView = () => {
                 <DialogTitle>Confirmation</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {actionType === 'delete' ? 'Are you sure this order is completed?' : 'Are you sure you want to cancel this order?'}
+                        {actionType === 'delete' ? 'Are you sure this order is completed?' :
+                            'Are you sure you want to cancel this order?'}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
