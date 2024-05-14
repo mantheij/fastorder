@@ -62,17 +62,28 @@ const EmployeeView = () => {
             const response = await axios.request(config);
             const openOrders = response.data;
 
+            let text = ''
             openOrders.forEach(order => {
                 order.orderDetails.forEach(detail => {
-                    // const productName = detail.productName
-                    // const quantity = detail.quantity
-                    addOrder(order.tableNumber.toString(), '-' + detail.productName + ' ' +
-                        detail.quantity.toString() + '<br/>')
-                });
+                    const productName = detail.productName
+                    const quantity = detail.quantity
+                    text += '-' + productName + ' (x' + quantity + ') <br/>'
 
+                });
+                addOrder(order.status, order.tableId.toString(), text )
             });
         } catch (error) {
             console.error('Fehler beim Abrufen der offenen Bestellungen:', error);
+        }
+    }
+
+    function showInWork(){
+        try{
+
+
+
+        }catch(error){
+            console.error('Fehler beim Abrufen der laufenden Bestellungen:', error);
         }
     }
 
@@ -80,6 +91,7 @@ const EmployeeView = () => {
     //every 10 sec, search for new orders
     function searchForNewOrders() {
         setInterval(async () => {
+            showInWork();
             await getOpenOrders();
         }, 10000);
     }
@@ -144,10 +156,13 @@ const EmployeeView = () => {
             <ClockBar currentTime={currentTime} />
 
             <Box style={{ marginTop: '56px' }}>
-                <Typography>
-                    <Button onClick={() => addOrder(5,
-                        "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
-                </Typography>
+
+                {/*Beispiel-Button: Zum testen der Boxen*/}
+
+                {/*<Typography>*/}
+                {/*    <Button onClick={() => addOrder(5,*/}
+                {/*        "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>*/}
+                {/*</Typography>*/}
 
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.map((item, index) => (

@@ -3,12 +3,14 @@ import { useState } from 'react';
 const useEmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
-    const addOrder = (tableNumber, text) => {
+    const addOrder = (status, tableNumber, text) => {
         const timestamp = new Date().toLocaleTimeString();
+        status = 'in work'
         setBoxes(prevBoxes => [...prevBoxes, { tableNumber, text, timestamp }]);
     };
 
-    const deleteBox = index => {
+    const deleteBox = (status, index) => {
+        status = 'done'
         setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
     };
 
