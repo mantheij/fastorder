@@ -45,7 +45,6 @@ const EmployeeView = () => {
 
 
 
-
     // Pull open orders from backend using axios, and extract quantity and productName
     const axios = require('axios');
 
