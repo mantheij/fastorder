@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+    CircularProgress } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -19,8 +20,9 @@ const ClockBar = ({ currentTime }) => {
     });
 
     return (
-        <Box sx={{ background: 'linear-gradient(to right bottom, #430089, #3da7f6)', height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+        <Box sx={{ background: 'linear-gradient(to right, #5cbff7, #235b7b)', height: '56px', width: '100%', position:
+                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '4px 4px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
         </Box>
@@ -50,13 +52,13 @@ const EmployeeView = () => {
             try {
                 axios.get('http://localhost:8080/api/orders/open')
                     .then(response =>{
-                        handleOpenOrder(response.data)
+                         response.data.forEach(order => {
+                             handleOpenOrder(order);
+                         });
+
                     })
 
-                // response.data.forEach(order => {
-                //     handleOpenOrder(order);
-                // });
-            } catch (error) {
+                            } catch (error) {
                 console.error('Error fetching open orders:', error);
             }
         };
@@ -136,6 +138,8 @@ const EmployeeView = () => {
         <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
             <ClockBar currentTime={currentTime} />
 
+            <AccessTimeIcon sx={{ color: 'white' }} />
+
             <Box style={{ marginTop: '56px' }}>
                 <Typography>
                     <Button onClick={() => addOrder(5, "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>
@@ -156,7 +160,7 @@ const EmployeeView = () => {
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     maxWidth: '100%',
-                                    boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.16)'
                                 }}
                             >
                                 <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
@@ -168,7 +172,8 @@ const EmployeeView = () => {
                                         '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ?
+                                            'lightgrey' : 'white',
                                         border: `2px solid ${theme.palette.green.main}`, '&:hover':
                                             { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
@@ -181,9 +186,9 @@ const EmployeeView = () => {
                                             <AccessTimeIcon />
                                         )}
                                     </Button>
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')}
-                                            sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ? 'lightgrey' : 'white',
-                                                border: `2px solid ${theme.palette.red.main}`, '&:hover':
+                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
+                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
+                                            'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`, '&:hover':
                                                     { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
                             </Box>
