@@ -6,18 +6,18 @@ import de.hhn.labfastord.models.Product;
 import de.hhn.labfastord.repositories.ProductCategoryRepository;
 import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 /**
  * The ProductController class manages the web requests related to products.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin
 public class ProductController {
 
     @Autowired
@@ -75,6 +75,9 @@ public class ProductController {
                         existingProduct.setImgName(newProductDTO.getImgName());
                         existingProduct.setQuantity(newProductDTO.getQuantity());
                         existingProduct.setAvailable(newProductDTO.getQuantity() > 0);
+                        existingProduct.setAllergens(newProductDTO.getAllergens());
+                        existingProduct.setIngredients(newProductDTO.getIngredients());
+                        existingProduct.setNutrition(newProductDTO.getNutrition());
                         try {
                             existingProduct.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
                                     .orElseThrow(NullPointerException::new));
@@ -105,6 +108,9 @@ public class ProductController {
             product.setImgName(newProductDTO.getImgName());
             product.setQuantity(newProductDTO.getQuantity());
             product.setAvailable(newProductDTO.getQuantity() > 0);
+            product.setAllergens(newProductDTO.getAllergens());
+            product.setIngredients(newProductDTO.getIngredients());
+            product.setNutrition(newProductDTO.getNutrition());
             try {
                 product.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
                         .orElseThrow(NullPointerException::new));
@@ -151,6 +157,9 @@ public class ProductController {
         dto.setImgName(product.getImgName());
         dto.setAvailable(product.isAvailable());
         dto.setQuantity(product.getQuantity());
+        dto.setAllergens(product.getAllergens());
+        dto.setIngredients(product.getIngredients());
+        dto.setNutrition(product.getNutrition());
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getCategoryId());
         } else {

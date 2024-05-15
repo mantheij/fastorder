@@ -4,18 +4,18 @@ import de.hhn.labfastord.dto.create.NewTableDTO;
 import de.hhn.labfastord.models.Tables;
 import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 /**
  * The TablesController class manages the web requests related to tables.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/tables")
-@CrossOrigin
 public class TablesController {
 
     @Autowired

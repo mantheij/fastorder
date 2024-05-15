@@ -1,24 +1,23 @@
 package de.hhn.labfastord.controllers;
 
-import de.hhn.labfastord.dto.create.NewProductCategoryDTO;
 import de.hhn.labfastord.dto.ProductCategoryDTO;
-import de.hhn.labfastord.models.ProductCategory;
+import de.hhn.labfastord.dto.create.NewProductCategoryDTO;
 import de.hhn.labfastord.models.Product;
+import de.hhn.labfastord.models.ProductCategory;
 import de.hhn.labfastord.repositories.ProductCategoryRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 /**
  * The ProductCategoryController class manages the web requests for product categories.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/productCategories")
-@CrossOrigin
 public class ProductCategoryController {
 
     @Autowired
