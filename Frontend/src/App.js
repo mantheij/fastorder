@@ -12,7 +12,6 @@ import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
 import CustomerStartUpButton from "./views/CustomerView";
 import CardView from "./views/CardView";
-
 function App() {
   return (
     <Router>
