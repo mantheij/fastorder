@@ -18,8 +18,9 @@ const ClockBar = ({ currentTime }) => {
         },
     });
 
+    //background for clock
     return (
-        <Box sx={{ background: 'linear-gradient(to right bottom, #430089, #3da7f6)', height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
@@ -33,7 +34,7 @@ const EmployeeView = () => {
     const [actionIndex, setActionIndex] = useState(null);
     const [actionType, setActionType] = useState(null);
     const [progressVisible, setProgressVisible] = useState(false); // State for Circular Progress visibility
-    const {boxes, addOrder, deleteBox, toggleInProgress, cancelOrder} = useEmployeeController();
+    const {boxes, addOrder, deleteBox, toggleInProgress, cancelOrder } = useEmployeeController();
     const [tableId] = useState()
 
     useEffect(() => {
@@ -46,30 +47,29 @@ const EmployeeView = () => {
 
 
     // Pull open orders from backend using axios, and extract quantity and productName
-    // const axios = require('axios');
-
     useEffect(() => {
         axios.get('http://localhost:8080/api/orders/open')
             .then(response => {
-
                 response.data.forEach(order => {
-                    const tableId = order.tableId;
-                    console.log(tableId)
-                    const orderDetails = order.orderDetails;
-                    const orderText = orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>');
+                    console.log(response.data)
+                    //Todo: status "in_work"
+                    //order.status.set("closed")
+                    const tableId = order.tableId
+                    const orderTime = order.datetime
+                    const orderDetails = order.orderDetails
+                    const orderText = orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
 
-                    addOrder(tableId, orderText);
+                    addOrder(orderTime, tableId, orderText)
                 });
             })
-            .catch(error => console.error('Error loading orders:', error));
+            .catch(error => console.error('Error loading orders:', error))
     }, []);
 
-    //every 10 sec, search for new orders
+    //every 20 sec, refresh site
     function searchForNewOrders() {
         setInterval(async () => {
-          //  showInWork();
-       //     await getOpenOrders();
-        }, 10000);
+             window.location.reload()
+        }, 20000);
     }
 
     searchForNewOrders();
@@ -90,9 +90,11 @@ const EmployeeView = () => {
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
+                //close order here (done)
                 deleteBox(actionIndex);
             } else if (actionType === 'cancel') {
                 cancelOrder(actionIndex);
+                //Delete order here (canceled)
             }
             setDialogOpen(false);
             setActionIndex(null);
@@ -132,14 +134,6 @@ const EmployeeView = () => {
             <ClockBar currentTime={currentTime} />
 
             <Box style={{ marginTop: '56px' }}>
-
-                {/*Beispiel-Button: Zum testen der Boxen*/}
-
-                {/*<Typography>*/}
-                {/*    <Button onClick={() => addOrder(5,*/}
-                {/*        "-Cola (250ml) x3<br>-Fanta (250ml) x1")}>Add Order</Button>*/}
-                {/*</Typography>*/}
-
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.map((item, index) => (
                         <Grid item key={index}>
@@ -150,36 +144,39 @@ const EmployeeView = () => {
                                     textAlign: 'center',
                                     padding: '10px',
                                     borderRadius: '8px',
+                                    marginTop: '5px',
                                     wordWrap: 'break-word',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     maxWidth: '100%',
                                     boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
-                                }}
-                            >
+                                }}>
+
                                 <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
                                     padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                                     {item.tableNumber}</Typography>
+
                                 <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
-                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.timestamp}</Typography>
+                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+
                                 <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
                                         '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
                                         'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress
                                             ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`,
                                         '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
+
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
                                         toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px',
                                         color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
                                         border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
                                         { item.inProgress ? (
-                                            <CircularProgress size={20} sx={{ color: 'black' }} />
-                                        ) : (
-                                            <AccessTimeIcon />
-                                        )}
+                                            <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                     </Button>
+
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
                                         'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
                                             'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`,
