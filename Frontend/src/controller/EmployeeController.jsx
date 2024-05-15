@@ -3,9 +3,8 @@ import { useState } from 'react';
 const useEmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
-    const addOrder = (status, tableNumber, text) => {
+    const addOrder = ( tableNumber, text) => {
         const timestamp = new Date().toLocaleTimeString();
-        status = 'in work'
         setBoxes(prevBoxes => [...prevBoxes, { tableNumber, text, timestamp }]);
     };
 

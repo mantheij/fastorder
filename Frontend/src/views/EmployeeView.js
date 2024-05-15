@@ -33,7 +33,8 @@ const EmployeeView = () => {
     const [actionIndex, setActionIndex] = useState(null);
     const [actionType, setActionType] = useState(null);
     const [progressVisible, setProgressVisible] = useState(false); // State for Circular Progress visibility
-    const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder } = useEmployeeController();
+    const {boxes, addOrder, deleteBox, toggleInProgress, cancelOrder} = useEmployeeController();
+    const [tableId] = useState()
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -44,55 +45,30 @@ const EmployeeView = () => {
     }, []);
 
 
-
     // Pull open orders from backend using axios, and extract quantity and productName
-    const axios = require('axios');
+    // const axios = require('axios');
 
-    async function getOpenOrders() {
-        try {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: 'http://localhost:3000/api/orders/open',
-                headers: {
-                    'Accept': '*/*'
-                }
-            };
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/orders/open')
+            .then(response => {
 
-            const response = await axios.request(config);
-            const openOrders = response.data;
+                response.data.forEach(order => {
+                    const tableId = order.tableId;
+                    console.log(tableId)
+                    const orderDetails = order.orderDetails;
+                    const orderText = orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>');
 
-            let text = ''
-            openOrders.forEach(order => {
-                order.orderDetails.forEach(detail => {
-                    const productName = detail.productName
-                    const quantity = detail.quantity
-                    text += '-' + productName + ' (x' + quantity + ') <br/>'
-
+                    addOrder(tableId, orderText);
                 });
-                addOrder(order.status, order.tableId.toString(), text )
-            });
-        } catch (error) {
-            console.error('Fehler beim Abrufen der offenen Bestellungen:', error);
-        }
-    }
-
-    function showInWork(){
-        try{
-
-
-
-        }catch(error){
-            console.error('Fehler beim Abrufen der laufenden Bestellungen:', error);
-        }
-    }
-
+            })
+            .catch(error => console.error('Error loading orders:', error));
+    }, []);
 
     //every 10 sec, search for new orders
     function searchForNewOrders() {
         setInterval(async () => {
-            showInWork();
-            await getOpenOrders();
+          //  showInWork();
+       //     await getOpenOrders();
         }, 10000);
     }
 
