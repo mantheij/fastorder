@@ -35,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if (productRepository.findAll().isEmpty()) {
+        if (userRepository.findAll().isEmpty()) {
             //add roles
             Role roleAdmin = new Role(EnumRole.ROLE_ADMIN);
             Role roleUser = new Role(EnumRole.ROLE_USER);
@@ -58,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
 
             //add category
             ProductCategory categoryBeer = new ProductCategory("Biere", "Alkoholische und nicht-alkoholische Biere");
-            ProductCategory categorySoft = new ProductCategory("Softtrinks", "Softtrinks");
+            ProductCategory categorySoft = new ProductCategory("Softdrinks", "Softdrinks");
             categoryRepository.save(categoryBeer);
             categoryRepository.save(categorySoft);
 

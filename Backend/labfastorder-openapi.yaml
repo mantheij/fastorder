@@ -1,4 +1,4 @@
-openapi: "3.1.0"
+openapi: 3.0.0
 info:
   title: "labfastorder API"
   description: "labfastorder API"
@@ -323,16 +323,16 @@ paths:
                 orderDetails:
                   type: "array"
                   items:
-                      properties:
-                        quantity:
-                          type: "integer"
-                          format: "int32"
-                        product:
-                          type: "object"
-                          properties:
-                            productId:
-                              type: "integer"
-                              format: "int64"
+                    properties:
+                      quantity:
+                        type: "integer"
+                        format: "int32"
+                      product:
+                        type: "object"
+                        properties:
+                          productId:
+                            type: "integer"
+                            format: "int64"
                 tableId:
                   type: "integer"
                   format: "int64"
@@ -416,6 +416,17 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/OrderDTO"
+  /api/test/admin:
+    get:
+      summary: "GET api/test/admin"
+      operationId: "adminAccess"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
   /api/test/all:
     get:
       summary: "GET api/test/all"
@@ -427,6 +438,51 @@ paths:
             '*/*':
               schema:
                 type: "string"
+  /api/test/user:
+    get:
+      summary: "GET api/test/user"
+      operationId: "userAccess"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/auth/signin:
+    post:
+      summary: "POST api/auth/signin"
+      operationId: "authenticateUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JwtResponse"
+  /api/auth/signup:
+    post:
+      summary: "POST api/auth/signup"
+      operationId: "registerUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
 components:
   schemas:
     ProductCategoryDTO:
@@ -626,3 +682,47 @@ components:
         tableId:
           type: "integer"
           format: "int64"
+    LoginRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    SignupRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        email:
+          type: "string"
+        role:
+          type: "array"
+          items:
+            type: "string"
+        password:
+          type: "string"
+    JwtResponse:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+        type:
+          type: "string"
+          default: "Bearer"
+        id:
+          type: "integer"
+          format: "int64"
+        username:
+          type: "string"
+        email:
+          type: "string"
+        roles:
+          type: "array"
+          items:
+            type: "string"
+    MessageResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
