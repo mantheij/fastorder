@@ -1,111 +1,92 @@
-import React, {useEffect, useState} from "react";
-import axios from 'axios'; // HTTP request library for fetching product data
-import Cookies from 'js-cookie'; // Library for managing cookies
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
     Alert,
-    Avatar,
-    Badge,
+    Avatar, Badge,
     Button,
     Card,
     CardActionArea,
     CardContent,
     CardMedia,
-    Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Drawer,
-    Fab,
+    Container, Dialog, DialogActions, DialogContent, DialogTitle,
+    Drawer, Fab,
     Grid,
     IconButton,
     List,
     ListItem,
     ListItemAvatar,
-    ListItemIcon,
     ListItemText,
     MenuItem,
     Select,
-    Snackbar,
-    Tab,
-    Tabs,
+    Snackbar, Tab, Tabs,
     TextField,
     Typography,
-} from "@mui/material"; // Material-UI components
-// Import MUI icons
+} from "@mui/material";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-import {useNavigate, useParams} from "react-router-dom";
 
-// Function for displaying product cards and cart
+import { useNavigate, useParams } from "react-router-dom";
+
 const ProductView = () => {
     const { tableId } = useParams();
-    // States for various data and UI interactions
-    const [drinks, setDrinks] = useState([]); // State for products
-    const [uniqueDrinks, setUniqueDrinks] = useState([]); // State for unique products (without duplicates)
-    const [value, setValue] = useState(0); // State for active tab value
-    const [cart, setCart] = useState([]); // State for cart
-    const [alertOpen, setAlertOpen] = useState(false); // State for Snackbar (notification)
-    const [alertMessage, setAlertMessage] = useState(''); // State for a Snackbar message
-    const [alertSeverity, setAlertSeverity] = useState('success'); // State for Snackbar severity
-    const [bottomSheetOpen, setBottomSheetOpen] = useState(false); // State for a bottom sheet open (selecting size
-    // and quantity)
-    const [selectedProduct, setSelectedProduct] = useState({}); // State for selected product
-    const [openDialog, setOpenDialog] = useState(false); // State for dialog (cart view)
-    const [isSearchVisible, setIsSearchVisible] = useState(false); // State for search bar visibility
-    const [searchQuery, setSearchQuery] = useState(''); // State for a search query
+    const [drinks, setDrinks] = useState([]);
+    const [uniqueDrinks, setUniqueDrinks] = useState([]);
+    const [value, setValue] = useState(0);
+    const [cart, setCart] = useState([]);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState({});
+    const [openDialog, setOpenDialog] = useState(false);
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [extras, setExtras] = useState('');
     const navigate = useNavigate();
-    const baseURL = "http://localhost:3000/images/products/"; // Based on your server configuration
+    const baseURL = "http://localhost:3000/images/products/";
 
-    // Effect for initializing product data and cart
     useEffect(() => {
-        // Load cart from cookies if available
         const loadedCart = Cookies.get('cart');
         if (loadedCart) {
             setCart(JSON.parse(loadedCart));
         }
-        // Load product data from API
         axios.get("http://localhost:8080/api/products")
             .then(response => {
-                setDrinks(response.data); // Set product data in state
-                // Filter unique products and set them in state
+                setDrinks(response.data);
                 setUniqueDrinks(Array.from(new Set(response.data.map(drink => drink.name)))
                     .map(name => response.data.find(drink => drink.name === name)));
             })
-            .catch(error => console.error("Error loading the products:", error)); // Error handling for data retrieval
-    }, []); // Empty dependency array means run once on initial render
+            .catch(error => console.error("Error loading the products:", error));
+    }, []);
 
     const handleOpenCardView = () => {
         if (cart.length === 0) {
-            setAlertMessage('Your cart is empty'); // Set error message
-            setAlertSeverity('error'); // Set an severity of Snackbar to 'error'
-            setAlertOpen(true); // Open Snackbar
+            setAlertMessage('Your cart is empty');
+            setAlertSeverity('error');
+            setAlertOpen(true);
         } else {
-            navigate(`/product/${tableId}/card`); // Navigate to CardView route if a cart is not empty
+            navigate(`/product/${tableId}/card`);
         }
     };
-    const handleCloseDialog = () => setOpenDialog(false); // Close the dialog
+    const handleCloseDialog = () => setOpenDialog(false);
 
-    // Function for handling adding a product to cart
     const handleAddToCart = () => {
-        const newCart = [...cart, {...selectedProduct, imgName: `${selectedProduct.imgName}`, extras}];
-        console.log(newCart); // Check the new cart
+        const newCart = [...cart, { ...selectedProduct, imgName: `${selectedProduct.imgName}`, extras }];
         setCart(newCart);
-        Cookies.set('cart', JSON.stringify(newCart), {expires: 7});
+        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
         setAlertMessage('Added drink to cart');
         setAlertSeverity('success');
         setAlertOpen(true);
         setBottomSheetOpen(false);
-        setExtras(''); // Reset extras
+        setExtras('');
     };
 
-    // Function for handling an opening bottom sheet (selecting size and quantity)
     const handleOpenBottomSheet = (product) => {
         const productWithImage = {
             ...product,
@@ -119,59 +100,51 @@ const ProductView = () => {
         setBottomSheetOpen(true);
     };
 
-    // Function for handling a closing bottom sheet
     const handleCloseBottomSheet = () => {
-        setBottomSheetOpen(false); // Close bottom sheet
+        setBottomSheetOpen(false);
     };
 
-    // Function for handling size change
     const handleSizeChange = (event) => {
-        const newSize = event.target.value; // New size from the event
-        // Find the selected product with the new size and update it
+        const newSize = event.target.value;
         const selectedSize = drinks.find(p => p.name === selectedProduct.name && p.size === newSize);
-        setSelectedProduct({...selectedProduct, size: newSize, price: selectedSize.price});
+        setSelectedProduct({ ...selectedProduct, size: newSize, price: selectedSize.price });
     };
 
-    // Function for handling quantity change
     const handleQuantityChange = (event) => {
-        const newQuantity = Number(event.target.value); // New quantity from the event
-        setSelectedProduct({...selectedProduct, quantity: newQuantity}); // Set the new quantity for the selected product
+        const newQuantity = Number(event.target.value);
+        setSelectedProduct({ ...selectedProduct, quantity: newQuantity });
     };
 
     const handleExtraChange = (event) => {
         setExtras(event.target.value);
     };
 
-    // Function for handling removing a product from cart
     const handleRemoveFromCart = (index) => {
-        const newCart = [...cart]; // Copy the current cart
-        newCart.splice(index, 1); // Remove the product at the specified index position
-        setCart(newCart); // Set the updated cart in state
-        Cookies.set('cart', JSON.stringify(newCart), {expires: 7}); // Save the cart in cookies with expiry
-        setAlertMessage('Item removed from cart'); // Set the notification message
-        setAlertSeverity('info'); // Set the notification severity
-        setAlertOpen(true); // Open the notification
+        const newCart = [...cart];
+        newCart.splice(index, 1);
+        setCart(newCart);
+        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
+        setAlertMessage('Item removed from cart');
+        setAlertSeverity('info');
+        setAlertOpen(true);
     };
 
-    // Function for rendering cart items
     const renderCartItems = () => {
         if (cart.length === 0) {
             return <ListItem>
-                <ListItemText primary="Your cart is empty"/>
+                <ListItemText primary="Your cart is empty" />
             </ListItem>;
         }
         return (
             <List>
                 {cart.map((item, index) => (
                     <ListItem key={index}>
-                        <ListItemIcon>
-                            <img src={`${item.imgName}`} alt={`${item.name} Logo`}
-                                 style={{width: 30, height: 30}}/>
-                        </ListItemIcon>
-                        <ListItemText primary={`${item.name} - ${item.size}`}
-                                      secondary={`Quantity: ${item.quantity}, Price: $${item.price}`}/>
+                        <ListItemAvatar>
+                            <Avatar src={`${item.imgName}`} alt={`${item.name} Logo`} />
+                        </ListItemAvatar>
+                        <ListItemText primary={`${item.name} - ${item.size}`} secondary={`Quantity: ${item.quantity}, Price: $${item.price}`} />
                         <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
-                            <DeleteIcon/>
+                            <DeleteIcon />
                         </IconButton>
                     </ListItem>
                 ))}
@@ -179,46 +152,44 @@ const ProductView = () => {
         );
     };
 
-    // Function for filtering drinks based on search query
     const filterDrinks = (drinks) => {
         return drinks.filter(drink => {
-            // If no search query present, show all drinks
             if (!searchQuery) {
                 return true;
             }
-            // Check if drink name contains a search query (case-insensitive)
             return drink.name.toLowerCase().includes(searchQuery.toLowerCase());
         });
     };
 
-    // Function to toggle search bar visibility
     const handleSearchButtonClick = () => {
         setIsSearchVisible(prevState => !prevState);
         handleResetSearch();
     };
 
-    // Function to reset a search query
     const handleResetSearch = () => {
         setSearchQuery("");
     };
 
-    // Handler function for changing search query
     const handleSearchInputChange = (event) => {
         setSearchQuery(event.target.value);
     };
 
-    // Apply filter to displayed drinks
     const filteredDrinks = filterDrinks(uniqueDrinks);
+
+    const isProductAvailable = (product) => {
+        const availableSizes = drinks.filter(p => p.name === product.name && p.quantity > 0);
+        return availableSizes.length > 0;
+    };
 
     return (
         <Container maxWidth={false}>
             <Grid>
                 <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} centered>
-                    <Tab label="All Drinks"/>
+                    <Tab label="All Drinks" />
                 </Tabs>
                 <Grid container justifyContent="flex-end" alignItems="center" spacing={2}>
                     <IconButton onClick={handleSearchButtonClick}>
-                        <SearchIcon/>
+                        <SearchIcon />
                     </IconButton>
                 </Grid>
                 {isSearchVisible && (
@@ -228,7 +199,7 @@ const ProductView = () => {
                         value={searchQuery}
                         onChange={handleSearchInputChange}
                         fullWidth
-                        style={{marginTop: 10, marginBottom: 10}}
+                        style={{ marginTop: 10, marginBottom: 10 }}
                     />
                 )}
             </Grid>
@@ -237,12 +208,12 @@ const ProductView = () => {
                     <Grid item xs={12} sm={6} md={3} key={drink.productId}>
                         <Card>
                             <CardActionArea
-                                onClick={() => drink.quantity > 0 ? handleOpenBottomSheet(drink) : null}
-                                disabled={drink.quantity === 0}
-                                style={{opacity: drink.quantity === 0 ? 0.5 : 1}}
+                                onClick={() => isProductAvailable(drink) ? handleOpenBottomSheet(drink) : null}
+                                disabled={!isProductAvailable(drink)}
+                                style={{ opacity: !isProductAvailable(drink) ? 0.5 : 1 }}
                             >
                                 <CardMedia
-                                    style={{height: 200, width: '100%', objectFit: 'contain'}}
+                                    style={{ height: 200, width: '100%', objectFit: 'contain' }}
                                     component="img"
                                     image={`/images/products/${drink.imgName}`}
                                     alt={drink.name}
@@ -263,30 +234,31 @@ const ProductView = () => {
                 onClose={handleCloseBottomSheet}>
                 <List>
                     <ListItem>
-                        <ListItemAvatar sx={{fontSize: 100}}>
+                        <ListItemAvatar sx={{ fontSize: 100 }}>
                             <Avatar
                                 src={`${selectedProduct.imgName}`}
                                 alt={selectedProduct.name}
-                                sx={{width: 128, height: 128}}  // Style for larger Avatar
+                                sx={{ width: 128, height: 128 }}
                             />
                         </ListItemAvatar>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary={selectedProduct.name}/>
+                        <ListItemText primary={selectedProduct.name} />
                     </ListItem>
                     <ListItem>
-                        <ListItemText secondary="Select Size and Quantity"/>
+                        <ListItemText secondary="Select Size and Quantity" />
                     </ListItem>
                     <ListItem>
                         <Select
                             value={selectedProduct.size || ''}
                             onChange={handleSizeChange}
                             fullWidth
-                            disabled={selectedProduct.availableSizes?.length === 0}
                         >
                             {selectedProduct.availableSizes?.length > 0 ? (
                                 selectedProduct.availableSizes.map(p => (
-                                    <MenuItem key={p.size} value={p.size}>{`${p.size} - $${p.price}`}</MenuItem>
+                                    <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
+                                        {`${p.size} - $${p.price}`}
+                                    </MenuItem>
                                 ))
                             ) : (
                                 <MenuItem disabled>No sizes available</MenuItem>
@@ -320,13 +292,12 @@ const ProductView = () => {
                         />
                     </ListItem>
                     <ListItem>
-                        <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to
-                            Cart</Button>
+                        <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to Cart</Button>
                     </ListItem>
                     <ListItem>
                         <div>
-                            <Accordion style={{width: "98.3vw", height: "auto"}}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}
+                            <Accordion style={{ width: "98.3vw", height: "auto" }}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}
                                                   id="panel1-header"
                                                   aria-controls="panel1-content"
                                 >
@@ -334,13 +305,13 @@ const ProductView = () => {
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
-                                        Ingredients: {selectedProduct.ingredients} <br/>
+                                        Ingredients: {selectedProduct.ingredients} <br />
                                         Allergens: {selectedProduct.allergens}
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
                             <Accordion>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}
                                                   id="panel2-header"
                                                   aria-controls="panel2-content"
                                 >
@@ -360,9 +331,9 @@ const ProductView = () => {
                 open={alertOpen}
                 autoHideDuration={6000}
                 onClose={() => setAlertOpen(false)}
-                anchorOrigin={{vertical: 'bottom', horizontal: 'left'}} // Snackbar position
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
-                <Alert severity={alertSeverity} sx={{width: '100%'}}>
+                <Alert severity={alertSeverity} sx={{ width: '100%' }}>
                     {alertMessage}
                 </Alert>
             </Snackbar>
@@ -375,11 +346,11 @@ const ProductView = () => {
                     <Button onClick={handleCloseDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
-            <Badge badgeContent={cart.length} color="error" anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-                   sx={{position: 'fixed', right: 25, bottom: 95, zIndex: 1}}>
-                <Fab color="primary" aria-label="cart" style={{position: 'fixed', right: 20, bottom: 50, zIndex: 0}}
+            <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                   sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
+                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }}
                      onClick={handleOpenCardView}>
-                    <ShoppingCartOutlinedIcon/>
+                    <ShoppingCartOutlinedIcon />
                 </Fab>
             </Badge>
         </Container>
