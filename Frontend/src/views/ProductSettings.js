@@ -1,10 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {
-    Box, Button, Typography, InputBase, IconButton, Paper, Divider,
-    Accordion, AccordionSummary, AccordionDetails,
-    List, ListItem, ListItemText, Checkbox, Dialog, DialogTitle,
-    DialogContent, DialogActions, Modal, TextField, InputLabel, Select, FormControl, MenuItem, DialogContentText
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+    FormControl,
+    IconButton,
+    InputBase,
+    InputLabel,
+    List,
+    ListItem,
+    ListItemText,
+    MenuItem,
+    Modal,
+    Paper,
+    Select,
+    TextField,
+    Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -76,7 +97,7 @@ const Settings = () => {
     /**
      * State to manage the data of a new category being added.
      */
-    const [newCategory, setNewCategory] = useState({ name: '', description: '' });
+    const [newCategory, setNewCategory] = useState({name: '', description: ''});
 
     /**
      * State to manage the ID of the category to be deleted.
@@ -91,7 +112,10 @@ const Settings = () => {
         price: '',
         quantity: '',
         productCategoryId: '',
-        size: ''
+        size: '',
+        allergens: "",
+        ingredients: "",
+        nutrition: ""
     });
 
     /**
@@ -176,7 +200,7 @@ const Settings = () => {
      * @param {object} event - The input change event.
      */
     const handleNewProductChange = (event) => {
-        setNewProduct({ ...newProduct, [event.target.name]: event.target.value });
+        setNewProduct({...newProduct, [event.target.name]: event.target.value});
     };
 
     /**
@@ -184,7 +208,7 @@ const Settings = () => {
      * @param {object} event - The input change event.
      */
     const handleNewCategoryChange = (event) => {
-        setNewCategory({ ...newCategory, [event.target.name]: event.target.value });
+        setNewCategory({...newCategory, [event.target.name]: event.target.value});
     };
 
     /**
@@ -222,15 +246,15 @@ const Settings = () => {
             price: formattedPrice,
             quantity: formattedQuantity,
             imgName,
-            allergens: "allergens",
-            ingredients: "ingredients",
-            nutrition: "nutrition"
+            allergens: newProduct.allergens || "allergens are empty",
+            ingredients: newProduct.ingredients || "ingredients are empty",
+            nutrition: newProduct.nutrition || "nutrition's are empty"
         };
 
         axios.post('http://localhost:8080/api/products', productData)
             .then(response => {
                 console.log('Product added successfully:', response.data);
-                const newProducts = { ...products };
+                const newProducts = {...products};
                 newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
                 newProducts[productData.productCategoryId].push(response.data);
                 setProducts(newProducts);
@@ -391,37 +415,39 @@ const Settings = () => {
     };
 
     return (
-        <Box sx={{ padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto' }}>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%' }}>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddCategoryModalOpen} sx={{ flex: 1 }}>
+        <Box sx={{padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}>
+            <Box sx={{display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%'}}>
+                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddCategoryModalOpen} sx={{flex: 1}}>
                     Add Category
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteCategoryDialogOpen} sx={{ flex: 1 }}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon/>}
+                        onClick={handleDeleteCategoryDialogOpen} sx={{flex: 1}}>
                     Delete Category
                 </Button>
-                <Divider orientation="vertical" flexItem />
-                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddModalOpen} sx={{ flex: 1 }}>
+                <Divider orientation="vertical" flexItem/>
+                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddModalOpen} sx={{flex: 1}}>
                     Add Product
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteProducts} sx={{ flex: 1 }}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon/>} onClick={handleDeleteProducts}
+                        sx={{flex: 1}}>
                     Delete Products
                 </Button>
             </Box>
-            <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
+            <Paper sx={{p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2}}>
                 <InputBase
-                    sx={{ ml: 1, flex: 1 }}
+                    sx={{ml: 1, flex: 1}}
                     placeholder="Search Products"
-                    inputProps={{ 'aria-label': 'search products' }}
+                    inputProps={{'aria-label': 'search products'}}
                     onChange={handleFilterChange}
                 />
-                <IconButton sx={{ p: '10px' }} aria-label="search">
-                    <SearchIcon />
+                <IconButton sx={{p: '10px'}} aria-label="search">
+                    <SearchIcon/>
                 </IconButton>
             </Paper>
 
             {categories.map(category => (
                 <Accordion key={category.categoryId}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                         <Typography>{category.name}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
@@ -447,12 +473,15 @@ const Settings = () => {
 
             <Modal open={isAddModalOpen} onClose={handleAddModalClose}>
                 <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
                         Add New Product
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name} onChange={handleNewProductChange} />
-                    <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price} onChange={handleNewProductChange} placeholder="0.00" />
-                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal" value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
+                               onChange={handleNewProductChange}/>
+                    <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price}
+                               onChange={handleNewProductChange} placeholder="0.00"/>
+                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                               value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0"/>
 
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="category-label">Category</InputLabel>
@@ -472,12 +501,19 @@ const Settings = () => {
                         </Select>
                     </FormControl>
 
-                    <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size} onChange={handleNewProductChange} placeholder="0,0L" />
-                    <TextField label="Allergens" name="allergens" fullWidth margin="normal" value={newProduct.allergens || ""} onChange={handleNewProductChange} disabled />
-                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal" value={newProduct.ingredients || ""} onChange={handleNewProductChange} disabled />
-                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal" value={newProduct.nutrition || ""} onChange={handleNewProductChange} disabled />
+                    <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
+                               onChange={handleNewProductChange} placeholder="0,0L"/>
+                    <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                               value={newProduct.allergens || ""} onChange={handleNewProductChange}
+                               placeholder="List of allergens"/>
+                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                               value={newProduct.ingredients || ""} onChange={handleNewProductChange}
+                               placeholder="List of ingredients"/>
+                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                               value={newProduct.nutrition || ""} onChange={handleNewProductChange}
+                               placeholder="List of nutrition"/>
 
-                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
+                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2}}>
                         Submit
                     </Button>
                 </Box>
@@ -485,13 +521,15 @@ const Settings = () => {
 
             <Modal open={isAddCategoryModalOpen} onClose={handleAddCategoryModalClose}>
                 <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
                         Add New Category
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name} onChange={handleNewCategoryChange} />
-                    <TextField label="Description" name="description" fullWidth margin="normal" value={newCategory.description} onChange={handleNewCategoryChange} />
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name}
+                               onChange={handleNewCategoryChange}/>
+                    <TextField label="Description" name="description" fullWidth margin="normal"
+                               value={newCategory.description} onChange={handleNewCategoryChange}/>
 
-                    <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{ mt: 2 }}>
+                    <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{mt: 2}}>
                         Submit
                     </Button>
                 </Box>

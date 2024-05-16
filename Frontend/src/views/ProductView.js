@@ -301,12 +301,12 @@ const ProductView = () => {
                                                   id="panel1-header"
                                                   aria-controls="panel1-content"
                                 >
-                                    <Typography>Ingredients and allergens</Typography>
+                                    <Typography style={{fontSize: "1.2rem"}}>Ingredients and allergens</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
-                                        Ingredients: {selectedProduct.ingredients} <br />
-                                        Allergens: {selectedProduct.allergens}
+                                        <Typography style={{ fontWeight: "bold"}}>Ingredients:</Typography> {selectedProduct.ingredients} <br />
+                                        <Typography style={{ fontWeight: "bold"}}>Allergens:</Typography> {selectedProduct.allergens}
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
@@ -315,7 +315,7 @@ const ProductView = () => {
                                                   id="panel2-header"
                                                   aria-controls="panel2-content"
                                 >
-                                    <Typography>Nutritional values</Typography>
+                                    <Typography style={{fontSize: "1.2rem"}}>Nutritional values</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
