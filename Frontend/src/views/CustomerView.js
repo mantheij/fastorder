@@ -15,10 +15,13 @@ import Menu from '@mui/material/Menu';
  * Styled button that displays an image.
  * It adjusts its size based on the screen width.
  */
-const ImageButton = styled(ButtonBase)(({theme}) => ({
+const ImageButton = styled(ButtonBase)(({}) => ({
     position: 'relative',
     height: 350,
     width: 350,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
 }));
 
 /**
@@ -26,15 +29,15 @@ const ImageButton = styled(ButtonBase)(({theme}) => ({
  * It positions the image within the button and adjusts its color.
  */
 const Image = styled('span')(({theme}) => ({
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: theme.palette.common.white,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
 }));
 
 /**
@@ -55,7 +58,7 @@ const ImageMarked = styled('span')(({theme}) => ({
  * Styled menu for language selection.
  * It customizes the appearance of the language selection menu.
  */
-const LanguageMenu = styled(Menu)(({theme}) => ({
+const LanguageMenu = styled(Menu)(({}) => ({
     '& .MuiPaper-root': {
         boxShadow: '0px 8px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
@@ -70,7 +73,6 @@ const LanguageMenu = styled(Menu)(({theme}) => ({
  */
 const CustomerStartUpButton = () => {
     const { tableId } = useParams();
-    console.log("Table ID received:", tableId);
 
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('German');
@@ -164,12 +166,9 @@ const CustomerStartUpButton = () => {
                             <img src={"/images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
-                                     width: '100%',
-                                     height: '100%',
                                      border: '1px solid transparent',
-                                     borderRadius: '300px',
                                      overflow: 'hidden',
-                                     padding: '30px',
+                                     padding: '50px',
                                      objectFit: 'contain',
                                      objectPosition: 'center',
                                      boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
