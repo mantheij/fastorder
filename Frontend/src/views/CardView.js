@@ -1,170 +1,195 @@
-import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import {
-    Container, Grid, Card, CardActionArea, CardContent,
-    CardMedia, Typography, CardActions, Tabs, Tab,
-    Button, Fab, Badge, Snackbar, Alert,
-    Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Select, MenuItem
-} from "@mui/material";
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+    List,
+    ListItem,
+    ListItemText,
+    IconButton,
+    ListItemAvatar,
+    Avatar,
+    Button,
+    Snackbar,
+    Alert,
+    Box,
+    Typography
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
 
 const CardView = () => {
-    const [drinks, setDrinks] = useState([]);
-    const [value, setValue] = useState(0);
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(loadCartFromCookies());
+    const navigate = useNavigate();
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedSizes, setSelectedSizes] = useState({}); // State für ausgewählte Größen
 
-    useEffect(() => {
-        axios.get("http://localhost:8080/api/products")
-            .then(response => setDrinks(response.data))
-            .catch(error => console.error("Error loading the products:", error));
-    }, []);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
+    const handleCloseAlert = () => {
+        setAlertOpen(false);
     };
 
-    const handleAddToCart = (drink) => {
-        setCart(prev => [...prev, drink]);
-        setAlertMessage('Added drink to cart');
-        setAlertSeverity('success');
-        setAlertOpen(true);
+    const handleRemoveFromCart = (index) => {
+        const newCart = [...cart];
+        newCart.splice(index, 1);
+        setCart(newCart);
+        saveCartToCookies(newCart);
     };
 
-    const handleDrinkChange = (drink) => {
-        if (!selectedSizes[drink.id]) {
-            setSelectedSizes({ ...selectedSizes, [drink.id]: "" });
-        }
+    const handleBackClick = () => {
+        navigate('/product');
     };
 
-    const handleSizeChange = (event, drinkId) => {
-        setSelectedSizes({ ...selectedSizes, [drinkId]: event.target.value });
-    };
-
-    const handleOpenDialog = () => setOpenDialog(true);
-    const handleCloseDialog = () => setOpenDialog(false);
-
-    const handleOrderNow = async () => {
+    const handleCreateOrder = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/orders', { items: cart });
-            console.log('Order response:', response);
-            setAlertMessage('Order placed successfully!');
+            const orderDetails = cart.map(item => ({
+                quantity: item.quantity,
+                product: {
+                    productId: item.productId
+                }
+            }));
+
+            const orderData = {
+                orderDetails,
+                tableId: 1
+            };
+
+            const authToken = Cookies.get('authToken');
+
+            // Prüfen Sie die Verfügbarkeit der Produkte
+            const checkAvailabilityPromises = cart.map(item =>
+                axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                })
+            );
+
+            const availabilityResponses = await Promise.all(checkAvailabilityPromises);
+            const isAvailable = availabilityResponses.every((response, index) =>
+                response.data.quantity >= cart[index].quantity
+            );
+
+            if (!isAvailable) {
+                setAlertMessage('One or more items are out of stock');
+                setAlertSeverity('error');
+                setAlertOpen(true);
+                return;
+            }
+
+            // Bestellung erstellen
+            await axios.post('http://localhost:8080/api/orders', orderData, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+
+            // Produktmengen im Backend aktualisieren
+            const updateProductQuantityPromises = cart.map(item => {
+                const productData = availabilityResponses.find(response => response.data.productId === item.productId).data;
+                const newQuantity = productData.quantity - item.quantity;
+
+                return axios.put(`http://localhost:8080/api/products/${item.productId}`, {
+                    name: productData.name,
+                    price: productData.price,
+                    imgName: productData.imgName,
+                    quantity: newQuantity,
+                    productCategoryId: productData.categoryId,
+                    size: productData.size
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`
+                    }
+                });
+            });
+
+            await Promise.all(updateProductQuantityPromises);
+
+            setAlertMessage('Order created successfully');
             setAlertSeverity('success');
+            setAlertOpen(true);
             setCart([]);
-            setOpenDialog(false);
+            removeCartFromCookies();
+            navigate('/product');
         } catch (error) {
-            console.error('Error placing order:', error);
-            setAlertMessage('Failed to place order.');
+            console.error('Error creating order:', error);
+            setAlertMessage('Failed to create order');
             setAlertSeverity('error');
-        } finally {
             setAlertOpen(true);
         }
     };
 
-    const handleCloseAlert = (reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setAlertOpen(false);
-    };
-
-    const filteredDrinks = (category) => {
-        if (category === 0) {
-            return drinks;
-        } else if (category === 1) {
-            return drinks.filter(drink => drink.categoryId === 1);
-        } else if (category === 2) {
-            return drinks.filter(drink => drink.categoryId === 2);
-        }
-        return [];
+    const calculateTotalCost = () => {
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
     };
 
     return (
-        <Container maxWidth={false}>
-            <Tabs value={value} onChange={handleChange} centered>
-                <Tab label="All Drinks"/>
-                <Tab label="Non-Alcoholic"/>
-                <Tab label="Wine"/>
-                <Tab label="Sparkling Wine"/>
-                <Tab label="Cocktails"/>
-            </Tabs>
-            <Grid container spacing={2}>
-                {filteredDrinks(value).map((drink) => (
-                    <Grid item xs={12} sm={6} md={3} key={drink.productId}>
-                        <Card>
-                            <CardActionArea onClick={() => handleDrinkChange(drink)}>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/placeholder.jpg"
-                                    alt={drink.name}
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {drink.name}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Price: ${drink.price}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Select
-                                        value={selectedSizes[drink.id] || ""}
-                                        onChange={(e) => handleSizeChange(e, drink.id)}
-                                        disabled={selectedSizes[drink.id] === undefined}
-                                    >
-                                        {drink.size && drink.size.map((size) => (
-                                            <MenuItem key={size} value={size}>
-                                                {size}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    <Button onClick={() => handleAddToCart(drink)} disabled={!selectedSizes[drink.id]}>Add to Cart</Button>
-                                </CardActions>
-                            </CardActionArea>
-
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                   sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
-                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }} onClick={handleOpenDialog}>
-                    <ShoppingCartOutlinedIcon />
-                </Fab>
-            </Badge>
-
-            <Dialog open={openDialog} onClose={handleCloseDialog} aria-labelledby="cart-dialog-title">
-                <DialogTitle id="cart-dialog-title">Your Cart</DialogTitle>
-                <DialogContent>
-                    <List>
-                        {cart.map((item, index) => (
-                            <ListItem key={index}>
-                                <ListItemText primary={item.name} secondary={`Price: $${item.price}`} />
+        <div>
+            <div style={{ display: "flex" }}>
+                <IconButton onClick={handleBackClick} aria-label="back" style={{ marginLeft: 0 }}>
+                    <ArrowBackIosIcon />
+                    back
+                </IconButton>
+            </div>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '1200px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                width: '100%'
+            }}>
+                <Box style={{ width: '100%' }}>
+                    <Typography variant="h6" component="div" style={{ marginBottom: '16px' }}>
+                        Total Cost: ${calculateTotalCost()}
+                    </Typography>
+                    <List style={{ width: '100%' }}>
+                        {cart.length > 0 ? (
+                            cart.map((item, index) => (
+                                <ListItem key={index}>
+                                    <ListItemAvatar>
+                                        <Avatar src={`${item.imgName}`} alt={item.name} />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={`${item.name} - ${item.size}`}
+                                        secondary={
+                                            <React.Fragment>
+                                                <div>Quantity: {item.quantity}, Price: ${item.price}</div>
+                                                {item.extras && <div>Extras: {item.extras}</div>}
+                                            </React.Fragment>
+                                        }
+                                    />
+                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </ListItem>
+                            ))
+                        ) : (
+                            <ListItem>
+                                <ListItemText primary="Your cart is empty" />
                             </ListItem>
-                        ))}
+                        )}
                     </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog}>Close</Button>
-                    <Button onClick={handleOrderNow} color="primary" variant="contained">Order Now</Button>
-                </DialogActions>
-            </Dialog>
-
-            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
-                <Alert onClose={handleCloseAlert} severity={alertSeverity} sx={{ width: '100%' }}>
-                    {alertMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
+                    <Snackbar
+                        open={alertOpen}
+                        autoHideDuration={6000}
+                        onClose={handleCloseAlert}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    >
+                        <Alert severity={alertSeverity} sx={{ width: '100%' }}>
+                            {alertMessage}
+                        </Alert>
+                    </Snackbar>
+                </Box>
+            </div>
+            {cart.length > 0 && (
+                <Button variant="contained" color="primary" onClick={handleCreateOrder}>
+                    Order Now
+                </Button>
+            )}
+        </div>
     );
 };
 

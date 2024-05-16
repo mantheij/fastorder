@@ -144,7 +144,7 @@ const CustomerStartUpButton = () => {
             height: '100vh'
         }}>
             {/* Link to card page */}
-            <Link to="/card">
+            <Link to="/product">
                 {/* Image button */}
                 <ImageButton>
                     {/* Image */}

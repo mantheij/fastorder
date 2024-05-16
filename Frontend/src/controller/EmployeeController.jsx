@@ -1,14 +1,20 @@
 import { useState } from 'react';
+import axios from "axios";
 
-const useEmployeeController = () => {
+const EmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
-    const addOrder = (tableNumber, text) => {
-        const timestamp = new Date().toLocaleTimeString();
-        setBoxes(prevBoxes => [...prevBoxes, { tableNumber, text, timestamp }]);
+    const addOrder = (orderTime, tableNumber, text) => {
+        setBoxes(prevBoxes => {
+            const orderExists = prevBoxes.some(box => box.tableNumber === tableNumber && box.orderTime === orderTime && box.text === text);
+            if (orderExists) {
+                return prevBoxes;
+            }
+            return [...prevBoxes, { tableNumber, text, orderTime }];
+        });
     };
 
-    const deleteBox = index => {
+    const deleteBox = (index) => {
         setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
     };
 
@@ -20,12 +26,20 @@ const useEmployeeController = () => {
         );
     };
 
-    const cancelOrder = index => {
-        setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+    const cancelOrder = (orderId, index) => {
+        axios.delete(`http://localhost:8080/api/orders/${orderId}`)
+            .then(response => {
+                console.log("Order deleted successfully");
+                setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+            })
+            .catch(error => {
+                console.error('Error deleting order:', error);
+            });
     };
 
     return {
         boxes,
+        setBoxes,
         addOrder,
         deleteBox,
         toggleInProgress,
@@ -33,4 +47,4 @@ const useEmployeeController = () => {
     };
 };
 
-export default useEmployeeController;
+export default EmployeeController;
