@@ -1,128 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import {
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
-    ListItemAvatar,
-    Avatar,
-    Button,
-    Snackbar,
-    Alert,
-    Box,
-    Typography
-} from '@mui/material';
+import {List, ListItem, ListItemText, IconButton, ListItemAvatar, Avatar, Button, Snackbar, Alert} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
-import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
 
 const CardView = () => {
     const { tableId } = useParams();
-    const [cart, setCart] = useState(loadCartFromCookies());
+    const [cart, setCart] = useState([]);
     const navigate = useNavigate();
-    const [alertOpen, setAlertOpen] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [alertOpen, setAlertOpen] = useState(false); // Zustand für Snackbar (Benachrichtigung)
+    const [alertMessage, setAlertMessage] = useState(''); // Zustand für Nachricht der Snackbar
+    const [alertSeverity, setAlertSeverity] = useState('success'); // Zustand für Schweregrad der Snackbar-Nachricht
 
     const handleCloseAlert = () => {
         setAlertOpen(false);
     };
 
+
+    useEffect(() => {
+        const loadedCart = Cookies.get('cart');
+        if (loadedCart) {
+            setCart(JSON.parse(loadedCart));
+        }
+    }, []);
+
     const handleRemoveFromCart = (index) => {
         const newCart = [...cart];
         newCart.splice(index, 1);
         setCart(newCart);
-        saveCartToCookies(newCart);
+        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
     };
 
     const handleBackClick = () => {
-        navigate('/product');
+        navigate(`/product/${tableId}`);
     };
 
-    const handleCreateOrder = async () => {
-        try {
-            const orderDetails = cart.map(item => ({
-                quantity: item.quantity,
-                product: {
-                    productId: item.productId
-                }
-            }));
+    const handleCreateOrder = () => {
+        const orderDetails = cart.map(item => ({
+            quantity: item.quantity,
+            product: {
+                productId: item.productId // Passen Sie dies entsprechend Ihrer Produkt-ID-Struktur an
+            }
+        }));
 
-            const orderData = {
-                orderDetails,
-                tableId: 1
-            };
+        const orderData = {
+            orderDetails,
+            tableId: tableId // Setzen Sie die Tisch-ID entsprechend Ihrem Anwendungsfall
+        };
 
-            const authToken = Cookies.get('authToken');
-
-            // Prüfen Sie die Verfügbarkeit der Produkte
-            const checkAvailabilityPromises = cart.map(item =>
-                axios.get(`http://localhost:8080/api/products/${item.productId}`, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`
-                    }
-                })
-            );
-
-            const availabilityResponses = await Promise.all(checkAvailabilityPromises);
-            const isAvailable = availabilityResponses.every((response, index) =>
-                response.data.quantity >= cart[index].quantity
-            );
-
-            if (!isAvailable) {
-                setAlertMessage('One or more items are out of stock');
+        axios.post('http://localhost:8080/api/orders', orderData)
+            .then(response => {
+                console.log('Order created successfully:', response.data);
+                setAlertMessage('Order created successfully');
+                setAlertSeverity('success');
+                setAlertOpen(true);
+                navigate('/product/${tableId}');
+                setCart([]); // Leeren Sie den Warenkorb
+                Cookies.remove('cart'); // Entfernen Sie den Warenkorb-Cookie
+            })
+            .catch(error => {
+                console.error('Error creating order:', error);
+                setAlertMessage('Failed to create order');
                 setAlertSeverity('error');
                 setAlertOpen(true);
-                return;
-            }
-
-            // Bestellung erstellen
-            await axios.post('http://localhost:8080/api/orders', orderData, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
             });
-
-            // Produktmengen im Backend aktualisieren
-            const updateProductQuantityPromises = cart.map(item => {
-                const productData = availabilityResponses.find(response => response.data.productId === item.productId).data;
-                const newQuantity = productData.quantity - item.quantity;
-
-                return axios.put(`http://localhost:8080/api/products/${item.productId}`, {
-                    name: productData.name,
-                    price: productData.price,
-                    imgName: productData.imgName,
-                    quantity: newQuantity,
-                    productCategoryId: productData.categoryId,
-                    size: productData.size
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`
-                    }
-                });
-            });
-
-            await Promise.all(updateProductQuantityPromises);
-
-            setAlertMessage('Order created successfully');
-            setAlertSeverity('success');
-            setAlertOpen(true);
-            setCart([]);
-            removeCartFromCookies();
-            navigate(`/product/${tableId}`);
-        } catch (error) {
-            console.error('Error creating order:', error);
-            setAlertMessage('Failed to create order');
-            setAlertSeverity('error');
-            setAlertOpen(true);
-        }
-    };
-
-    const calculateTotalCost = () => {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
     };
 
     return (
@@ -142,48 +85,43 @@ const CardView = () => {
                 marginRight: 'auto',
                 width: '100%'
             }}>
-                <Box style={{ width: '100%' }}>
-                    <Typography variant="h6" component="div" style={{ marginBottom: '16px' }}>
-                        Total Cost: ${calculateTotalCost()}
-                    </Typography>
-                    <List style={{ width: '100%' }}>
-                        {cart.length > 0 ? (
-                            cart.map((item, index) => (
-                                <ListItem key={index}>
-                                    <ListItemAvatar>
-                                        <Avatar src={`${item.imgName}`} alt={item.name} />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={`${item.name} - ${item.size}`}
-                                        secondary={
-                                            <React.Fragment>
-                                                <div>Quantity: {item.quantity}, Price: ${item.price}</div>
-                                                {item.extras && <div>Extras: {item.extras}</div>}
-                                            </React.Fragment>
-                                        }
-                                    />
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </ListItem>
-                            ))
-                        ) : (
-                            <ListItem>
-                                <ListItemText primary="Your cart is empty" />
+                <List style={{ width: '100%' }}>
+                    {cart.length > 0 ? (
+                        cart.map((item, index) => (
+                            <ListItem key={index}>
+                                <ListItemAvatar>
+                                    <Avatar src={`${item.imgName}`} alt={item.name} />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={`${item.name} - ${item.size}`}
+                                    secondary={
+                                        <React.Fragment>
+                                            <div>Quantity: {item.quantity}, Price: ${item.price}</div>
+                                            {item.extras && <div>Extras: {item.extras}</div>}
+                                        </React.Fragment>
+                                    }
+                                />
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
+                                    <DeleteIcon />
+                                </IconButton>
                             </ListItem>
-                        )}
-                    </List>
-                    <Snackbar
-                        open={alertOpen}
-                        autoHideDuration={6000}
-                        onClose={handleCloseAlert}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                    >
-                        <Alert severity={alertSeverity} sx={{ width: '100%' }}>
-                            {alertMessage}
-                        </Alert>
-                    </Snackbar>
-                </Box>
+                        ))
+                    ) : (
+                        <ListItem>
+                            <ListItemText primary="Your cart is empty" />
+                        </ListItem>
+                    )}
+                </List>
+                <Snackbar
+                    open={alertOpen}
+                    autoHideDuration={6000}
+                    onClose={handleCloseAlert}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Position der Snackbar
+                >
+                    <Alert severity={alertSeverity} sx={{ width: '100%' }}>
+                        {alertMessage}
+                    </Alert>
+                </Snackbar>
             </div>
             {cart.length > 0 && (
                 <Button variant="contained" color="primary" onClick={handleCreateOrder}>
@@ -191,6 +129,7 @@ const CardView = () => {
                 </Button>
             )}
         </div>
+
     );
 };
 

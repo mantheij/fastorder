@@ -3,7 +3,7 @@
  * It allows the customer to select a language and navigate to another page.
  */
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {styled} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -15,13 +15,10 @@ import Menu from '@mui/material/Menu';
  * Styled button that displays an image.
  * It adjusts its size based on the screen width.
  */
-const ImageButton = styled(ButtonBase)(({}) => ({
+const ImageButton = styled(ButtonBase)(({theme}) => ({
     position: 'relative',
     height: 350,
     width: 350,
-    borderRadius: '50%',
-    overflow: 'hidden',
-    boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
 }));
 
 /**
@@ -29,15 +26,15 @@ const ImageButton = styled(ButtonBase)(({}) => ({
  * It positions the image within the button and adjusts its color.
  */
 const Image = styled('span')(({theme}) => ({
-    position: 'relative',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: theme.palette.common.white,
-    borderRadius: '50%',
-    overflow: 'hidden',
-    width: '100%',
-    height: '100%',
 }));
 
 /**
@@ -58,7 +55,7 @@ const ImageMarked = styled('span')(({theme}) => ({
  * Styled menu for language selection.
  * It customizes the appearance of the language selection menu.
  */
-const LanguageMenu = styled(Menu)(({}) => ({
+const LanguageMenu = styled(Menu)(({theme}) => ({
     '& .MuiPaper-root': {
         boxShadow: '0px 8px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
@@ -72,10 +69,11 @@ const LanguageMenu = styled(Menu)(({}) => ({
  * It allows the customer to select a language and navigate to another page.
  */
 const CustomerStartUpButton = () => {
-    // State variables for a language selection menu
+    const { tableId } = useParams();
+    console.log("Table ID received:", tableId);
+
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('German');
-    const { tableId } = useParams();
 
     /**
      * Retrieves available languages with their respective flags and texts.
@@ -163,12 +161,15 @@ const CustomerStartUpButton = () => {
                             }}
                         >
                             {/* Logo */}
-                            <img src={"images/logo/logo.png"}
+                            <img src={"/images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
+                                     width: '100%',
+                                     height: '100%',
                                      border: '1px solid transparent',
+                                     borderRadius: '300px',
                                      overflow: 'hidden',
-                                     padding: '50px',
+                                     padding: '30px',
                                      objectFit: 'contain',
                                      objectPosition: 'center',
                                      boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
@@ -210,8 +211,8 @@ const CustomerStartUpButton = () => {
                             <img
                                 src={languageAnchorEl ? getLanguages()[language].flagOpen : getLanguages()[language].flagClosed}
                                 alt={language} style={{
-                                width: '30vw',
-                                height: '10vh',
+                                width: '30px',
+                                height: 'auto',
                                 marginRight: '8px',
                             }}/> {getLanguages()[language].text}
                         </MenuItem>

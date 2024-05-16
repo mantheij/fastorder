@@ -1,112 +1,104 @@
-// Import necessary dependencies from a React and MUI library
-import React, {useEffect, useState} from "react";
-import axios from 'axios'; // HTTP request library for fetching product data
-import Cookies from 'js-cookie'; // Library for managing cookies
+// Importiere erforderliche Abhängigkeiten aus React und MUI-Bibliothek
+import React, {useState, useEffect} from "react";
+import axios from 'axios'; // HTTP-Anfragenbibliothek für das Abholen von Produktdaten
+import Cookies from 'js-cookie'; // Bibliothek zur Verwaltung von Cookies
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Alert,
-    Avatar,
-    Badge,
-    Button,
+    Container,
+    Grid,
     Card,
     CardActionArea,
     CardContent,
     CardMedia,
-    Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Drawer,
+    Typography,
+    CardActions,
+    Tabs,
+    Tab,
+    Button,
     Fab,
-    Grid,
-    IconButton,
+    Badge,
+    Snackbar,
+    Alert,
+    Drawer,
     List,
     ListItem,
-    ListItemAvatar,
-    ListItemIcon,
     ListItemText,
-    MenuItem,
     Select,
-    Snackbar,
-    Tab,
-    Tabs,
+    MenuItem,
+    IconButton,
     TextField,
-    Typography,
-} from "@mui/material"; // Material-UI components
-// Import MUI icons
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    ListItemIcon, Avatar, ListItemAvatar
+} from "@mui/material"; // Material-UI-Komponenten
+// MUI-Symbole importieren
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SearchIcon from '@mui/icons-material/Search';
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
-// Function for displaying product cards and cart
+// Funktion für die Darstellung von Produktkarten und Warenkorb
 const ProductView = () => {
+    // Zustände für verschiedene Daten und UI-Interaktionen
     const { tableId } = useParams();
-    // States for various data and UI interactions
-    const [drinks, setDrinks] = useState([]); // State for products
-    const [uniqueDrinks, setUniqueDrinks] = useState([]); // State for unique products (without duplicates)
-    const [value, setValue] = useState(0); // State for active tab value
-    const [cart, setCart] = useState([]); // State for cart
-    const [alertOpen, setAlertOpen] = useState(false); // State for Snackbar (notification)
-    const [alertMessage, setAlertMessage] = useState(''); // State for a Snackbar message
-    const [alertSeverity, setAlertSeverity] = useState('success'); // State for Snackbar severity
-    const [bottomSheetOpen, setBottomSheetOpen] = useState(false); // State for a bottom sheet open (selecting size
-    // and quantity)
-    const [selectedProduct, setSelectedProduct] = useState({}); // State for selected product
-    const [openDialog, setOpenDialog] = useState(false); // State for dialog (cart view)
-    const [isSearchVisible, setIsSearchVisible] = useState(false); // State for search bar visibility
-    const [searchQuery, setSearchQuery] = useState(''); // State for a search query
-    const [extras, setExtras] = useState('');
+    const [drinks, setDrinks] = useState([]); // Zustand für Produkte
+    const [uniqueDrinks, setUniqueDrinks] = useState([]); // Zustand für eindeutige Produkte (ohne Duplikate)
+    const [value, setValue] = useState(0); // Zustand für aktiven Tab-Wert
+    const [cart, setCart] = useState([]); // Zustand für Warenkorb
+    const [alertOpen, setAlertOpen] = useState(false); // Zustand für Snackbar (Benachrichtigung)
+    const [alertMessage, setAlertMessage] = useState(''); // Zustand für Nachricht der Snackbar
+    const [alertSeverity, setAlertSeverity] = useState('success'); // Zustand für Schweregrad der Snackbar-Nachricht
+    const [bottomSheetOpen, setBottomSheetOpen] = useState(false); // Zustand für die untere Blattöffnung (Auswahlgröße und Menge)
+    const [selectedProduct, setSelectedProduct] = useState({}); // Zustand für das ausgewählte Produkt
+    const [openDialog, setOpenDialog] = useState(false); // Zustand für Dialog (Warenkorbansicht)
     const navigate = useNavigate();
-    const baseURL = "http://localhost:3000/images/products/"; // Based on your server configuration
+    const [extras, setExtras] = useState('');
+    const baseURL = "http://localhost:3000/images/products/"; // Basierend auf Ihrer Serverkonfiguration
 
-    // Effect for initializing product data and cart
+
+    // Effekt für die Initialisierung von Produktdaten und des Warenkorbs
     useEffect(() => {
-        // Load cart from cookies if available
-        const loadedCart = Cookies.get('cart');
+        // Lade den Warenkorb aus Cookies, falls vorhanden
+        const loadedCart = Cookies.get(`cart`);
         if (loadedCart) {
             setCart(JSON.parse(loadedCart));
         }
-        // Load product data from API
+        // Lade Produktdaten von der API
         axios.get("http://localhost:8080/api/products")
             .then(response => {
-                setDrinks(response.data); // Set product data in state
-                // Filter unique products and set them in state
+                setDrinks(response.data); // Setze Produktdaten im Zustand
+                // Filtere eindeutige Produkte und setze sie im Zustand
                 setUniqueDrinks(Array.from(new Set(response.data.map(drink => drink.name)))
                     .map(name => response.data.find(drink => drink.name === name)));
             })
-            .catch(error => console.error("Error loading the products:", error)); // Error handling for data retrieval
-    }, []); // Empty dependency array means run once on initial render
+            .catch(error => console.error("Error loading the products:", error)); // Fehlerbehandlung bei Datenabruf
+    }, []); // Leerer Abhängigkeitsarray bedeutet einmalige Ausführung beim ersten Rendern
 
     const handleOpenCardView = () => {
         if (cart.length === 0) {
-            setAlertMessage('Your cart is empty'); // Set error message
-            setAlertSeverity('error'); // Set an severity of Snackbar to 'error'
-            setAlertOpen(true); // Open Snackbar
+            setAlertMessage('Your cart is empty'); // Setzen der Fehlermeldung
+            setAlertSeverity('error'); // Setzen des Schweregrads der Snackbar auf 'error'
+            setAlertOpen(true); // Öffnen der Snackbar
         } else {
-            navigate('/product/${tableId}/card'); // Navigate to CardView route if a cart is not empty
+            navigate(`/product/${tableId}/card`); // Navigieren zur CardView Route, wenn Warenkorb nicht leer ist
         }
     };
-    const handleCloseDialog = () => setOpenDialog(false); // Close the dialog
+    const handleCloseDialog = () => setOpenDialog(false); // Schließe den Dialog
 
-    // Function for handling adding a product to cart
+    // Funktion zur Behandlung des Hinzufügens eines Produkts zum Warenkorb
     const handleAddToCart = () => {
-        const newCart = [...cart, {...selectedProduct, imgName: `${selectedProduct.imgName}`, extras}];
-        console.log(newCart); // Check the new cart
+        const newCart = [...cart, {...selectedProduct, imgName: `${selectedProduct.imgName}`, extras }];
+        console.log(newCart);  // Überprüfen Sie den neuen Warenkorb
         setCart(newCart);
-        Cookies.set('cart', JSON.stringify(newCart), {expires: 7});
+        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
         setAlertMessage('Added drink to cart');
         setAlertSeverity('success');
         setAlertOpen(true);
         setBottomSheetOpen(false);
-        setExtras(''); // Reset extras
+        setExtras(''); // Extras zurücksetzen
     };
 
-    // Function for handling an opening bottom sheet (selecting size and quantity)
+    // Funktion zur Behandlung der Öffnung des unteren Blatts (Größe und Menge auswählen)
     const handleOpenBottomSheet = (product) => {
         const productWithImage = {
             ...product,
@@ -120,41 +112,41 @@ const ProductView = () => {
         setBottomSheetOpen(true);
     };
 
-    // Function for handling a closing bottom sheet
+    // Funktion zur Behandlung des Schließens des unteren Blatts
     const handleCloseBottomSheet = () => {
-        setBottomSheetOpen(false); // Close bottom sheet
+        setBottomSheetOpen(false); // Schließe das untere Blatt
     };
 
-    // Function for handling size change
+    // Funktion zur Behandlung der Größenänderung
     const handleSizeChange = (event) => {
-        const newSize = event.target.value; // New size from the event
-        // Find the selected product with the new size and update it
+        const newSize = event.target.value; // Neue Größe aus dem Ereignis
+        // Suche das ausgewählte Produkt mit der neuen Größe und aktualisiere es
         const selectedSize = drinks.find(p => p.name === selectedProduct.name && p.size === newSize);
         setSelectedProduct({...selectedProduct, size: newSize, price: selectedSize.price});
     };
 
-    // Function for handling quantity change
+    // Funktion zur Behandlung der Mengenänderung
     const handleQuantityChange = (event) => {
-        const newQuantity = Number(event.target.value); // New quantity from the event
-        setSelectedProduct({...selectedProduct, quantity: newQuantity}); // Set the new quantity for the selected product
+        const newQuantity = Number(event.target.value); // Neue Menge aus dem Ereignis
+        setSelectedProduct({...selectedProduct, quantity: newQuantity}); // Setze die neue Menge für das ausgewählte Produkt
     };
 
     const handleExtraChange = (event) => {
         setExtras(event.target.value);
     };
 
-    // Function for handling removing a product from cart
+    // Funktion zur Behandlung des Entfernens eines Produkts aus dem Warenkorb
     const handleRemoveFromCart = (index) => {
-        const newCart = [...cart]; // Copy the current cart
-        newCart.splice(index, 1); // Remove the product at the specified index position
-        setCart(newCart); // Set the updated cart in state
-        Cookies.set('cart', JSON.stringify(newCart), {expires: 7}); // Save the cart in cookies with expiry
-        setAlertMessage('Item removed from cart'); // Set the notification message
-        setAlertSeverity('info'); // Set the notification severity
-        setAlertOpen(true); // Open the notification
+        const newCart = [...cart]; // Kopiere den aktuellen Warenkorb
+        newCart.splice(index, 1); // Entferne das Produkt an der angegebenen Indexposition
+        setCart(newCart); // Setze den aktualisierten Warenkorb im Zustand
+        Cookies.set('cart', JSON.stringify(newCart), {expires: 7}); // Speichere den Warenkorb in Cookies mit Ablaufdatum
+        setAlertMessage('Item removed from cart'); // Setze die Benachrichtigungsnachricht
+        setAlertSeverity('info'); // Setze die Benachrichtigungsschweregrad
+        setAlertOpen(true); // Öffne die Benachrichtigung
     };
 
-    // Function for rendering cart items
+    // Funktion zur Darstellung der Warenkorbartikel
     const renderCartItems = () => {
         if (cart.length === 0) {
             return <ListItem>
@@ -179,62 +171,13 @@ const ProductView = () => {
             </List>
         );
     };
-
-    // Function for filtering drinks based on search query
-    const filterDrinks = (drinks) => {
-        return drinks.filter(drink => {
-            // If no search query present, show all drinks
-            if (!searchQuery) {
-                return true;
-            }
-            // Check if drink name contains a search query (case-insensitive)
-            return drink.name.toLowerCase().includes(searchQuery.toLowerCase());
-        });
-    };
-
-    // Function to toggle search bar visibility
-    const handleSearchButtonClick = () => {
-        setIsSearchVisible(prevState => !prevState);
-        handleResetSearch();
-    };
-
-    // Function to reset a search query
-    const handleResetSearch = () => {
-        setSearchQuery("");
-    };
-
-    // Handler function for changing search query
-    const handleSearchInputChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
-
-    // Apply filter to displayed drinks
-    const filteredDrinks = filterDrinks(uniqueDrinks);
-
     return (
         <Container maxWidth={false}>
-            <Grid>
-                <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} centered>
-                    <Tab label="All Drinks"/>
-                </Tabs>
-                <Grid container justifyContent="flex-end" alignItems="center" spacing={2}>
-                    <IconButton onClick={handleSearchButtonClick}>
-                        <SearchIcon/>
-                    </IconButton>
-                </Grid>
-                {isSearchVisible && (
-                    <TextField
-                        label="Search drinks"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}
-                        fullWidth
-                        style={{marginTop: 10, marginBottom: 10}}
-                    />
-                )}
-            </Grid>
+            <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} centered>
+                <Tab label="All Drinks"/>
+            </Tabs>
             <Grid container spacing={2}>
-                {filteredDrinks.filter(drink => drink.categoryId === value || value === 0).map((drink) => (
+                {uniqueDrinks.filter(drink => drink.categoryId === value || value === 0).map((drink) => (
                     <Grid item xs={12} sm={6} md={3} key={drink.productId}>
                         <Card>
                             <CardActionArea
@@ -268,7 +211,7 @@ const ProductView = () => {
                             <Avatar
                                 src={`${selectedProduct.imgName}`}
                                 alt={selectedProduct.name}
-                                sx={{width: 128, height: 128}}  // Style for larger Avatar
+                                sx={{width: 128, height: 128}}  // Stil für größeren Avatar
                             />
                         </ListItemAvatar>
                     </ListItem>
@@ -283,15 +226,10 @@ const ProductView = () => {
                             value={selectedProduct.size || ''}
                             onChange={handleSizeChange}
                             fullWidth
-                            disabled={selectedProduct.availableSizes?.length === 0}
                         >
-                            {selectedProduct.availableSizes?.length > 0 ? (
-                                selectedProduct.availableSizes.map(p => (
-                                    <MenuItem key={p.size} value={p.size}>{`${p.size} - $${p.price}`}</MenuItem>
-                                ))
-                            ) : (
-                                <MenuItem disabled>No sizes available</MenuItem>
-                            )}
+                            {selectedProduct.availableSizes?.map(p => (
+                                <MenuItem key={p.size} value={p.size}>{`${p.size} - $${p.price}`}</MenuItem>
+                            ))}
                         </Select>
                     </ListItem>
                     <ListItem>
@@ -324,44 +262,13 @@ const ProductView = () => {
                         <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to
                             Cart</Button>
                     </ListItem>
-                    <ListItem>
-                        <div>
-                            <Accordion style={{width: "98.3vw", height: "auto"}}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}
-                                                  id="panel1-header"
-                                                  aria-controls="panel1-content"
-                                >
-                                    <Typography>Ingredients and allergens</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Ingredients: {selectedProduct.ingredients} <br/>
-                                        Allergens: {selectedProduct.allergens}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}
-                                                  id="panel2-header"
-                                                  aria-controls="panel2-content"
-                                >
-                                    <Typography>Nutritional values</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        {selectedProduct.nutrition}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                    </ListItem>
                 </List>
             </Drawer>
             <Snackbar
                 open={alertOpen}
                 autoHideDuration={6000}
                 onClose={() => setAlertOpen(false)}
-                anchorOrigin={{vertical: 'bottom', horizontal: 'left'}} // Snackbar position
+                anchorOrigin={{vertical: 'bottom', horizontal: 'left'}} // Position der Snackbar
             >
                 <Alert severity={alertSeverity} sx={{width: '100%'}}>
                     {alertMessage}

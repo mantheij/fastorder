@@ -1,29 +1,23 @@
 import React from "react";
 import {FormControl, InputLabel, Select, MenuItem, Button} from "@mui/material";
 import {useTables} from "../model/TablesContext";
+import {useNavigate} from "react-router-dom"; // Importieren Sie useNavigate
 
-/**
- * The TableSelectionView component provides a user interface for selecting a table.
- * It utilizes context to fetch table data and allows the user to pick from available tables.
- * This selection updates the context's selectedTable state.
- */
 const TableSelectionView = () => {
-
-    /**
-     * Destructures tables, selectedTable, and setSelectedTable from the context provided by useTables hook.
-     * - tables: Array of table data
-     * - selectedTable: ID of the currently selected table
-     * - setSelectedTable: Function to update the selected table
-     */
     const { tables, selectedTable, setSelectedTable } = useTables();
+    const navigate = useNavigate(); // Erstellen Sie eine Instanz von navigate
 
-    /**
-     * Handles changes to the table selection from the dropdown menu.
-     * Updates the selectedTable state with the new table ID.
-     * @param {React.ChangeEvent<HTMLSelectElement>} event - The event triggered on selecting a table.
-     */
     const handleSelectTable = (event) => {
         setSelectedTable(event.target.value);
+    };
+
+    // Funktion zur Navigation, wenn ein Tisch ausgewählt und bestätigt wird
+    const handleConfirmTableSelection = () => {
+        if (selectedTable) {
+            navigate(`/customerStart/${selectedTable}`); // Navigieren zur customerStart mit der ausgewählten tableId
+        } else {
+            alert("Please select a table first."); // Einfache Fehlerbehandlung, wenn keine Tisch ausgewählt wurde
+        }
     };
 
     return (
@@ -37,40 +31,25 @@ const TableSelectionView = () => {
             alignItems: 'center',
             background: "linear-gradient(to top, #0383E2, #5DADF0)"
         }}>
-            {/* Title of the view */}
-            <h1 style={{ color: '#FFFFFF',fontSize:"5vh", }}>Select table</h1>
-
-            {/* Form control for table selection */}
+            <h1 style={{ color: '#FFFFFF', fontSize: "5vh" }}>Select table</h1>
             <FormControl variant="outlined" sx={{
                 width: '30vw',
                 marginBottom: '10vh',
                 '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                        borderColor: '#FFFFFF', // White border
-                    },
-                    '&:hover fieldset': {
-                        borderColor: 'rgba(255, 255, 255, 0.5)', // White border with transparency on hover
-                    },
-                    '&.Mui-focused fieldset': {
-                        borderColor: '#FFFFFF', // White border when focused
-                    },
+                    '& fieldset': { borderColor: '#FFFFFF' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused fieldset': { borderColor: '#FFFFFF' },
                 },
                 '& .MuiInputLabel-root': {
-                    color: '#FFFFFF', // White text for the label
-                    '&.Mui-focused': {
-                        color: '#FFFFFF', // White text when label is focused
-                    },
-                    '&.MuiInputLabel-shrink': {
-                        color: '#FFFFFF', // White text remains even when the Select menu is open
-                    },
+                    color: '#FFFFFF',
+                    '&.Mui-focused': { color: '#FFFFFF' },
+                    '&.MuiInputLabel-shrink': { color: '#FFFFFF' },
                 },
                 '& .MuiSelect-select': {
-                    color: '#FFFFFF', // White text for the selected item
-                    backgroundColor: 'rgba(255, 255, 255, 0)', // Fully transparent background
+                    color: '#FFFFFF',
+                    backgroundColor: 'rgba(255, 255, 255, 0)',
                 },
-                '& .MuiSvgIcon-root': {
-                    color: '#FFFFFF', // White icon for the dropdown arrow
-                }
+                '& .MuiSvgIcon-root': { color: '#FFFFFF' }
             }}>
                 <InputLabel id="table-select-label">Table...</InputLabel>
                 <Select
@@ -80,24 +59,22 @@ const TableSelectionView = () => {
                     onChange={handleSelectTable}
                     label="Tisch..."
                 >
-                    {/* Map each table to a MenuItem for selection */}
                     {tables.map((table) => (
                         <MenuItem key={table.id} value={table.id}>{table.id}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
-            {/* Confirmation button */}
             <Button
                 variant="contained"
-                href="/customerStart"
+                onClick={handleConfirmTableSelection} // Aktualisieren Sie das onClick-Event
                 sx={{
-                    backgroundColor: '#FFFFFF', // Setzt die Hintergrundfarbe auf Weiß
-                    color: '#5DADF0',           // Setzt die Textfarbe auf Blau
-                    fontSize: '2.0vh',         // Größere Schriftgröße
-                    padding: '10px 20px',       // Größere Padding-Werte für größere Button-Größe
-                    '&:hover': {               // Stile für den Hover-Zustand
-                        backgroundColor: '#e0f0ff', // Leichtes Blau beim Hover
-                        boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.2)' // Leichter Schatten für den Hover-Effekt
+                    backgroundColor: '#FFFFFF',
+                    color: '#5DADF0',
+                    fontSize: '2.0vh',
+                    padding: '10px 20px',
+                    '&:hover': {
+                        backgroundColor: '#e0f0ff',
+                        boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.2)'
                     }
                 }}
             >
