@@ -17,7 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
-import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
+import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './/utils';
 
 const CardView = () => {
     const { tableId } = useParams();
