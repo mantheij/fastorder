@@ -210,8 +210,8 @@ const CustomerStartUpButton = () => {
                             <img
                                 src={languageAnchorEl ? getLanguages()[language].flagOpen : getLanguages()[language].flagClosed}
                                 alt={language} style={{
-                                width: '30px',
-                                height: 'auto',
+                                width: '30vw',
+                                height: '10vh',
                                 marginRight: '8px',
                             }}/> {getLanguages()[language].text}
                         </MenuItem>

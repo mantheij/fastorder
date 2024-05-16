@@ -283,10 +283,15 @@ const ProductView = () => {
                             value={selectedProduct.size || ''}
                             onChange={handleSizeChange}
                             fullWidth
+                            disabled={selectedProduct.availableSizes?.length === 0}
                         >
-                            {selectedProduct.availableSizes?.map(p => (
-                                <MenuItem key={p.size} value={p.size}>{`${p.size} - $${p.price}`}</MenuItem>
-                            ))}
+                            {selectedProduct.availableSizes?.length > 0 ? (
+                                selectedProduct.availableSizes.map(p => (
+                                    <MenuItem key={p.size} value={p.size}>{`${p.size} - $${p.price}`}</MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No sizes available</MenuItem>
+                            )}
                         </Select>
                     </ListItem>
                     <ListItem>
