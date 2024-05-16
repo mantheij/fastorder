@@ -8,7 +8,17 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 
+
 const ClockBar = ({ currentTime }) => {
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: blue[500],
+            },
+        },
+    });
+
+    //background for clock
     return (
         <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
@@ -23,8 +33,9 @@ const EmployeeView = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [actionIndex, setActionIndex] = useState(null);
     const [actionType, setActionType] = useState(null);
-    const [progressVisible, setProgressVisible] = useState(false);
-    const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes } = useEmployeeController();
+    const [progressVisible, setProgressVisible] = useState(false); // State for Circular Progress visibility
+    const {boxes, addOrder, deleteBox, toggleInProgress, cancelOrder } = useEmployeeController();
+    const [tableId] = useState()
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -34,26 +45,35 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
+
+    // Pull open orders from backend using axios, and extract quantity and productName
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/orders/open');
-                const orders = response.data.map(order => ({
-                    tableNumber: order.tableId,
-                    orderTime: order.datetime,
-                    text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
-                }));
-                setBoxes(orders);
-            } catch (error) {
-                console.error('Error loading orders:', error);
-            }
-        };
+        axios.get('http://localhost:8080/api/orders/open')
+            .then(response => {
+                response.data.forEach(order => {
+                    console.log(response.data)
+                    //Todo: status "in_work"
+                    //order.status.set("closed")
+                    const tableId = order.tableId
+                    const orderTime = order.datetime
+                    const orderDetails = order.orderDetails
+                    const orderText = orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
 
-        fetchOrders();
-        const interval = setInterval(fetchOrders, 20000);
+                    addOrder(orderTime, tableId, orderText)
+                });
+            })
+            .catch(error => console.error('Error loading orders:', error))
+    }, []);
 
-        return () => clearInterval(interval);
-    }, [setBoxes]);
+    //every 20 sec, refresh site
+    function searchForNewOrders() {
+        setInterval(async () => {
+             window.location.reload()
+        }, 20000);
+    }
+
+    searchForNewOrders();
+
 
     const handleDialogOpen = (index, type) => {
         setActionIndex(index);
@@ -70,9 +90,11 @@ const EmployeeView = () => {
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
+                //close order here (done)
                 deleteBox(actionIndex);
             } else if (actionType === 'cancel') {
                 cancelOrder(actionIndex);
+                //Delete order here (canceled)
             }
             setDialogOpen(false);
             setActionIndex(null);
@@ -182,7 +204,6 @@ const EmployeeView = () => {
         </div>
     );
 };
-
 export default EmployeeView;
 
 

@@ -32,7 +32,6 @@ const SignInView = () => {
             return;
         }
 
-        // Implement sign in logic here
         if (username === 'chef' && password === '123') {
             // Redirect to EmployeeView
             navigate('/orders');

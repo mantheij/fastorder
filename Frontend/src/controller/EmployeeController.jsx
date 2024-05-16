@@ -5,15 +5,13 @@ const EmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
     const addOrder = (orderTime, tableNumber, text) => {
-        setBoxes(prevBoxes => {
-            const orderExists = prevBoxes.some(box => box.tableNumber === tableNumber && box.orderTime === orderTime && box.text === text);
-            if (orderExists) {
-                return prevBoxes;
-            }
-            return [...prevBoxes, { tableNumber, text, orderTime }];
-        });
+        //Todo: red color depending on time
+        //const timestamp = new Date().toLocaleTimeString();
+        setBoxes(prevBoxes => [...prevBoxes, { tableNumber, text, orderTime }]);
     };
 
+
+    //todo: set completed orders to closed and save them for "completed" view
     const deleteBox = (index) => {
         setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
     };
@@ -26,6 +24,8 @@ const EmployeeController = () => {
         );
     };
 
+
+    //delete canceled orders from the system
     const cancelOrder = (orderId, index) => {
         axios.delete(`http://localhost:8080/api/orders/${orderId}`)
             .then(response => {
