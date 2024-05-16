@@ -75,6 +75,7 @@ const CustomerStartUpButton = () => {
     // State variables for a language selection menu
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('German');
+    const { tableId } = useParams();
 
     /**
      * Retrieves available languages with their respective flags and texts.
@@ -83,28 +84,28 @@ const CustomerStartUpButton = () => {
     const getLanguages = () => {
         return {
             German: {
-                flagClosed: 'images/language/de_flag_rnd.png',
-                flagOpen: 'images/language/de_flag.png',
+                flagClosed: '/images/language/de_flag_rnd.png',
+                flagOpen: '/images/language/de_flag.png',
                 text: 'Deutsch',
             },
             English: {
-                flagClosed: 'images/language/us_flag_rnd.png',
-                flagOpen: 'images/language/us_flag.png',
+                flagClosed: '/images/language/us_flag_rnd.png',
+                flagOpen: '/images/language/us_flag.png',
                 text: 'English',
             },
             Spanish: {
-                flagClosed: 'images/language/esp_flag_rnd.png',
-                flagOpen: 'images/language/esp_flag.png',
+                flagClosed: '/images/language/esp_flag_rnd.png',
+                flagOpen: '/images/language/esp_flag.png',
                 text: 'Español',
             },
             French: {
-                flagClosed: 'images/language/fra_flag_rnd.png',
-                flagOpen: 'images/language/fra_flag.png',
+                flagClosed: '/images/language/fra_flag_rnd.png',
+                flagOpen: '/images/language/fra_flag.png',
                 text: 'Français',
             },
             Chinese: {
-                flagClosed: 'images/language/chn_flag_rnd.png',
-                flagOpen: 'images/language/chn_flag.png',
+                flagClosed: '/images/language/chn_flag_rnd.png',
+                flagOpen: '/images/language/chn_flag.png',
                 text: '中国人',
             },
         };
@@ -144,7 +145,7 @@ const CustomerStartUpButton = () => {
             height: '100vh'
         }}>
             {/* Link to card page */}
-            <Link to="/product">
+            <Link to={`/product/${tableId}`}>
                 {/* Image button */}
                 <ImageButton>
                     {/* Image */}

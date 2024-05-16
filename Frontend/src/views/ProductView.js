@@ -45,6 +45,7 @@ import {useNavigate} from "react-router-dom";
 
 // Function for displaying product cards and cart
 const ProductView = () => {
+    const { tableId } = useParams();
     // States for various data and UI interactions
     const [drinks, setDrinks] = useState([]); // State for products
     const [uniqueDrinks, setUniqueDrinks] = useState([]); // State for unique products (without duplicates)
@@ -87,7 +88,7 @@ const ProductView = () => {
             setAlertSeverity('error'); // Set an severity of Snackbar to 'error'
             setAlertOpen(true); // Open Snackbar
         } else {
-            navigate('/product/card'); // Navigate to CardView route if a cart is not empty
+            navigate('/product/${tableId}/card'); // Navigate to CardView route if a cart is not empty
         }
     };
     const handleCloseDialog = () => setOpenDialog(false); // Close the dialog

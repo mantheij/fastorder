@@ -74,7 +74,7 @@ const HomeView = () => {
                                         ) : (
                                             // Button for each item, colored based on occupation status
                                             <Button
-                                                href="/customerStart"
+                                                href={`/customerStart/${item.id}`}
                                                 sx={{
                                                     width: item.width,
                                                     height: item.height,

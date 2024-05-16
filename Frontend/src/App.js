@@ -24,9 +24,9 @@ function App() {
           <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
-          <Route path="/customerStart" element ={<CustomerStartUpButton />}/>
-          <Route path="/product" element ={<ProductView />}/>
-          <Route path="/product/card" element ={<CardView />}/>
+          <Route path="/customerStart/:tableId" element ={<CustomerStartUpButton />}/>
+          <Route path="/product/:tableId" element ={<ProductView />}/>
+          <Route path="/product/:tableId/card" element ={<CardView />}/>
         </Routes>
         </TablesProvider>
         {/* Konstante Navigation am unteren Rand */}

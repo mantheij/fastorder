@@ -20,6 +20,7 @@ import axios from 'axios';
 import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
 
 const CardView = () => {
+    const { tableId } = useParams();
     const [cart, setCart] = useState(loadCartFromCookies());
     const navigate = useNavigate();
     const [alertOpen, setAlertOpen] = useState(false);
@@ -111,7 +112,7 @@ const CardView = () => {
             setAlertOpen(true);
             setCart([]);
             removeCartFromCookies();
-            navigate('/product');
+            navigate(`/product/${tableId}`);
         } catch (error) {
             console.error('Error creating order:', error);
             setAlertMessage('Failed to create order');
