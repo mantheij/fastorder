@@ -6,18 +6,18 @@ import de.hhn.labfastord.models.Product;
 import de.hhn.labfastord.repositories.ProductCategoryRepository;
 import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 /**
  * The ProductController class manages the web requests related to products.
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin("http://localhost:3000/")
 public class ProductController {
 
     @Autowired
@@ -75,14 +75,16 @@ public class ProductController {
                         existingProduct.setImgName(newProductDTO.getImgName());
                         existingProduct.setQuantity(newProductDTO.getQuantity());
                         existingProduct.setAvailable(newProductDTO.getQuantity() > 0);
+                        existingProduct.setAllergens(newProductDTO.getAllergens());
+                        existingProduct.setIngredients(newProductDTO.getIngredients());
+                        existingProduct.setNutrition(newProductDTO.getNutrition());
                         try {
                             existingProduct.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
                                     .orElseThrow(NullPointerException::new));
                         } catch (NullPointerException e) {
                             existingProduct.setCategory(null);
                         }
-                        String[] sizes = newProductDTO.getSize().toArray(new String[0]);
-                        existingProduct.setSizes(String.join(", ", sizes));
+                        existingProduct.setSizes(newProductDTO.getSize());
                         return ResponseEntity.ok(productMapper(productRepository.save(existingProduct)));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -106,14 +108,16 @@ public class ProductController {
             product.setImgName(newProductDTO.getImgName());
             product.setQuantity(newProductDTO.getQuantity());
             product.setAvailable(newProductDTO.getQuantity() > 0);
+            product.setAllergens(newProductDTO.getAllergens());
+            product.setIngredients(newProductDTO.getIngredients());
+            product.setNutrition(newProductDTO.getNutrition());
             try {
                 product.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
                         .orElseThrow(NullPointerException::new));
             } catch (NullPointerException e) {
                 product.setCategory(null);
             }
-            String[] sizes = newProductDTO.getSize().toArray(new String[0]);
-            product.setSizes(String.join(", ", sizes));
+            product.setSizes(newProductDTO.getSize());
 
             return ResponseEntity.ok(productMapper(productRepository.save(product)));
         } catch (DataAccessException e) {
@@ -153,16 +157,15 @@ public class ProductController {
         dto.setImgName(product.getImgName());
         dto.setAvailable(product.isAvailable());
         dto.setQuantity(product.getQuantity());
+        dto.setAllergens(product.getAllergens());
+        dto.setIngredients(product.getIngredients());
+        dto.setNutrition(product.getNutrition());
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getCategoryId());
         } else {
             dto.setCategoryId(null);
         }
-        if (product.getSizes() != null) {
-            dto.setSize(List.of(product.getSizes().split(", ")));
-        } else {
-            dto.setSize(null);
-        }
+        dto.setSize(product.getSizes());
         return dto;
     }
 }
