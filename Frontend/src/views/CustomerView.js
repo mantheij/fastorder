@@ -15,14 +15,13 @@ import Menu from '@mui/material/Menu';
  * Styled button that displays an image.
  * It adjusts its size based on the screen width.
  */
-const ImageButton = styled(ButtonBase)(({theme}) => ({
+const ImageButton = styled(ButtonBase)(({}) => ({
     position: 'relative',
-    height: 250,
-    width: 250,
-    [theme.breakpoints.down('sm')]: {
-        width: '100% !important',
-        height: 150,
-    },
+    height: 350,
+    width: 350,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
 }));
 
 /**
@@ -30,15 +29,15 @@ const ImageButton = styled(ButtonBase)(({theme}) => ({
  * It positions the image within the button and adjusts its color.
  */
 const Image = styled('span')(({theme}) => ({
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: theme.palette.common.white,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
 }));
 
 /**
@@ -59,7 +58,7 @@ const ImageMarked = styled('span')(({theme}) => ({
  * Styled menu for language selection.
  * It customizes the appearance of the language selection menu.
  */
-const LanguageMenu = styled(Menu)(({theme}) => ({
+const LanguageMenu = styled(Menu)(({}) => ({
     '& .MuiPaper-root': {
         boxShadow: '0px 8px 10px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
@@ -73,7 +72,7 @@ const LanguageMenu = styled(Menu)(({theme}) => ({
  * It allows the customer to select a language and navigate to another page.
  */
 const CustomerStartUpButton = () => {
-    // State variables for language selection menu
+    // State variables for a language selection menu
     const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [selectedLanguage, setSelectedLanguage] = useState('German');
 
@@ -145,7 +144,7 @@ const CustomerStartUpButton = () => {
             height: '100vh'
         }}>
             {/* Link to card page */}
-            <Link to="/card">
+            <Link to="/product">
                 {/* Image button */}
                 <ImageButton>
                     {/* Image */}
@@ -166,16 +165,13 @@ const CustomerStartUpButton = () => {
                             <img src={"images/logo/logo.png"}
                                  alt={"businessIcon"}
                                  style={{
-                                     width: '100%',
-                                     height: '100%',
                                      border: '1px solid transparent',
-                                     borderRadius: '300px',
                                      overflow: 'hidden',
-                                     padding: '30px',
+                                     padding: '50px',
                                      objectFit: 'contain',
                                      objectPosition: 'center',
                                      boxShadow: '0px 4px 8px rgba(0,0,0,0.6)',
-                                     background: '#fff'
+                                     background: '#fff',
                                  }}
                             />
                             {/* Image marker */}
@@ -186,7 +182,11 @@ const CustomerStartUpButton = () => {
             </Link>
 
             {/* Language selection button */}
-            <Box sx={{position: 'absolute', bottom: 80, right: 32}}>
+            <Box sx={{
+                position: 'absolute',
+                bottom: 130,  // Responsive bottom margin
+                right: 20   // Responsive right margin
+            }}>
                 <ButtonBase onClick={handleLanguageMenuOpen}>
                     {/* Flag icon */}
                     <img
@@ -211,7 +211,7 @@ const CustomerStartUpButton = () => {
                                 alt={language} style={{
                                 width: '30px',
                                 height: 'auto',
-                                marginRight: '8px'
+                                marginRight: '8px',
                             }}/> {getLanguages()[language].text}
                         </MenuItem>
                     ))}

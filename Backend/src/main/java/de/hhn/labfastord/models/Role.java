@@ -1,14 +1,9 @@
 package de.hhn.labfastord.models;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
-@Table(name = "Roles")
+@Table(name = "roles")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,5 +14,26 @@ public class Role {
     private EnumRole name;
 
     public Role() {
+
+    }
+
+    public Role(EnumRole name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public EnumRole getName() {
+        return name;
+    }
+
+    public void setName(EnumRole name) {
+        this.name = name;
     }
 }

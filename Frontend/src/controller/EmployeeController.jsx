@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from "axios";
 
-const useEmployeeController = () => {
+const EmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
     const addOrder = (orderTime, tableNumber, text) => {
@@ -39,6 +39,7 @@ const useEmployeeController = () => {
 
     return {
         boxes,
+        setBoxes,
         addOrder,
         deleteBox,
         toggleInProgress,
@@ -46,4 +47,4 @@ const useEmployeeController = () => {
     };
 };
 
-export default useEmployeeController;
+export default EmployeeController;
