@@ -213,7 +213,7 @@ const Settings = () => {
      * Formats the new product data and sends a POST request to add the product to the server.
      */
     const handleAddProduct = () => {
-        const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpg`;
+        const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
         const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
         const formattedPrice = parseFloat(cleanedPrice);
         const formattedQuantity = parseInt(newProduct.quantity, 10);
