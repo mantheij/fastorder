@@ -23,9 +23,6 @@ public class OrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private OrderRepository orderRepository;
-
     private int createdOrderId;
 
     @Test
