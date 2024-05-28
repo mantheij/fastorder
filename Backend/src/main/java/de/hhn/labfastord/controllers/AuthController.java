@@ -2,7 +2,6 @@ package de.hhn.labfastord.controllers;
 
 import de.hhn.labfastord.dto.login.JwtResponse;
 import de.hhn.labfastord.dto.login.LoginRequest;
-import de.hhn.labfastord.dto.login.MessageResponse;
 import de.hhn.labfastord.dto.login.SignupRequest;
 import de.hhn.labfastord.models.EnumRole;
 import de.hhn.labfastord.models.Role;
@@ -72,13 +71,13 @@ public class AuthController {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
           .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+          .body("Error: Username is already taken!");
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity
           .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
+          .body("Error: Email is already in use!");
     }
 
     User user = new User(signUpRequest.getUsername(),
@@ -109,6 +108,6 @@ public class AuthController {
     user.setRoles(roles);
     userRepository.save(user);
 
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok("User registered successfully!");
   }
 }
