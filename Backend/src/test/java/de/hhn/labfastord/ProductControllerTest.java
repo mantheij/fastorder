@@ -17,68 +17,63 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class OrderControllerTest {
+public class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private int createdOrderId;
+    private int createdProductId;
 
     @Test
-    public void returnAllOrders() throws Exception {
-        mockMvc.perform(get("/api/orders"))
+    public void returnAllProducts() throws Exception {
+        mockMvc.perform(get("/api/products"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
 
     @Test
-    public void returnAllOpenOrders() throws Exception {
-        mockMvc.perform(get("/api/orders/open"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[*].status", everyItem(is("open"))));
-    }
+    public void createNewProductAndUpdate() throws Exception {
+        String newProductJson = "{ \"name\": \"NewProduct\", \"price\": 10.0, \"quantity\": 100, \"productCategoryId\": \"1\", \"size\": \"1L\" }";
 
-    @Test
-    public void createNewOrderAndUpdateStatus() throws Exception {
-        String newOrderJson = "{ \"tableId\": 1, \"orderDetails\": [{ \"product\": { \"productId\": 1 }, \"quantity\": 2 }] }";
-
-        MvcResult result = mockMvc.perform(post("/api/orders")
+        MvcResult result = mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(newOrderJson))
+                        .content(newProductJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("open")))
+                .andExpect(jsonPath("$.name", is("NewProduct")))
                 .andReturn();
 
         String responseString = result.getResponse().getContentAsString();
-        createdOrderId = JsonPath.read(responseString, "$.orderId");
+        createdProductId = JsonPath.read(responseString, "$.productId");
 
-        mockMvc.perform(get("/api/orders/" + createdOrderId))
+        mockMvc.perform(get("/api/products/" + createdProductId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.orderId", is(createdOrderId)))
-                .andExpect(jsonPath("$.status", is("open")));
+                .andExpect(jsonPath("$.productId", is(createdProductId)))
+                .andExpect(jsonPath("$.name", is("NewProduct")));
 
-        String statusJson = "{\"status\": \"closed\"}";
+        String updatedProductJson = "{ \"name\": \"UpdatedProduct\", \"price\": 15.0, \"quantity\": 50, \"productCategoryId\": \"1\", \"size\": \"2L\" }";
 
-        mockMvc.perform(patch("/api/orders/" + createdOrderId + "/status")
+        mockMvc.perform(put("/api/products/" + createdProductId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(statusJson))
+                        .content(updatedProductJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("closed")));
+                .andExpect(jsonPath("$.name", is("UpdatedProduct")))
+                .andExpect(jsonPath("$.price", is(15.0)))
+                .andExpect(jsonPath("$.quantity", is(50)))
+                .andExpect(jsonPath("$.size", is("2L")));
     }
-
+    
     @Test
-    public void deleteOrder() throws Exception {
-        mockMvc.perform(delete("/api/orders/" + createdOrderId))
+    public void deleteProduct() throws Exception {
+        mockMvc.perform(delete("/api/products/" + createdProductId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Successfully deleted"));
     }
 
     @Test
-    public void checkIfOrderDeleted() throws Exception {
-        mockMvc.perform(get("/api/orders/" + createdOrderId))
+    public void checkIfProductDeleted() throws Exception {
+        mockMvc.perform(get("/api/products/" + createdProductId))
                 .andExpect(status().isNotFound());
     }
 }
