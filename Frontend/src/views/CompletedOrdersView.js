@@ -41,9 +41,10 @@ const CompletedOrdersView = () => {
                         orderStatus: order.status,
                         tableNumber: order.tableId,
                         orderId: order.orderId,
-                        orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr ` + //TODO: zeilenumbruch
-                            `${format(new Date(order.datetime), 'dd.MM.yyyy')}`,
-                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}`).join('<br/>')
+                        orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
+                        orderDate: `${format(new Date(order.datetime), 'dd.MM.yyyy')}`,
+                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} 
+                        ${detail.productSize}`).join('<br/>')
                     }));
                 setBoxes(completedOrders);
             } catch (error) {
@@ -102,8 +103,11 @@ const CompletedOrdersView = () => {
                                     padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                                     {item.tableNumber}</Typography>
 
-                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '4px', textShadow:
                                         '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+
+                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderDate}</Typography>
 
                                 <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
                                         '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />

@@ -46,8 +46,9 @@ const EmployeeView = () => {
                 const orders = response.data.map(order => ({
                     tableNumber: order.tableId,
                     orderId: order.orderId,
-                    orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `, //TODO: zeilenumbruch
-                    text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} `).join('<br/>')
+                    orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `,
+                    text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} 
+                    ${detail.productSize}`).join('<br/>')
                 }));
                 setBoxes(orders);
             } catch (error) {
@@ -56,7 +57,7 @@ const EmployeeView = () => {
         };
 
         fetchOrders();
-        const interval = setInterval(fetchOrders, 20000);
+        const interval = setInterval(fetchOrders, 15000);
 
         return () => clearInterval(interval);
     }, [setBoxes]);
