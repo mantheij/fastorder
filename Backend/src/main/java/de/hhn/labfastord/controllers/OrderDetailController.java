@@ -68,9 +68,11 @@ public class OrderDetailController {
         if (orderDetail.getProduct() != null) {
             dto.setProductId(orderDetail.getProduct().getProductId());
             dto.setProductName(orderDetail.getProduct().getName());
+            dto.setProductSize(orderDetail.getProduct().getSizes());
         } else {
             dto.setProductId(null);
             dto.setProductName(null);
+            dto.setProductSize(null);
         }
         return dto;
     }
