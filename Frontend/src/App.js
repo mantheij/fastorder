@@ -10,6 +10,7 @@ import "./App.css";
 import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
+import CompletedOrdersView from './views/CompletedOrdersView';
 import CustomerStartUpButton from "./views/CustomerView";
 import CardView from "./views/CardView";
 import SettingsView from "./views/SettingsView";
@@ -26,6 +27,7 @@ function App() {
           <Route path="/table-selection" element={<TableSelectionView />} />
           <Route path="/chef" element={<HomeView />}/>
           <Route path="/orders" element={<EmployeeView />}/>
+          <Route path="/orders/completed" element={<CompletedOrdersView />} />
           <Route path="/customerStart/:tableId" element ={<CustomerStartUpButton />}/>
           <Route path="/product/:tableId" element ={<ProductView />}/>
           <Route path="/product/:tableId/card" element ={<CardView />}/>

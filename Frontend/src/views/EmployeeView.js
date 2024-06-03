@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress }
+    from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -7,10 +8,12 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ClockBar = ({ currentTime }) => {
     return (
-        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
+                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
@@ -25,6 +28,7 @@ const EmployeeView = () => {
     const [actionType, setActionType] = useState(null);
     const [progressVisible, setProgressVisible] = useState(false);
     const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes } = useEmployeeController();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -40,6 +44,7 @@ const EmployeeView = () => {
                 const response = await axios.get('http://localhost:8080/api/orders/open');
                 const orders = response.data.map(order => ({
                     tableNumber: order.tableId,
+                    orderId: order.orderId,
                     orderTime: order.datetime,
                     text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
                 }));
@@ -70,9 +75,11 @@ const EmployeeView = () => {
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
-                deleteBox(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                deleteBox(orderId, actionIndex);
             } else if (actionType === 'cancel') {
-                cancelOrder(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                cancelOrder(orderId, actionIndex);
             }
             setDialogOpen(false);
             setActionIndex(null);
@@ -166,6 +173,12 @@ const EmployeeView = () => {
                 </Grid>
             </Box>
 
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
+                    Completed Orders
+                </Button>
+            </Box>
+
             <Dialog open={dialogOpen} onClose={handleDialogClose}>
                 <DialogTitle>Confirmation</DialogTitle>
                 <DialogContent>
@@ -184,5 +197,3 @@ const EmployeeView = () => {
 };
 
 export default EmployeeView;
-
-
