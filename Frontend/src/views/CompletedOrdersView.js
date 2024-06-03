@@ -5,6 +5,7 @@ import { createTheme } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const ClockBar = ({ currentTime }) => {
     return (
@@ -40,8 +41,9 @@ const CompletedOrdersView = () => {
                         orderStatus: order.status,
                         tableNumber: order.tableId,
                         orderId: order.orderId,
-                        orderTime: order.datetime,
-                        text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
+                        orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr ` + //TODO: zeilenumbruch
+                            `${format(new Date(order.datetime), 'dd.MM.yyyy')}`,
+                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}`).join('<br/>')
                     }));
                 setBoxes(completedOrders);
             } catch (error) {
