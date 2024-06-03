@@ -31,6 +31,8 @@ const EmployeeController = () => {
                 i === index ? { ...box, inProgress: !box.inProgress } : box
             )
         );
+
+        localStorage.setItem('boxes', JSON.stringify(boxes));
     };
 
     const cancelOrder = (orderId, index) => {

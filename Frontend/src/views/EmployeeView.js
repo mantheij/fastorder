@@ -39,6 +39,28 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
+    //TODO: status "in_work" for saving
+    //
+    // useEffect(() => {
+    //     const fetchOrders = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8080/api/orders');
+    //             const openOrders = response.data
+    //                 .filter(order => order.status === 'open' || order.status === 'in_work')
+    //                 .map(order => ({
+    //                     orderStatus: order.status,
+    //                     tableNumber: order.tableId,
+    //                     orderId: order.orderId,
+    //                     orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
+    //                     text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
+    //                     ${detail.productSize}`).join('<br/>')
+    //                 }));
+    //             setBoxes(openOrders);
+    //         } catch (error) {
+    //             console.error('Error loading completed orders:', error);
+    //         }
+    //     };
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -55,6 +77,7 @@ const EmployeeView = () => {
                 console.error('Error loading orders:', error);
             }
         };
+
 
         fetchOrders();
         const interval = setInterval(fetchOrders, 15000);
@@ -89,7 +112,21 @@ const EmployeeView = () => {
         }
     };
 
-    const toggleProgressVisibility = () => {
+    const toggleProgressVisibility = (index) => {
+
+        //Todo: status in_work
+        //
+        // const orderId = boxes[index].orderId;
+        // axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: 'in_work' })
+        //         .then(response => {
+        //             console.log('PATCH erfolgreich:', response.data);
+        //             setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+        //         })
+        //         .catch(error => {
+        //             console.error('Fehler beim PATCH:', error);
+        //         });
+        // toggleInProgress(index)
+
         setProgressVisible(!progressVisible);
     };
 
@@ -157,7 +194,7 @@ const EmployeeView = () => {
                                         '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
 
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
-                                        toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px',
+                                        toggleProgressVisibility(index);}} sx={{ marginLeft: '8px', marginRight: '8px',
                                         color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
                                         border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
                                         { item.inProgress ? (
