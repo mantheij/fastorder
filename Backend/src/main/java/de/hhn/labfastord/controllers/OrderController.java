@@ -177,9 +177,11 @@ public class OrderController {
                     if (orderDetail.getProduct() != null) {
                         orderDetailDTO.setProductId(orderDetail.getProduct().getProductId());
                         orderDetailDTO.setProductName(orderDetail.getProduct().getName());
+                        orderDetailDTO.setProductSize(orderDetail.getProduct().getSizes());
                     } else {
                         orderDetailDTO.setProductId(null);
                         orderDetailDTO.setProductName(null);
+                        orderDetailDTO.setProductSize(null);
                     }
                     return orderDetailDTO;
                 }).toList());
