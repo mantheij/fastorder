@@ -9,6 +9,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {format} from "date-fns";
 
 const ClockBar = ({ currentTime }) => {
     return (
@@ -45,8 +46,8 @@ const EmployeeView = () => {
                 const orders = response.data.map(order => ({
                     tableNumber: order.tableId,
                     orderId: order.orderId,
-                    orderTime: order.datetime,
-                    text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
+                    orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `, //TODO: zeilenumbruch
+                    text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} `).join('<br/>')
                 }));
                 setBoxes(orders);
             } catch (error) {
