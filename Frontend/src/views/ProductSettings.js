@@ -238,7 +238,7 @@ const Settings = () => {
     /**
      * Formats the new product data and sends a POST request to add the product to the server.
      */
-    const handleAddProduct = () => {
+    const handleAddProduct = async () => {
         const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
         const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
         const formattedPrice = parseFloat(cleanedPrice);
@@ -268,8 +268,8 @@ const Settings = () => {
                 productData.imageUrl = response.data;
             } else if (newProduct.imageUrl) {
                 console.log('Downloading image from URL:', newProduct.imageUrl);
-                const response = await axios.get(newProduct.imageUrl, { responseType: 'arraybuffer' });
-                const blob = new Blob([response.data], { type: 'image/jpeg' });
+                const response = await axios.get(newProduct.imageUrl, {responseType: 'arraybuffer'});
+                const blob = new Blob([response.data], {type: 'image/jpeg'});
                 const formData = new FormData();
                 formData.append('file', blob, imgName);
                 const uploadResponse = await axios.post('http://localhost:8080/api/upload', formData, {
@@ -289,7 +289,7 @@ const Settings = () => {
                 }
             });
             console.log('Product added successfully:', productResponse.data);
-            const newProducts = { ...products };
+            const newProducts = {...products};
             newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
             newProducts[productData.productCategoryId].push(productResponse.data);
             setProducts(newProducts);
