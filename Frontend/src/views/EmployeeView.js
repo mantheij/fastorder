@@ -51,10 +51,12 @@ const EmployeeView = () => {
                         orderStatus: order.status,
                         tableNumber: order.tableId,
                         orderId: order.orderId,
+                        orderTimeReal: new Date (order.datetime),
                         orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
                         text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
                         ${detail.productSize}`).join('<br/>')
-                    }));
+                    }))
+                    .sort((a, b) => a.orderTimeReal - b.orderTimeReal);
 
                 //const inWorkOrders = allOrders.filter(order => order.orderStatus === 'in_work');
                 //const notInWorkOrders = allOrders.filter(order => order.orderStatus === 'open');
@@ -202,9 +204,9 @@ const EmployeeView = () => {
 
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
                                         toggleProgressVisibility(index); window.location.reload();}} sx={{ marginLeft:
-                                            '8px', marginRight: '8px', color: 'black', bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                        border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
-                                        { item.orderStatus === 'in_work' ? (
+                                            '8px', marginRight: '8px', color: 'black', bgcolor: item.orderStatus ===
+                                        'in_work' ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': {
+                                            bgcolor: 'lightgrey' } }}>{ item.orderStatus === 'in_work' ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                     </Button>
 
