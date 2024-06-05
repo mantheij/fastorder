@@ -11,7 +11,7 @@ const TableDetails = () => {
     const { tableId } = useParams();
 
     const handleOrderClick = () => {
-        navigate(`/chef/product/${tableId}`);
+        navigate(`/product/${tableId}`);
     };
 
     const handleViewOrdersClick = () => {

@@ -32,7 +32,6 @@ function App() {
                 <Route path="/orders" element={<EmployeeView />} />
                 <Route path="/orders/completed" element={<CompletedOrdersView />} />
                 <Route path="/customerStart/:tableId" element={<CustomerStartUpButton />} />
-                <Route path="/chef/product/:tableId" element={<ProductView />} />
                 <Route path="/product/:tableId" element={<ProductView />} />
                 <Route path="/product/:tableId/card" element={<CardView />} />
                 <Route path="/settings" element={<SettingsView />} />
