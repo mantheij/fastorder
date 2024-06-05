@@ -41,42 +41,48 @@ const EmployeeView = () => {
 
     //TODO: status "in_work" for saving
     //
-    // useEffect(() => {
-    //     const fetchOrders = async () => {
-    //         try {
-    //             const response = await axios.get('http://localhost:8080/api/orders');
-    //             const openOrders = response.data
-    //                 .filter(order => order.status === 'open' || order.status === 'in_work')
-    //                 .map(order => ({
-    //                     orderStatus: order.status,
-    //                     tableNumber: order.tableId,
-    //                     orderId: order.orderId,
-    //                     orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
-    //                     text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
-    //                     ${detail.productSize}`).join('<br/>')
-    //                 }));
-    //             setBoxes(openOrders);
-    //         } catch (error) {
-    //             console.error('Error loading completed orders:', error);
-    //         }
-    //     };
-
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders/open');
-                const orders = response.data.map(order => ({
-                    tableNumber: order.tableId,
-                    orderId: order.orderId,
-                    orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `,
-                    text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} 
-                    ${detail.productSize}`).join('<br/>')
-                }));
-                setBoxes(orders);
+                const response = await axios.get('http://localhost:8080/api/orders');
+                const openOrders = response.data
+                    .filter(order => order.status === 'in_work' || order.status === 'open')
+                    .map(order => ({
+                        orderStatus: order.status,
+                        tableNumber: order.tableId,
+                        orderId: order.orderId,
+                        orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
+                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
+                        ${detail.productSize}`).join('<br/>')
+                    }));
+
+                //const inWorkOrders = allOrders.filter(order => order.orderStatus === 'in_work');
+                //const notInWorkOrders = allOrders.filter(order => order.orderStatus === 'open');
+
+                setBoxes(openOrders);
+
             } catch (error) {
-                console.error('Error loading orders:', error);
+                console.error('Error loading completed orders:', error);
             }
+
         };
+
+    // useEffect(() => {
+    //     const fetchOrders = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8080/api/orders/open');
+    //             const orders = response.data.map(order => ({
+    //                 tableNumber: order.tableId,
+    //                 orderId: order.orderId,
+    //                 orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `,
+    //                 text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
+    //                 ${detail.productSize}`).join('<br/>')
+    //             }));
+    //             setBoxes(orders);
+    //         } catch (error) {
+    //             console.error('Error loading orders:', error);
+    //         }
+    //     };
 
 
         fetchOrders();
@@ -116,16 +122,17 @@ const EmployeeView = () => {
 
         //Todo: status in_work
         //
-        // const orderId = boxes[index].orderId;
-        // axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: 'in_work' })
-        //         .then(response => {
-        //             console.log('PATCH erfolgreich:', response.data);
-        //             setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
-        //         })
-        //         .catch(error => {
-        //             console.error('Fehler beim PATCH:', error);
-        //         });
-        // toggleInProgress(index)
+        const orderId = boxes[index].orderId;
+        const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
+        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
+                .then(response => {
+                    console.log('PATCH erfolgreich:', response.data);
+                    setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+                })
+                .catch(error => {
+                    console.error('Fehler beim PATCH:', error);
+                });
+        toggleInProgress(index)
 
         setProgressVisible(!progressVisible);
     };
@@ -161,9 +168,9 @@ const EmployeeView = () => {
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.map((item, index) => (
                         <Grid item key={index}>
-                            <Box
+                            <Box key={item.orderStatus}
                                 sx={{
-                                    bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                    bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                     color: 'black',
                                     textAlign: 'center',
                                     padding: '10px',
@@ -189,20 +196,20 @@ const EmployeeView = () => {
 
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress
+                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.orderStatus === 'in_work'
                                             ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`,
                                         '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
 
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
-                                        toggleProgressVisibility(index);}} sx={{ marginLeft: '8px', marginRight: '8px',
-                                        color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                        toggleProgressVisibility(index); window.location.reload();}} sx={{ marginLeft:
+                                            '8px', marginRight: '8px', color: 'black', bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                         border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
-                                        { item.inProgress ? (
+                                        { item.orderStatus === 'in_work' ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                     </Button>
 
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
+                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.orderStatus === 'in_work' ?
                                             'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`,
                                         '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
