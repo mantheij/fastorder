@@ -3,7 +3,6 @@ import axios from "axios";
 import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Paper, Button } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PaymentIcon from "@mui/icons-material/Payment";
 
 const ViewOrders = () => {
@@ -43,7 +42,7 @@ const ViewOrders = () => {
     };
 
     const handleOrderClick = () => {
-        navigate(`/product/${tableId}`);
+
     };
 
     return (
@@ -82,6 +81,7 @@ const ViewOrders = () => {
             <Button
                 variant="contained"
                 color="error"
+                onClick={handleOrderClick}
                 sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mt: 2, alignSelf: 'center' }}
             >
                 <PaymentIcon sx={{ mr: 1 }} />

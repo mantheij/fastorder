@@ -2,19 +2,22 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LabelBottomNavigation from "./navigation";
-import HomeView from "./views/HomeView";
 import ProductView from "./views/ProductView";
 import CustomerView from "./views/CustomerView";
 import SignInView from "./views/SignInView";
 import "./App.css";
-import TableSelectionView from "./views/TableSelectionView";
 import {TablesProvider} from "./model/TablesContext";
 import EmployeeView from "./views/EmployeeView";
 import CustomerStartUpButton from "./views/CustomerView";
 import CardView from "./views/CardView";
-import SettingsView from "./views/SettingsView";
-import ProductSettings from "./views/ProductSettings";
 import CompletedOrdersView from "./views/CompletedOrdersView";
+import TableDetails from "./views/Chef/TableDetails";
+import ViewOrders from "./views/Chef/ViewOrders";
+import TableSelectionView from "./views/Selection/TableSelectionView";
+import SettingsView from "./views/Settings/SettingsView";
+import ProductSettings from "./views/Settings/ProductSettings";
+import HomeView from "./views/Chef/HomeView";
+
 function App() {
   return (
     <Router>
