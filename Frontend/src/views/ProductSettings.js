@@ -118,7 +118,12 @@ const Settings = () => {
         nutrition: '',
         imageUrl: ''
     });
+
     const [productImage, setProductImage] = useState(null);
+
+    const getToken = () => {
+        return localStorage.getItem('token');
+    };
 
     /**
      * useEffect hook to load product categories and products from the server when the component mounts.
@@ -236,6 +241,14 @@ const Settings = () => {
     };
 
     /**
+     * Handles the file input change event.
+     * @param {object} event - The input change event.
+     */
+    const handleFileChange = (event) => {
+        setProductImage(event.target.files[0]);
+    };
+
+    /**
      * Formats the new product data and sends a POST request to add the product to the server.
      */
     const handleAddProduct = async () => {
@@ -253,6 +266,8 @@ const Settings = () => {
             nutrition: newProduct.nutrition || "nutrition's are empty"
         };
 
+        const token = getToken();
+
         try {
             if (productImage) {
                 console.log('Uploading image:', productImage);
@@ -261,7 +276,7 @@ const Settings = () => {
                 const response = await axios.post('http://localhost:8080/api/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 console.log('Image uploaded successfully', response.data);
@@ -275,7 +290,7 @@ const Settings = () => {
                 const uploadResponse = await axios.post('http://localhost:8080/api/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 console.log('Image downloaded and uploaded successfully', uploadResponse.data);
@@ -285,7 +300,7 @@ const Settings = () => {
             console.log('Sending product data to server:', productData);
             const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
                 headers: {
-                    'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                    'Authorization': `Bearer ${token}`
                 }
             });
             console.log('Product added successfully:', productResponse.data);
@@ -333,13 +348,13 @@ const Settings = () => {
      */
     const deleteSelectedProducts = () => {
         axios.all(Array.from(selectedProducts).map(productId =>
-            axios.delete(`http://localhost:8080/api/products/${productId}`)
-        )).then(() => {
-            console.log('All selected products deleted successfully');
-            fetchProducts(); // Fetch all products again to reflect the deletions
-            setSelectedProducts(new Set());
-            setDeleteDialogOpen(false);
-        }).catch(error => {
+            axios.delete(`http://localhost:8080/api/products/${productId}`)))
+            .then(() => {
+                console.log('All selected products deleted successfully');
+                fetchProducts(); // Fetch all products again to reflect the deletions
+                setSelectedProducts(new Set());
+                setDeleteDialogOpen(false);
+            }).catch(error => {
             console.error('Failed to delete products', error);
         });
     };
