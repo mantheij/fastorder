@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
     Accordion,
@@ -113,10 +113,12 @@ const Settings = () => {
         quantity: '',
         productCategoryId: '',
         size: '',
-        allergens: "",
-        ingredients: "",
-        nutrition: ""
+        allergens: '',
+        ingredients: '',
+        nutrition: '',
+        imageUrl: ''
     });
+    const [productImage, setProductImage] = useState(null);
 
     /**
      * useEffect hook to load product categories and products from the server when the component mounts.
@@ -200,7 +202,7 @@ const Settings = () => {
      * @param {object} event - The input change event.
      */
     const handleNewProductChange = (event) => {
-        setNewProduct({...newProduct, [event.target.name]: event.target.value});
+        setNewProduct({ ...newProduct, [event.target.name]: event.target.value });
     };
 
     /**
@@ -208,7 +210,7 @@ const Settings = () => {
      * @param {object} event - The input change event.
      */
     const handleNewCategoryChange = (event) => {
-        setNewCategory({...newCategory, [event.target.name]: event.target.value});
+        setNewCategory({ ...newCategory, [event.target.name]: event.target.value });
     };
 
     /**
@@ -251,18 +253,50 @@ const Settings = () => {
             nutrition: newProduct.nutrition || "nutrition's are empty"
         };
 
-        axios.post('http://localhost:8080/api/products', productData)
-            .then(response => {
-                console.log('Product added successfully:', response.data);
-                const newProducts = {...products};
-                newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
-                newProducts[productData.productCategoryId].push(response.data);
-                setProducts(newProducts);
-                setIsAddModalOpen(false);
-            })
-            .catch(error => {
-                console.error('Error adding product:', error);
+        try {
+            if (productImage) {
+                console.log('Uploading image:', productImage);
+                const formData = new FormData();
+                formData.append('file', productImage, imgName);
+                const response = await axios.post('http://localhost:8080/api/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                    }
+                });
+                console.log('Image uploaded successfully', response.data);
+                productData.imageUrl = response.data;
+            } else if (newProduct.imageUrl) {
+                console.log('Downloading image from URL:', newProduct.imageUrl);
+                const response = await axios.get(newProduct.imageUrl, { responseType: 'arraybuffer' });
+                const blob = new Blob([response.data], { type: 'image/jpeg' });
+                const formData = new FormData();
+                formData.append('file', blob, imgName);
+                const uploadResponse = await axios.post('http://localhost:8080/api/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                    }
+                });
+                console.log('Image downloaded and uploaded successfully', uploadResponse.data);
+                productData.imageUrl = uploadResponse.data;
+            }
+
+            console.log('Sending product data to server:', productData);
+            const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
+                headers: {
+                    'Authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNzU0NjgyMCwiZXhwIjoxNzE3NjMzMjIwfQ.h33-Vo7Fa1TGRQL_SZPRb5oq6lpIxhaiW9PVcCeiSx0'
+                }
             });
+            console.log('Product added successfully:', productResponse.data);
+            const newProducts = { ...products };
+            newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
+            newProducts[productData.productCategoryId].push(productResponse.data);
+            setProducts(newProducts);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
     };
 
     /**
@@ -415,39 +449,39 @@ const Settings = () => {
     };
 
     return (
-        <Box sx={{padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}>
-            <Box sx={{display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%'}}>
-                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddCategoryModalOpen} sx={{flex: 1}}>
+        <Box sx={{ padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto' }}>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%' }}>
+                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddCategoryModalOpen} sx={{ flex: 1 }}>
                     Add Category
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon/>}
-                        onClick={handleDeleteCategoryDialogOpen} sx={{flex: 1}}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon />}
+                        onClick={handleDeleteCategoryDialogOpen} sx={{ flex: 1 }}>
                     Delete Category
                 </Button>
-                <Divider orientation="vertical" flexItem/>
-                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddModalOpen} sx={{flex: 1}}>
+                <Divider orientation="vertical" flexItem />
+                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddModalOpen} sx={{ flex: 1 }}>
                     Add Product
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon/>} onClick={handleDeleteProducts}
-                        sx={{flex: 1}}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteProducts}
+                        sx={{ flex: 1 }}>
                     Delete Products
                 </Button>
             </Box>
-            <Paper sx={{p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2}}>
+            <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
                 <InputBase
-                    sx={{ml: 1, flex: 1}}
+                    sx={{ ml: 1, flex: 1 }}
                     placeholder="Search Products"
-                    inputProps={{'aria-label': 'search products'}}
+                    inputProps={{ 'aria-label': 'search products' }}
                     onChange={handleFilterChange}
                 />
-                <IconButton sx={{p: '10px'}} aria-label="search">
-                    <SearchIcon/>
+                <IconButton sx={{ p: '10px' }} aria-label="search">
+                    <SearchIcon />
                 </IconButton>
             </Paper>
 
             {categories.map(category => (
                 <Accordion key={category.categoryId}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography>{category.name}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
@@ -473,15 +507,15 @@ const Settings = () => {
 
             <Modal open={isAddModalOpen} onClose={handleAddModalClose}>
                 <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Add New Product
                     </Typography>
                     <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
-                               onChange={handleNewProductChange}/>
+                               onChange={handleNewProductChange} />
                     <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price}
-                               onChange={handleNewProductChange} placeholder="0.00"/>
+                               onChange={handleNewProductChange} placeholder="0.00" />
                     <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
-                               value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0"/>
+                               value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
 
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="category-label">Category</InputLabel>
@@ -502,18 +536,22 @@ const Settings = () => {
                     </FormControl>
 
                     <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
-                               onChange={handleNewProductChange} placeholder="0,0L"/>
+                               onChange={handleNewProductChange} placeholder="0,0L" />
                     <TextField label="Allergens" name="allergens" fullWidth margin="normal"
                                value={newProduct.allergens || ""} onChange={handleNewProductChange}
-                               placeholder="List of allergens"/>
+                               placeholder="List of allergens" />
                     <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
                                value={newProduct.ingredients || ""} onChange={handleNewProductChange}
-                               placeholder="List of ingredients"/>
+                               placeholder="List of ingredients" />
                     <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
                                value={newProduct.nutrition || ""} onChange={handleNewProductChange}
-                               placeholder="List of nutrition"/>
+                               placeholder="List of nutrition" />
+                    <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
+                               value={newProduct.imageUrl} onChange={handleNewProductChange}
+                               placeholder="http://example.com/image.jpg" />
+                    <input type="file" name="productImage" onChange={handleFileChange} />
 
-                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2}}>
+                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
                         Submit
                     </Button>
                 </Box>
@@ -521,15 +559,15 @@ const Settings = () => {
 
             <Modal open={isAddCategoryModalOpen} onClose={handleAddCategoryModalClose}>
                 <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Add New Category
                     </Typography>
                     <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name}
-                               onChange={handleNewCategoryChange}/>
+                               onChange={handleNewCategoryChange} />
                     <TextField label="Description" name="description" fullWidth margin="normal"
-                               value={newCategory.description} onChange={handleNewCategoryChange}/>
+                               value={newCategory.description} onChange={handleNewCategoryChange} />
 
-                    <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{mt: 2}}>
+                    <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{ mt: 2 }}>
                         Submit
                     </Button>
                 </Box>

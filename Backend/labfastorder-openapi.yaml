@@ -6,6 +6,50 @@ info:
 servers:
   - url: "localhost:8080"
 paths:
+  /api/upload:
+    post:
+      summary: "Upload a file"
+      description: "Uploads a file to the server and returns the URL of the uploaded file."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "The file to upload"
+      responses:
+        "200":
+          description: "File uploaded successfully"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "http://localhost:8080/images/products/filename.jpeg"
+        "400":
+          description: "No file selected"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "No file selected"
+        "413":
+          description: "File too large"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "File too large!"
+        "500":
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "File upload failed: {error message}"
   /api/productCategories:
     get:
       summary: "GET api/productCategories"
@@ -616,6 +660,9 @@ components:
           type: "string"
         nutrition:
           type: "string"
+        file:
+          type: "string"
+          format: "binary"
     OrderDTO:
       type: "object"
       properties:
