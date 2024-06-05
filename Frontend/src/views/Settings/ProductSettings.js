@@ -10,6 +10,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from "@mui/icons-material/Close";
 
 const modalStyle = {
     position: 'absolute',
@@ -93,6 +95,9 @@ const Settings = () => {
         productCategoryId: '',
         size: ''
     });
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [productToEdit, setProductToEdit] = useState(null);
 
     /**
      * useEffect hook to load product categories and products from the server when the component mounts.
@@ -311,8 +316,23 @@ const Settings = () => {
             onClose={handleCloseDialog}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            maxWidth="sm"
+            fullWidth
         >
-            <DialogTitle id="alert-dialog-title">{"Confirm delete"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">
+                {"Confirm delete"}
+                <IconButton
+                    aria-label="close"
+                    onClick={handleCloseDialog}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     Are you sure you want to delete these items?:
@@ -344,25 +364,42 @@ const Settings = () => {
             onClose={handleDeleteCategoryDialogClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            maxWidth="sm"
+            fullWidth
         >
-            <DialogTitle id="alert-dialog-title">{"Confirm delete category"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">
+                {"Confirm delete category"}
+                <IconButton
+                    aria-label="close"
+                    onClick={handleDeleteCategoryDialogClose}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
             <DialogContent>
-                <FormControl fullWidth>
-                    <InputLabel id="category-select-label">Select Category</InputLabel>
-                    <Select
-                        labelId="category-select-label"
-                        id="category-select"
-                        value={categoryToDelete}
-                        label="Select Category"
-                        onChange={(event) => setCategoryToDelete(event.target.value)}
-                    >
-                        {categories.map((category) => (
-                            <MenuItem key={category.categoryId} value={category.categoryId}>
-                                {category.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                <Box sx={{ mt: 2 }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="category-select-label">Select Category</InputLabel>
+                        <Select
+                            labelId="category-select-label"
+                            id="category-select"
+                            value={categoryToDelete}
+                            label="Select Category"
+                            onChange={(event) => setCategoryToDelete(event.target.value)}
+                        >
+                            {categories.map((category) => (
+                                <MenuItem key={category.categoryId} value={category.categoryId}>
+                                    {category.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button onClick={deleteCategory} color="error" variant="contained" autoFocus>
@@ -374,6 +411,7 @@ const Settings = () => {
             </DialogActions>
         </Dialog>
     );
+
 
     /**
      * Finds a product by its ID in the products state.
@@ -388,6 +426,48 @@ const Settings = () => {
             }
         }
         return null;
+    };
+
+    const handleEditProduct = (productId) => {
+        const product = findProduct(productId);
+        setProductToEdit(product);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
+        setProductToEdit(null);
+    };
+
+    const handleEditProductChange = (event) => {
+        setProductToEdit({ ...productToEdit, [event.target.name]: event.target.value });
+    };
+
+    const handleUpdateProduct = () => {
+        const imgName = `${productToEdit.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
+        const cleanedPrice = productToEdit.price.replace('€', '').replace(',', '.');
+        const formattedPrice = parseFloat(cleanedPrice);
+        const formattedQuantity = parseInt(productToEdit.quantity, 10);
+        const productData = {
+            ...productToEdit,
+            price: formattedPrice,
+            quantity: formattedQuantity,
+            imgName,
+            allergens: "allergens",
+            ingredients: "ingredients",
+            nutrition: "nutrition"
+        };
+
+        axios.put(`http://localhost:8080/api/products/${productToEdit.productId}`, productData)
+            .then(response => {
+                console.log('Product updated successfully:', response.data);
+                fetchProducts();
+                setIsEditModalOpen(false);
+                setProductToEdit(null);
+            })
+            .catch(error => {
+                console.error('Error updating product:', error);
+            });
     };
 
     return (
@@ -428,11 +508,16 @@ const Settings = () => {
                         <List>
                             {filteredProducts(category.categoryId).map(product => (
                                 <ListItem key={product.productId} secondaryAction={
-                                    <Checkbox
-                                        edge="end"
-                                        onChange={() => handleToggleProduct(product.productId)}
-                                        checked={selectedProducts.has(product.productId)}
-                                    />
+                                    <>
+                                        <Checkbox
+                                            edge="end"
+                                            onChange={() => handleToggleProduct(product.productId)}
+                                            checked={selectedProducts.has(product.productId)}
+                                        />
+                                        <IconButton edge="end" aria-label="edit" onClick={() => handleEditProduct(product.productId)}>
+                                            <EditIcon />
+                                        </IconButton>
+                                    </>
                                 }>
                                     <ListItemText
                                         primary={product.name}
@@ -449,6 +534,17 @@ const Settings = () => {
                 <Box sx={modalStyle}>
                     <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Add New Product
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleAddModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                     </Typography>
                     <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name} onChange={handleNewProductChange} />
                     <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price} onChange={handleNewProductChange} placeholder="0.00" />
@@ -483,10 +579,70 @@ const Settings = () => {
                 </Box>
             </Modal>
 
+            <Modal open={isEditModalOpen} onClose={handleEditModalClose}>
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                        Edit Product
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleEditModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Typography>
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={productToEdit?.name || ''} onChange={handleEditProductChange} />
+                    <TextField label="Price €" name="price" fullWidth margin="normal" value={productToEdit?.price || ''} onChange={handleEditProductChange} placeholder="0.00" />
+                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal" value={productToEdit?.quantity || ''} onChange={handleEditProductChange} placeholder="0" />
+
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel id="category-label">Category</InputLabel>
+                        <Select
+                            labelId="category-label"
+                            id="category-select"
+                            name="productCategoryId"
+                            value={productToEdit?.productCategoryId || ''}
+                            label="Category"
+                            onChange={handleEditProductChange}
+                        >
+                            {categories.map((category) => (
+                                <MenuItem key={category.categoryId} value={category.categoryId}>
+                                    {category.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <TextField label="Size" name="size" fullWidth margin="normal" value={productToEdit?.size || ''} onChange={handleEditProductChange} placeholder="0,0L" />
+                    <TextField label="Allergens" name="allergens" fullWidth margin="normal" value={productToEdit?.allergens || ""} onChange={handleEditProductChange} disabled />
+                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal" value={productToEdit?.ingredients || ""} onChange={handleEditProductChange} disabled />
+                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal" value={productToEdit?.nutrition || ""} onChange={handleEditProductChange} disabled />
+
+                    <Button variant="contained" color="primary" onClick={handleUpdateProduct} sx={{ mt: 2 }}>
+                        Submit
+                    </Button>
+                </Box>
+            </Modal>
+
             <Modal open={isAddCategoryModalOpen} onClose={handleAddCategoryModalClose}>
                 <Box sx={modalStyle}>
                     <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Add New Category
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleAddCategoryModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                     </Typography>
                     <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name} onChange={handleNewCategoryChange} />
                     <TextField label="Description" name="description" fullWidth margin="normal" value={newCategory.description} onChange={handleNewCategoryChange} />

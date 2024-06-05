@@ -1,22 +1,21 @@
 import React from "react";
-import {FormControl, InputLabel, Select, MenuItem, Button} from "@mui/material";
-import {useTables} from "../model/TablesContext";
-import {useNavigate} from "react-router-dom"; // Importieren Sie useNavigate
+import { FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";
+import { useTables } from "../../model/TablesContext";
+import { useNavigate } from "react-router-dom";
 
 const TableSelectionView = () => {
     const { tables, selectedTable, setSelectedTable } = useTables();
-    const navigate = useNavigate(); // Erstellen Sie eine Instanz von navigate
+    const navigate = useNavigate();
 
     const handleSelectTable = (event) => {
         setSelectedTable(event.target.value);
     };
 
-    // Funktion zur Navigation, wenn ein Tisch ausgewählt und bestätigt wird
     const handleConfirmTableSelection = () => {
         if (selectedTable) {
-            navigate(`/customerStart/${selectedTable}`); // Navigieren zur customerStart mit der ausgewählten tableId
+            navigate(`/customerStart/${selectedTable}`);
         } else {
-            alert("Please select a table first."); // Einfache Fehlerbehandlung, wenn keine Tisch ausgewählt wurde
+            alert("Please select a table first.");
         }
     };
 
@@ -36,18 +35,22 @@ const TableSelectionView = () => {
                 width: '30vw',
                 marginBottom: '10vh',
                 '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: '#FFFFFF' },
-                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                    '&.Mui-focused fieldset': { borderColor: '#FFFFFF' },
+                    '& fieldset': { borderColor: '#FFFFFF', borderWidth: '2px' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)', borderWidth: '2px' },
+                    '&.Mui-focused fieldset': { borderColor: '#FFFFFF', borderWidth: '2px' },
                 },
                 '& .MuiInputLabel-root': {
                     color: '#FFFFFF',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
                     '&.Mui-focused': { color: '#FFFFFF' },
                     '&.MuiInputLabel-shrink': { color: '#FFFFFF' },
                 },
                 '& .MuiSelect-select': {
                     color: '#FFFFFF',
                     backgroundColor: 'rgba(255, 255, 255, 0)',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
                 },
                 '& .MuiSvgIcon-root': { color: '#FFFFFF' }
             }}>
@@ -66,11 +69,12 @@ const TableSelectionView = () => {
             </FormControl>
             <Button
                 variant="contained"
-                onClick={handleConfirmTableSelection} // Aktualisieren Sie das onClick-Event
+                onClick={handleConfirmTableSelection}
                 sx={{
                     backgroundColor: '#FFFFFF',
                     color: '#5DADF0',
                     fontSize: '2.0vh',
+                    fontWeight: 'bold',
                     padding: '10px 20px',
                     '&:hover': {
                         backgroundColor: '#e0f0ff',

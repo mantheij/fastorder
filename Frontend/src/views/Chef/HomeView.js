@@ -1,6 +1,7 @@
 import React, { useState} from "react";
 import {Button, Grid} from "@mui/material";
-import {useTables} from "../model/TablesContext";
+import {useTables} from "../../model/TablesContext";
+import { useNavigate } from "react-router-dom";
 
 /**
  * The HomeView component is responsible for displaying area selection options and the corresponding grids of tables.
@@ -17,12 +18,18 @@ const HomeView = () => {
      */
     const { grids } = useTables();
 
+    const navigate = useNavigate();
+
     /**
      * Handles click events on area selection buttons, updating the selectedArea state.
      * @param {number} area - The area number that was clicked.
      */
     const handleAreaClick = (area) => {
         setSelectedArea(area);
+    };
+
+    const handleTableClick = (tableId) => {
+        navigate(`tableDetails/${tableId}`);
     };
 
 
@@ -74,7 +81,7 @@ const HomeView = () => {
                                         ) : (
                                             // Button for each item, colored based on occupation status
                                             <Button
-                                                href={`/customerStart/${item.id}`}
+                                                onClick={() => handleTableClick(item.id)}
                                                 sx={{
                                                     width: item.width,
                                                     height: item.height,

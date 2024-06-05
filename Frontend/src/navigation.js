@@ -21,9 +21,9 @@ export default function LabelBottomNavigation() {
             width: "100%",
             position: "fixed",
             bottom: 0,
-            backgroundColor: "#ffffff", // neutrale weiße Farbe
-            boxShadow: "0px 1px 10px rgba(0,0,0,0.3)", // Schatten für Tiefe
-            borderRadius: "10px 10px 0 0" // Abgerundete obere Ecken
+            backgroundColor: "#ffffff",
+            boxShadow: "0px 1px 10px rgba(0,0,0,0.3)",
+            borderRadius: "10px 10px 0 0"
           }}
           value={value}
           onChange={handleChange}
