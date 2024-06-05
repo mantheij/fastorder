@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress }
+    from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -7,10 +8,13 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {format} from "date-fns";
 
 const ClockBar = ({ currentTime }) => {
     return (
-        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
+                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                 {currentTime.toLocaleTimeString()}
             </Typography>
@@ -25,6 +29,7 @@ const EmployeeView = () => {
     const [actionType, setActionType] = useState(null);
     const [progressVisible, setProgressVisible] = useState(false);
     const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes } = useEmployeeController();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -34,23 +39,56 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
+    //TODO: status "in_work" for saving
+    //
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders/open');
-                const orders = response.data.map(order => ({
-                    tableNumber: order.tableId,
-                    orderTime: order.datetime,
-                    text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
-                }));
-                setBoxes(orders);
+                const response = await axios.get('http://localhost:8080/api/orders');
+                const openOrders = response.data
+                    .filter(order => order.status === 'in_work' || order.status === 'open')
+                    .map(order => ({
+                        orderStatus: order.status,
+                        tableNumber: order.tableId,
+                        orderId: order.orderId,
+                        orderTimeReal: new Date (order.datetime),
+                        orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
+                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
+                        ${detail.productSize}`).join('<br/>')
+                    }))
+                    .sort((a, b) => a.orderTimeReal - b.orderTimeReal);
+
+                //const inWorkOrders = allOrders.filter(order => order.orderStatus === 'in_work');
+                //const notInWorkOrders = allOrders.filter(order => order.orderStatus === 'open');
+
+                setBoxes(openOrders);
+
             } catch (error) {
-                console.error('Error loading orders:', error);
+                console.error('Error loading completed orders:', error);
             }
+
         };
 
+    // useEffect(() => {
+    //     const fetchOrders = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8080/api/orders/open');
+    //             const orders = response.data.map(order => ({
+    //                 tableNumber: order.tableId,
+    //                 orderId: order.orderId,
+    //                 orderTime: `${format(new Date(order.datetime), 'HH:mm:ss')} Uhr `,
+    //                 text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName}
+    //                 ${detail.productSize}`).join('<br/>')
+    //             }));
+    //             setBoxes(orders);
+    //         } catch (error) {
+    //             console.error('Error loading orders:', error);
+    //         }
+    //     };
+
+
         fetchOrders();
-        const interval = setInterval(fetchOrders, 20000);
+        const interval = setInterval(fetchOrders, 15000);
 
         return () => clearInterval(interval);
     }, [setBoxes]);
@@ -70,9 +108,11 @@ const EmployeeView = () => {
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
-                deleteBox(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                deleteBox(orderId, actionIndex);
             } else if (actionType === 'cancel') {
-                cancelOrder(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                cancelOrder(orderId, actionIndex);
             }
             setDialogOpen(false);
             setActionIndex(null);
@@ -80,7 +120,22 @@ const EmployeeView = () => {
         }
     };
 
-    const toggleProgressVisibility = () => {
+    const toggleProgressVisibility = (index) => {
+
+        //Todo: status in_work
+        //
+        const orderId = boxes[index].orderId;
+        const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
+        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
+                .then(response => {
+                    console.log('PATCH erfolgreich:', response.data);
+                    setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+                })
+                .catch(error => {
+                    console.error('Fehler beim PATCH:', error);
+                });
+        toggleInProgress(index)
+
         setProgressVisible(!progressVisible);
     };
 
@@ -115,9 +170,9 @@ const EmployeeView = () => {
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.map((item, index) => (
                         <Grid item key={index}>
-                            <Box
+                            <Box key={item.orderStatus}
                                 sx={{
-                                    bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                    bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                     color: 'black',
                                     textAlign: 'center',
                                     padding: '10px',
@@ -143,20 +198,20 @@ const EmployeeView = () => {
 
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress
+                                        'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.orderStatus === 'in_work'
                                             ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`,
                                         '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
 
                                     <Button variant="contained" size="small" onClick={() => {toggleInProgress(index);
-                                        toggleProgressVisibility();}} sx={{ marginLeft: '8px', marginRight: '8px',
-                                        color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white',
-                                        border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
-                                        { item.inProgress ? (
+                                        toggleProgressVisibility(index); window.location.reload();}} sx={{ marginLeft:
+                                            '8px', marginRight: '8px', color: 'black', bgcolor: item.orderStatus ===
+                                        'in_work' ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': {
+                                            bgcolor: 'lightgrey' } }}>{ item.orderStatus === 'in_work' ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                     </Button>
 
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
+                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.orderStatus === 'in_work' ?
                                             'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`,
                                         '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
                                 </Box>
@@ -164,6 +219,12 @@ const EmployeeView = () => {
                         </Grid>
                     ))}
                 </Grid>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
+                    Completed Orders
+                </Button>
             </Box>
 
             <Dialog open={dialogOpen} onClose={handleDialogClose}>
@@ -184,5 +245,3 @@ const EmployeeView = () => {
 };
 
 export default EmployeeView;
-
-

@@ -12,6 +12,7 @@ public class OrderDetailDTO {
     private Double price;
     private Long productId;
     private String productName;
+    private String productSize;
 
     public OrderDetailDTO() {}
 }
