@@ -17,11 +17,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
-import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './/utils';
+import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
 
 const CardView = () => {
     const { tableId } = useParams();
-    const [cart, setCart] = useState(loadCartFromCookies());
+    const [cart, setCart] = useState(loadCartFromCookies(tableId));
     const navigate = useNavigate();
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -35,7 +35,7 @@ const CardView = () => {
         const newCart = [...cart];
         newCart.splice(index, 1);
         setCart(newCart);
-        saveCartToCookies(newCart);
+        saveCartToCookies(tableId, newCart);
     };
 
     const handleBackClick = () => {
@@ -111,7 +111,7 @@ const CardView = () => {
             setAlertSeverity('success');
             setAlertOpen(true);
             setCart([]);
-            removeCartFromCookies();
+            removeCartFromCookies(tableId);
             navigate(`/product/${tableId}`);
         } catch (error) {
             console.error('Error creating order:', error);

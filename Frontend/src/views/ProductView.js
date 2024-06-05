@@ -32,6 +32,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { useNavigate, useParams } from "react-router-dom";
+import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
 
 const ProductView = () => {
     const { tableId } = useParams();
@@ -52,10 +53,9 @@ const ProductView = () => {
     const baseURL = "http://localhost:3000/images/products/";
 
     useEffect(() => {
-        const loadedCart = Cookies.get('cart');
-        if (loadedCart) {
-            setCart(JSON.parse(loadedCart));
-        }
+        const loadedCart = loadCartFromCookies(tableId);
+        setCart(loadedCart);
+
         axios.get("http://localhost:8080/api/products")
             .then(response => {
                 setDrinks(response.data);
@@ -79,7 +79,7 @@ const ProductView = () => {
     const handleAddToCart = () => {
         const newCart = [...cart, { ...selectedProduct, imgName: `${selectedProduct.imgName}`, extras }];
         setCart(newCart);
-        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
+        saveCartToCookies(tableId, newCart);
         setAlertMessage('Added drink to cart');
         setAlertSeverity('success');
         setAlertOpen(true);
@@ -123,7 +123,7 @@ const ProductView = () => {
         const newCart = [...cart];
         newCart.splice(index, 1);
         setCart(newCart);
-        Cookies.set('cart', JSON.stringify(newCart), { expires: 7 });
+        saveCartToCookies(tableId, newCart);
         setAlertMessage('Item removed from cart');
         setAlertSeverity('info');
         setAlertOpen(true);
