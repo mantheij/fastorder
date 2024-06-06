@@ -25,12 +25,16 @@ import {
     Paper,
     Select,
     TextField,
-    Typography
+    Typography,
+    Snackbar,
+    Alert,
+    Grid
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import UploadIcon from '@mui/icons-material/Upload';
 
 const modalStyle = {
     position: 'absolute',
@@ -54,59 +58,16 @@ const modalStyle = {
  * allowing users to add, delete, and search for products and categories.
  */
 const Settings = () => {
-    /**
-     * State to manage the list of product categories.
-     */
     const [categories, setCategories] = useState([]);
-
-    /**
-     * State to manage the list of products grouped by category.
-     */
     const [products, setProducts] = useState({});
-
-    /**
-     * State to manage the search filter value.
-     */
     const [filter, setFilter] = useState('');
-
-    /**
-     * State to manage the set of selected product IDs.
-     */
     const [selectedProducts, setSelectedProducts] = useState(new Set());
-
-    /**
-     * State to manage the visibility of the Add Product modal.
-     */
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-    /**
-     * State to manage the visibility of the Delete Products dialog.
-     */
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-    /**
-     * State to manage the visibility of the Add Category modal.
-     */
     const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
-
-    /**
-     * State to manage the visibility of the Delete Category dialog.
-     */
     const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
-
-    /**
-     * State to manage the data of a new category being added.
-     */
-    const [newCategory, setNewCategory] = useState({name: '', description: ''});
-
-    /**
-     * State to manage the ID of the category to be deleted.
-     */
+    const [newCategory, setNewCategory] = useState({ name: '', description: '' });
     const [categoryToDelete, setCategoryToDelete] = useState('');
-
-    /**
-     * State to manage the data of a new product being added.
-     */
     const [newProduct, setNewProduct] = useState({
         name: '',
         price: '',
@@ -120,14 +81,15 @@ const Settings = () => {
     });
 
     const [productImage, setProductImage] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const getToken = () => {
         return localStorage.getItem('token');
     };
 
-    /**
-     * useEffect hook to load product categories and products from the server when the component mounts.
-     */
     useEffect(() => {
         axios.get('http://localhost:8080/api/productCategories')
             .then(response => {
@@ -137,9 +99,6 @@ const Settings = () => {
             .catch(error => console.error('Error loading categories:', error));
     }, []);
 
-    /**
-     * Fetches the list of products from the server and groups them by category.
-     */
     const fetchProducts = () => {
         axios.get('http://localhost:8080/api/products')
             .then(response => {
@@ -152,84 +111,31 @@ const Settings = () => {
             .catch(error => console.error('Error loading products:', error));
     };
 
-    /**
-     * Filters products by category and search filter.
-     * @param {string} categoryId - The ID of the category to filter.
-     * @returns {Array} - The filtered products.
-     */
     const filteredProducts = categoryId => {
         return products[categoryId] ? products[categoryId].filter(product => product.name.toLowerCase().includes(filter)) : [];
     };
 
-    /**
-     * Formats the price of a product to a string with a currency symbol.
-     * @param {number} price - The price of the product.
-     * @returns {string} - The formatted price.
-     */
     const formatPrice = (price) => {
         return `${price.toFixed(2).replace('.', ',')}€`;
     };
 
-    /**
-     * Opens the Add Product modal.
-     */
     const handleAddModalOpen = () => setIsAddModalOpen(true);
-
-    /**
-     * Closes the Add Product modal.
-     */
     const handleAddModalClose = () => setIsAddModalOpen(false);
-
-    /**
-     * Opens the Add Category modal.
-     */
     const handleAddCategoryModalOpen = () => setIsAddCategoryModalOpen(true);
-
-    /**
-     * Closes the Add Category modal.
-     */
     const handleAddCategoryModalClose = () => setIsAddCategoryModalOpen(false);
-
-    /**
-     * Opens the Delete Category dialog.
-     */
     const handleDeleteCategoryDialogOpen = () => {
         setDeleteCategoryDialogOpen(true);
     };
-
-    /**
-     * Closes the Delete Category dialog.
-     */
     const handleDeleteCategoryDialogClose = () => setDeleteCategoryDialogOpen(false);
-
-    /**
-     * Updates the state with the new product data entered by the user.
-     * @param {object} event - The input change event.
-     */
     const handleNewProductChange = (event) => {
         setNewProduct({ ...newProduct, [event.target.name]: event.target.value });
     };
-
-    /**
-     * Updates the state with the new category data entered by the user.
-     * @param {object} event - The input change event.
-     */
     const handleNewCategoryChange = (event) => {
         setNewCategory({ ...newCategory, [event.target.name]: event.target.value });
     };
-
-    /**
-     * Updates the search filter state with the value entered by the user.
-     * @param {object} event - The input change event.
-     */
     const handleFilterChange = (event) => {
         setFilter(event.target.value.toLowerCase());
     };
-
-    /**
-     * Adds or removes a product from the selected products set.
-     * @param {string} productId - The ID of the product to toggle.
-     */
     const handleToggleProduct = (productId) => {
         const newSelected = new Set(selectedProducts);
         if (newSelected.has(productId)) {
@@ -240,17 +146,13 @@ const Settings = () => {
         setSelectedProducts(newSelected);
     };
 
-    /**
-     * Handles the file input change event.
-     * @param {object} event - The input change event.
-     */
     const handleFileChange = (event) => {
         setProductImage(event.target.files[0]);
+        setNewProduct({ ...newProduct, imageUrl: '' });
+        setSnackbarMessage('Image selected: ' + event.target.files[0].name);
+        setSnackbarOpen(true);
     };
 
-    /**
-     * Formats the new product data and sends a POST request to add the product to the server.
-     */
     const handleAddProduct = async () => {
         const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
         const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
@@ -270,33 +172,59 @@ const Settings = () => {
 
         try {
             if (productImage) {
-                console.log('Uploading image:', productImage);
-                const formData = new FormData();
-                formData.append('file', productImage, imgName);
-                const response = await axios.post('http://localhost:8080/api/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                console.log('Image uploaded successfully', response.data);
-                productData.imageUrl = response.data;
+                try {
+                    console.log('Uploading image:', productImage);
+                    setSnackbarMessage('Uploading image...');
+                    setSnackbarOpen(true);
+                    const formData = new FormData();
+                    formData.append('file', productImage, imgName);
+                    const response = await axios.post('http://localhost:8080/api/images/upload', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    console.log('Image uploaded successfully', response.data);
+                    productData.imageUrl = response.data;
+                    setSnackbarMessage('Image uploaded successfully');
+                    setSnackbarOpen(true);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    setSnackbarMessage('');
+                    setSnackbarOpen(false);
+                    setErrorMessage('Error uploading image. Do you want to add the product without the image?');
+                    setConfirmDialogOpen(true);
+                    return;
+                }
             } else if (newProduct.imageUrl) {
-                console.log('Downloading image from URL:', newProduct.imageUrl);
-                const response = await axios.get(newProduct.imageUrl, {responseType: 'arraybuffer'});
-                const blob = new Blob([response.data], {type: 'image/jpeg'});
-                const formData = new FormData();
-                formData.append('file', blob, imgName);
-                const uploadResponse = await axios.post('http://localhost:8080/api/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                console.log('Image downloaded and uploaded successfully', uploadResponse.data);
-                productData.imageUrl = uploadResponse.data;
+                try {
+                    console.log('Downloading image from URL:', newProduct.imageUrl);
+                    setSnackbarMessage('Downloading image...');
+                    setSnackbarOpen(true);
+                    const response = await axios.post('http://localhost:8080/api/images/download', {
+                        imageUrl: newProduct.imageUrl,
+                        filename: imgName
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    console.log('Image downloaded and uploaded successfully', response.data);
+                    productData.imageUrl = response.data;
+                    setSnackbarMessage('Image downloaded and uploaded successfully');
+                    setSnackbarOpen(true);
+                } catch (error) {
+                    console.error('Error downloading image:', error);
+                    setSnackbarMessage('');
+                    setSnackbarOpen(false);
+                    setErrorMessage('Error downloading image from URL. Do you want to add the product without the image?');
+                    setConfirmDialogOpen(true);
+                    return;
+                }
             }
 
+            setSnackbarMessage('');
+            setSnackbarOpen(false);
             console.log('Sending product data to server:', productData);
             const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
                 headers: {
@@ -304,7 +232,7 @@ const Settings = () => {
                 }
             });
             console.log('Product added successfully:', productResponse.data);
-            const newProducts = {...products};
+            const newProducts = { ...products };
             newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
             newProducts[productData.productCategoryId].push(productResponse.data);
             setProducts(newProducts);
@@ -314,9 +242,6 @@ const Settings = () => {
         }
     };
 
-    /**
-     * Sends a POST request to add the new category to the server.
-     */
     const handleAddCategory = () => {
         axios.post('http://localhost:8080/api/productCategories', newCategory)
             .then(response => {
@@ -329,29 +254,20 @@ const Settings = () => {
             });
     };
 
-    /**
-     * Opens the Delete Products dialog.
-     */
     const handleDeleteProducts = () => {
         setDeleteDialogOpen(true);
     };
 
-    /**
-     * Closes the Delete Products dialog.
-     */
     const handleCloseDialog = () => {
         setDeleteDialogOpen(false);
     };
 
-    /**
-     * Sends DELETE requests to remove the selected products from the server and updates the state.
-     */
     const deleteSelectedProducts = () => {
         axios.all(Array.from(selectedProducts).map(productId =>
             axios.delete(`http://localhost:8080/api/products/${productId}`)))
             .then(() => {
                 console.log('All selected products deleted successfully');
-                fetchProducts(); // Fetch all products again to reflect the deletions
+                fetchProducts();
                 setSelectedProducts(new Set());
                 setDeleteDialogOpen(false);
             }).catch(error => {
@@ -359,9 +275,6 @@ const Settings = () => {
         });
     };
 
-    /**
-     * Sends a DELETE request to remove the selected category from the server and updates the state.
-     */
     const deleteCategory = () => {
         axios.delete(`http://localhost:8080/api/productCategories/${categoryToDelete}`)
             .then(() => {
@@ -374,10 +287,6 @@ const Settings = () => {
             });
     };
 
-    /**
-     * Renders the confirmation dialog for deleting selected products.
-     * @returns {JSX.Element} - The delete confirmation dialog.
-     */
     const renderDeleteConfirmDialog = () => (
         <Dialog
             open={deleteDialogOpen}
@@ -407,10 +316,6 @@ const Settings = () => {
         </Dialog>
     );
 
-    /**
-     * Renders the confirmation dialog for deleting a category.
-     * @returns {JSX.Element} - The delete category confirmation dialog.
-     */
     const renderDeleteCategoryConfirmDialog = () => (
         <Dialog
             open={deleteCategoryDialogOpen}
@@ -448,11 +353,78 @@ const Settings = () => {
         </Dialog>
     );
 
-    /**
-     * Finds a product by its ID in the products state.
-     * @param {string} productId - The ID of the product to find.
-     * @returns {object|null} - The found product or null if not found.
-     */
+    const renderConfirmDialog = () => (
+        <Dialog
+            open={confirmDialogOpen}
+            onClose={() => setConfirmDialogOpen(false)}
+            aria-labelledby="confirm-dialog-title"
+            aria-describedby="confirm-dialog-description"
+        >
+            <DialogTitle id="confirm-dialog-title">{"Image Upload/Download Error"}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="confirm-dialog-description">
+                    {errorMessage}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={async () => {
+                        setConfirmDialogOpen(false);
+                        setSnackbarOpen(false);
+                        await handleAddProductWithoutImage();
+                    }}
+                    color="primary"
+                    variant="contained"
+                >
+                    Yes
+                </Button>
+                <Button
+                    onClick={() => setConfirmDialogOpen(false)}
+                    color="error"
+                    variant="contained"
+                >
+                    No
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+
+    const handleAddProductWithoutImage = async () => {
+        const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
+        const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
+        const formattedPrice = parseFloat(cleanedPrice);
+        const formattedQuantity = parseInt(newProduct.quantity, 10);
+        const productData = {
+            ...newProduct,
+            price: formattedPrice,
+            quantity: formattedQuantity,
+            imgName,
+            allergens: newProduct.allergens || "allergens are empty",
+            ingredients: newProduct.ingredients || "ingredients are empty",
+            nutrition: newProduct.nutrition || "nutrition's are empty",
+            imageUrl: ''
+        };
+
+        const token = getToken();
+
+        try {
+            console.log('Sending product data to server:', productData);
+            const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('Product added successfully:', productResponse.data);
+            const newProducts = { ...products };
+            newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
+            newProducts[productData.productCategoryId].push(productResponse.data);
+            setProducts(newProducts);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
+    };
+
     const findProduct = (productId) => {
         for (const key in products) {
             if (products.hasOwnProperty(key)) {
@@ -561,10 +533,19 @@ const Settings = () => {
                     <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
                                value={newProduct.nutrition || ""} onChange={handleNewProductChange}
                                placeholder="List of nutrition" />
-                    <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
-                               value={newProduct.imageUrl} onChange={handleNewProductChange}
-                               placeholder="http://example.com/image.jpg" />
-                    <input type="file" name="productImage" onChange={handleFileChange} />
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={9}>
+                            <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
+                                       value={newProduct.imageUrl} onChange={handleNewProductChange}
+                                       placeholder="http://example.com/image.jpg" />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Button variant="contained" component="label" startIcon={<UploadIcon />} fullWidth>
+                                Upload Local
+                                <input type="file" hidden name="productImage" onChange={handleFileChange} />
+                            </Button>
+                        </Grid>
+                    </Grid>
 
                     <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
                         Submit
@@ -590,6 +571,12 @@ const Settings = () => {
 
             {renderDeleteConfirmDialog()}
             {renderDeleteCategoryConfirmDialog()}
+            {renderConfirmDialog()}
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage ? "info" : "error"} sx={{ width: '100%' }}>
+                    {snackbarMessage || errorMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
