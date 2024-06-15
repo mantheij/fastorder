@@ -33,6 +33,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import { useNavigate, useParams } from "react-router-dom";
 import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
+import config from "../config";
 
 const ProductView = () => {
     const { tableId } = useParams();
@@ -50,13 +51,11 @@ const ProductView = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [extras, setExtras] = useState('');
     const navigate = useNavigate();
-    const baseURL = "http://localhost:3000/images/products/";
 
     useEffect(() => {
         const loadedCart = loadCartFromCookies(tableId);
         setCart(loadedCart);
-
-        axios.get("http://localhost:8080/api/products")
+        axios.get(`${config.apiBaseUrl}/api/products`)
             .then(response => {
                 setDrinks(response.data);
                 setUniqueDrinks(Array.from(new Set(response.data.map(drink => drink.name)))

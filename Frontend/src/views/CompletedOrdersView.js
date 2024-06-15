@@ -6,6 +6,7 @@ import { blue } from '@mui/material/colors';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import config from "../config";
 
 const ClockBar = ({ currentTime }) => {
     return (
@@ -34,7 +35,7 @@ const CompletedOrdersView = () => {
     useEffect(() => {
         const fetchCompletedOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders');
+                const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
                 const completedOrders = response.data
                     .filter(order => order.status === 'completed')
                     .map(order => ({

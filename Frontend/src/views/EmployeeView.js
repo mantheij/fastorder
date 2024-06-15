@@ -10,6 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {format} from "date-fns";
+import config from "../config";
 
 const ClockBar = ({ currentTime }) => {
     return (
@@ -44,7 +45,7 @@ const EmployeeView = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders');
+                const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
                 const openOrders = response.data
                     .filter(order => order.status === 'in_work' || order.status === 'open')
                     .map(order => ({
@@ -66,13 +67,12 @@ const EmployeeView = () => {
             } catch (error) {
                 console.error('Error loading completed orders:', error);
             }
-
         };
 
     // useEffect(() => {
     //     const fetchOrders = async () => {
     //         try {
-    //             const response = await axios.get('http://localhost:8080/api/orders/open');
+    //             const response = await axios.get(`${config.apiBaseUrl}/api/orders/open`);
     //             const orders = response.data.map(order => ({
     //                 tableNumber: order.tableId,
     //                 orderId: order.orderId,
@@ -126,7 +126,7 @@ const EmployeeView = () => {
         //
         const orderId = boxes[index].orderId;
         const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
-        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
+        axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, { status: newStatus })
                 .then(response => {
                     console.log('PATCH erfolgreich:', response.data);
                     setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
