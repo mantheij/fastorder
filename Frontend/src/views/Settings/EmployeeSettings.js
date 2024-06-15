@@ -49,6 +49,8 @@ function EmployeeSettings() {
     const [openEditTypeDialog, setOpenEditTypeDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [isEditRoleDisabled, setIsEditRoleDisabled] = useState(true); // Initial state can be true or false based on your logic
+
 
     useEffect(() => {
         fetchUsers();
@@ -67,6 +69,11 @@ function EmployeeSettings() {
     const handleAddEmployee = async () => {
         if (!username || !email || !password || !role) {
             setError('All fields are required');
+            setOpenSnackbar(true);
+            return;
+        }
+        if (username.length > 20) {
+            setError('Username must be 20 characters or less');
             setOpenSnackbar(true);
             return;
         }
@@ -108,9 +115,18 @@ function EmployeeSettings() {
     const handleEditUser = async () => {
         try {
             if (editType === 'username' && username) {
-                await axios.put(`${config.apiBaseUrl}/api/user/changeUsername/${selectedUserId}`,  username );
+                if (username.length > 20) {
+                    setError('Username must be 20 characters or less');
+                    setOpenSnackbar(true);
+                    return;
+                }
+                await axios.put(`${config.apiBaseUrl}/api/user/changeUsername/${selectedUserId}`, username, {
+                    headers: { 'Content-Type': 'text/plain' },
+                });
             } else if (editType === 'role' && role) {
-                await axios.put(`${config.apiBaseUrl}/api/user/changeRole/${selectedUserId}`,  role );
+                await axios.put(`${config.apiBaseUrl}/api/user/changeRole/${selectedUserId}`, role, {
+                    headers: { 'Content-Type': 'text/plain' },
+                });
             } else if (editType === 'password' && oldPassword && newPassword) {
                 await axios.put(`${config.apiBaseUrl}/api/user/changePassword/${selectedUserId}`, {
                     oldPassword,
@@ -296,8 +312,8 @@ function EmployeeSettings() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                     >
-                        <MenuItem value="ROLE_ADMIN">Admin</MenuItem>
-                        <MenuItem value="ROLE_USER">Employee</MenuItem>
+                        <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
+                        <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
                     </Select>
                 </DialogContent>
                 <DialogActions>
@@ -315,7 +331,7 @@ function EmployeeSettings() {
                     <Button onClick={() => handleOpenEditDialog('username')} fullWidth variant="outlined" sx={{ mt: 2 }}>
                         Edit Username
                     </Button>
-                    <Button onClick={() => handleOpenEditDialog('role')} fullWidth variant="outlined" sx={{ mt: 2 }}>
+                    <Button onClick={() => handleOpenEditDialog('role')} fullWidth variant="outlined" sx={{ mt: 2 }} disabled={{isEditRoleDisabled}}>
                         Edit Role
                     </Button>
                     <Button onClick={() => handleOpenEditDialog('password')} fullWidth variant="outlined" sx={{ mt: 2 }}>
@@ -351,8 +367,8 @@ function EmployeeSettings() {
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                         >
-                            <MenuItem value="ROLE_ADMIN">Admin</MenuItem>
-                            <MenuItem value="ROLE_USER">Employee</MenuItem>
+                            <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
+                            <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
                         </Select>
                     )}
                     {editType === 'password' && (
