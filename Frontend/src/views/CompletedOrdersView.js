@@ -40,7 +40,7 @@ const CompletedOrdersView = () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/orders');
                 const completedOrders = response.data
-                    .filter(order => order.status === 'completed')
+                    .filter(order => order.status === 'completed' || order.status === 'payed')
                     .map(order => ({
                         orderStatus: order.status,
                         tableNumber: order.tableId,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress, Checkbox }
-    from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress, Checkbox } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -104,12 +103,11 @@ const EmployeeView = () => {
         axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
             .then(response => {
                 console.log('PATCH erfolgreich:', response.data);
-                setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+                setBoxes(prevBoxes => prevBoxes.map((box, i) => i === index ? { ...box, orderStatus: newStatus } : box));
             })
             .catch(error => {
                 console.error('Fehler beim PATCH:', error);
             });
-        toggleInProgress(index)
 
         setProgressVisible(!progressVisible);
     };
@@ -205,7 +203,7 @@ const EmployeeView = () => {
                                             '&:hover': { bgcolor: theme.palette.green.light }
                                         }}><CheckIcon /></Button>
 
-                                        <Button variant="contained" size="small" onClick={() => { toggleInProgress(index); toggleProgressVisibility(index); window.location.reload(); }} sx={{
+                                        <Button variant="contained" size="small" onClick={() => toggleProgressVisibility(index)} sx={{
                                             marginLeft: '8px',
                                             marginRight: '8px',
                                             color: 'black',
