@@ -153,74 +153,80 @@ const EmployeeView = () => {
 
             <Box style={{ marginTop: '56px' }}>
                 <Grid container spacing={2} justifyContent="center">
-                    {boxes.map((item, index) => (
-                        <Grid item key={index}>
-                            <Box key={item.orderStatus}
-                                 sx={{
-                                     bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                     color: 'black',
-                                     textAlign: 'center',
-                                     padding: '10px',
-                                     borderRadius: '8px',
-                                     marginTop: '5px',
-                                     wordWrap: 'break-word',
-                                     display: 'flex',
-                                     flexDirection: 'column',
-                                     alignItems: 'center',
-                                     maxWidth: '100%',
-                                     boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
-                                 }}>
+                    {boxes.length === 0 ? (
+                        <Typography variant="h6" align="center" sx={{ marginTop: '20px' }}>
+                            No orders
+                        </Typography>
+                    ) : (
+                        boxes.map((item, index) => (
+                            <Grid item key={index}>
+                                <Box key={item.orderStatus}
+                                     sx={{
+                                         bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                         color: 'black',
+                                         textAlign: 'center',
+                                         padding: '10px',
+                                         borderRadius: '8px',
+                                         marginTop: '5px',
+                                         wordWrap: 'break-word',
+                                         display: 'flex',
+                                         flexDirection: 'column',
+                                         alignItems: 'center',
+                                         maxWidth: '100%',
+                                         boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                     }}>
 
-                                <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                                    {item.tableNumber}</Typography>
+                                    <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                                        {item.tableNumber}</Typography>
 
-                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
 
-                                {item.text.map((product) => (
-                                    <Box key={product.id} sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Checkbox
-                                            checked={checkedItems[item.orderId]?.[product.id] || false}
-                                            onChange={() => handleCheckboxChange(item.orderId, product.id)}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
-                                                textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
-                                            }}
-                                            dangerouslySetInnerHTML={{ __html: product.content }}
-                                        />
+                                    {item.text.map((product) => (
+                                        <Box key={product.id} sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Checkbox
+                                                checked={checkedItems[item.orderId]?.[product.id] || false}
+                                                onChange={() => handleCheckboxChange(item.orderId, product.id)}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
+                                                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: product.content }}
+                                            />
+                                        </Box>
+                                    ))}
+
+                                    <Box sx={{ marginTop: '20px' }}>
+                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{
+                                            color: theme.palette.green.main,
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: `2px solid ${theme.palette.green.main}`,
+                                            '&:hover': { bgcolor: theme.palette.green.light }
+                                        }}><CheckIcon /></Button>
+
+                                        <Button variant="contained" size="small" onClick={() => { toggleInProgress(index); toggleProgressVisibility(index); window.location.reload(); }} sx={{
+                                            marginLeft: '8px',
+                                            marginRight: '8px',
+                                            color: 'black',
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: '2px solid black',
+                                            '&:hover': { bgcolor: 'lightgrey' }
+                                        }}>{item.orderStatus === 'in_work' ? (
+                                            <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
+                                        </Button>
+
+                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{
+                                            color: theme.palette.red.main,
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: `2px solid ${theme.palette.red.main}`,
+                                            '&:hover': { bgcolor: theme.palette.red.light }
+                                        }}><CloseIcon /></Button>
                                     </Box>
-                                ))}
-
-                                <Box sx={{ marginTop: '20px' }}>
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{
-                                        color: theme.palette.green.main,
-                                        bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                        border: `2px solid ${theme.palette.green.main}`,
-                                        '&:hover': { bgcolor: theme.palette.green.light }
-                                    }}><CheckIcon /></Button>
-
-                                    <Button variant="contained" size="small" onClick={() => { toggleInProgress(index); toggleProgressVisibility(index); window.location.reload(); }} sx={{
-                                        marginLeft: '8px',
-                                        marginRight: '8px',
-                                        color: 'black',
-                                        bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                        border: '2px solid black',
-                                        '&:hover': { bgcolor: 'lightgrey' }
-                                    }}>{item.orderStatus === 'in_work' ? (
-                                        <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
-                                    </Button>
-
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{
-                                        color: theme.palette.red.main,
-                                        bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                        border: `2px solid ${theme.palette.red.main}`,
-                                        '&:hover': { bgcolor: theme.palette.red.light }
-                                    }}><CloseIcon /></Button>
                                 </Box>
-                            </Box>
-                        </Grid>
-                    ))}
+                            </Grid>
+                        ))
+                    )}
                 </Grid>
             </Box>
 
