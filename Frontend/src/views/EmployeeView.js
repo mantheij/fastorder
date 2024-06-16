@@ -50,6 +50,7 @@ const EmployeeView = () => {
                         orderId: order.orderId,
                         orderTimeReal: new Date(order.datetime),
                         orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
+                        orderDate: `${format(new Date(order.datetime), 'dd.MM.yyyy')}`,
                         text: order.orderDetails.map((detail, index) => ({
                             id: `${order.orderId}-${index}`,
                             content: `-(x${detail.quantity}) ${detail.productName} ${detail.productSize}`
@@ -174,10 +175,15 @@ const EmployeeView = () => {
                                          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
                                      }}>
 
-                                    <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                                    <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
+                                        padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
                                         {item.tableNumber}</Typography>
 
-                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+
+                                    <Typography sx={{ fontSize: '0.7rem', marginBottom: '8px', textShadow:
+                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderDate}</Typography>
 
                                     {item.text.map((product) => (
                                         <Box key={product.id} sx={{ display: 'flex', alignItems: 'center' }}>
