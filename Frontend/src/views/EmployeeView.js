@@ -27,14 +27,15 @@ const ClockBar = ({ currentTime }) => {
 
     return (
 
-        <Box sx={{ background: "linear-gradient(to top, #6DAGF0, #0383E2)", height: '56px', width: '100%', position: 'fixed', borderColor: 'white',
+        <Box sx={{border: '2px solid black', background: "linear-gradient(to top, #fefefe, #ffffff)", height: '56px', width: '100%', position: 'fixed',
             top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Box sx={{ display: 'flex', padding: '8px', borderRadius: '4px', border: '2px solid black', background: 'white', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                    <Typography variant="h5" align="center" sx={{ color: 'black', textShadow: 'none' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', border: '2px solid ${theme.palette.blue.dark}'}}>
+                <Box sx={{ display: 'flex', padding: '8px', borderRadius: '4px',   }}>
+                    <Typography variant="h5" align="center" sx={{ color: 'black', textShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)' }}>
+
                         {currentTime.toLocaleTimeString()}
                     </Typography>
-                    <Typography variant="subtitle1" align="center" sx={{ color: 'black', textShadow: 'none', marginLeft: 1 }}>
+                    <Typography variant="subtitle1" align="center" sx={{ color: 'black', textShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)', marginLeft: 1 }}>
                         {currentTime.toLocaleDateString()}
                     </Typography>
                 </Box>
@@ -199,17 +200,18 @@ const EmployeeView = () => {
                                          flexDirection: 'column',
                                          alignItems: 'center',
                                          maxWidth: '100%',
-                                         boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                         boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)'
                                      }}>
 
                                     <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
-                                        padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                                        {item.tableNumber}
+                                        padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)' }}>
                                         <Box component="span" sx={{ fontSize: '3rem', display: 'inline-flex',
                                             position: 'relative', top: '8px', padding: '5px', borderRadius: '4px', }}>
                                             <TableBarIcon sx={{ fontSize: 'inherit', filter:
                                                     'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))' }} />
                                         </Box>
+                                        {item.tableNumber}
+
                                     </Typography>
 
                                     <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
@@ -272,7 +274,7 @@ const EmployeeView = () => {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Button variant="contained" sx={{backgroundColor: 'white'}} onClick={() => navigate('/orders/completed')} sx={{border: '2px solid white'}}  >
+                <Button variant="contained"  onClick={() => navigate('/orders/completed')} sx={{backgroundColor: 'white', color: 'black', boxShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)' }}  >
                     Completed Orders
                 </Button>
             </Box>
