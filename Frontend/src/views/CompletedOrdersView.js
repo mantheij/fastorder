@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import RestoreIcon from '@mui/icons-material/Restore';
+
 const ClockBar = ({ currentTime }) => {
     return (
         <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
@@ -111,44 +112,50 @@ const CompletedOrdersView = () => {
 
             <Box style={{ marginTop: '30px' }}>
                 <Grid container spacing={2} justifyContent="center">
-                    {boxes.map((item, index) => (
-                        <Grid item key={index}>
-                            <Box
-                                sx={{
-                                    bgcolor: 'white',
-                                    color: 'black',
-                                    textAlign: 'center',
-                                    padding: '10px',
-                                    borderRadius: '8px',
-                                    marginTop: '5px',
-                                    wordWrap: 'break-word',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    maxWidth: '100%',
-                                    boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
-                                }}>
+                    {boxes.length === 0 ? (
+                        <Typography variant="h6" align="center" sx={{ marginTop: '20px' }}>
+                            No completed orders
+                        </Typography>
+                    ) : (
+                        boxes.map((item, index) => (
+                            <Grid item key={index}>
+                                <Box
+                                    sx={{
+                                        bgcolor: 'white',
+                                        color: 'black',
+                                        textAlign: 'center',
+                                        padding: '10px',
+                                        borderRadius: '8px',
+                                        marginTop: '5px',
+                                        wordWrap: 'break-word',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        maxWidth: '100%',
+                                        boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                    }}>
 
-                                <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
-                                    padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                                    {item.tableNumber}</Typography>
+                                    <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
+                                        padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                                        {item.tableNumber}</Typography>
 
-                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '4px', textShadow:
-                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '4px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
 
-                                <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
-                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderDate}</Typography>
+                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderDate}</Typography>
 
-                                <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
-                                        '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                                    <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
 
-                                <Button variant="contained" color="primary" size="small"    style={{ minWidth: '30px',
-                                    minHeight: '30px', padding: '5px' }}onClick={() => handleDialogOpen(index)}>
-                                    <RestoreIcon/>
-                                </Button>
-                            </Box>
-                        </Grid>
-                    ))}
+                                    <Button variant="contained" color="primary" size="small"    style={{ minWidth: '30px',
+                                        minHeight: '30px', padding: '5px' }}onClick={() => handleDialogOpen(index)}>
+                                        <RestoreIcon/>
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        ))
+                    )}
                 </Grid>
             </Box>
 
