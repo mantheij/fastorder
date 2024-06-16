@@ -13,9 +13,14 @@ const ClockBar = ({ currentTime }) => {
     return (
         <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
                 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                {currentTime.toLocaleTimeString()}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                    {currentTime.toLocaleTimeString()}
+                </Typography>
+                <Typography variant="subtitle1" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 1 }}>
+                    {currentTime.toLocaleDateString()}
+                </Typography>
+            </Box>
         </Box>
     );
 };
