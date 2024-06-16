@@ -27,7 +27,7 @@ const ClockBar = ({ currentTime }) => {
 
     return (
 
-        <Box sx={{border: '2px solid black', background: "linear-gradient(to top, #fefefe, #ffffff)", height: '56px', width: '100%', position: 'fixed',
+        <Box sx={{ background: "linear-gradient(to top, #fefefe, #ffffff)", height: '56px', width: '100%', position: 'fixed',
             top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', border: '2px solid ${theme.palette.blue.dark}'}}>
                 <Box sx={{ display: 'flex', padding: '8px', borderRadius: '4px',   }}>
@@ -274,7 +274,8 @@ const EmployeeView = () => {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Button variant="contained"  onClick={() => navigate('/orders/completed')} sx={{backgroundColor: 'white', color: 'black', boxShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)' }}  >
+                <Button variant="contained"  onClick={() => navigate('/orders/completed')} sx={{backgroundColor: 'white',
+                    color: 'black', boxShadow: '0px 2px 4px rgba(0, 0, 0.2, 0.4)', '&:hover': { bgcolor: theme.palette.grey.hover } }}  >
                     Completed Orders
                 </Button>
             </Box>
