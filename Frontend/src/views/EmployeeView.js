@@ -1,28 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress, Checkbox } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+    CircularProgress, Checkbox } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import TableBarIcon from '@mui/icons-material/TableBar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
 
 const ClockBar = ({ currentTime }) => {
+
+    const theme = createTheme({
+        palette: {
+            primary: {
+                light: blue[300],
+                main: blue[500],
+                dark: blue[700],
+                darker: blue[900],
+            }
+        },
+    });
+
     return (
-        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
-                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
+        <Box sx={{ background: "linear-gradient(to top, #6DAGF0, #0383E2)", height: '56px', width: '100%', position: 'fixed', borderColor: 'white',
+            top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                    {currentTime.toLocaleTimeString()}
-                </Typography>
-                <Typography variant="subtitle1" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 1 }}>
-                    {currentTime.toLocaleDateString()}
-                </Typography>
+                <Box sx={{ display: 'flex', padding: '8px', borderRadius: '4px', border: '2px solid black', background: 'white', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                    <Typography variant="h5" align="center" sx={{ color: 'black', textShadow: 'none' }}>
+                        {currentTime.toLocaleTimeString()}
+                    </Typography>
+                    <Typography variant="subtitle1" align="center" sx={{ color: 'black', textShadow: 'none', marginLeft: 1 }}>
+                        {currentTime.toLocaleDateString()}
+                    </Typography>
+                </Box>
             </Box>
         </Box>
+
+
 
 
     );
@@ -155,7 +174,7 @@ const EmployeeView = () => {
     };
 
     return (
-        <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
+        <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto', background: "linear-gradient(to top, #0383E2, #5DADF0)"}}>
             <ClockBar currentTime={currentTime} />
 
             <Box style={{ marginTop: '56px' }}>
@@ -185,7 +204,13 @@ const EmployeeView = () => {
 
                                     <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
                                         padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                                        {item.tableNumber}</Typography>
+                                        {item.tableNumber}
+                                        <Box component="span" sx={{ fontSize: '3rem', display: 'inline-flex',
+                                            position: 'relative', top: '8px', padding: '5px', borderRadius: '4px', }}>
+                                            <TableBarIcon sx={{ fontSize: 'inherit', filter:
+                                                    'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))' }} />
+                                        </Box>
+                                    </Typography>
 
                                     <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
                                             '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
@@ -201,7 +226,8 @@ const EmployeeView = () => {
                                             />
                                             <Typography
                                                 sx={{
-                                                    textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
+                                                    textDecoration: checkedItems[item.orderId]?.[product.id] ?
+                                                        'line-through' : 'none',
                                                     textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
                                                 }}
                                                 dangerouslySetInnerHTML={{ __html: product.content }}
@@ -210,14 +236,16 @@ const EmployeeView = () => {
                                     ))}
 
                                     <Box sx={{ marginTop: '20px' }}>
-                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{
+                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
+                                            'delete')} sx={{
                                             color: theme.palette.green.main,
                                             bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                             border: `2px solid ${theme.palette.green.main}`,
                                             '&:hover': { bgcolor: theme.palette.green.light }
                                         }}><CheckIcon /></Button>
 
-                                        <Button variant="contained" size="small" onClick={() => toggleProgressVisibility(index)} sx={{
+                                        <Button variant="contained" size="small" onClick={() =>
+                                            toggleProgressVisibility(index)} sx={{
                                             marginLeft: '8px',
                                             marginRight: '8px',
                                             color: 'black',
@@ -228,7 +256,8 @@ const EmployeeView = () => {
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                         </Button>
 
-                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'cancel')} sx={{
+                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
+                                            'cancel')} sx={{
                                             color: theme.palette.red.main,
                                             bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                             border: `2px solid ${theme.palette.red.main}`,
@@ -243,7 +272,7 @@ const EmployeeView = () => {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
+                <Button variant="contained" sx={{backgroundColor: 'white'}} onClick={() => navigate('/orders/completed')} sx={{border: '2px solid white'}}  >
                     Completed Orders
                 </Button>
             </Box>
@@ -252,7 +281,8 @@ const EmployeeView = () => {
                 <DialogTitle>Confirmation</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {actionType === 'delete' ? 'Are you sure this order is completed?' : 'Are you sure you want to cancel this order?'}
+                        {actionType === 'delete' ? 'Are you sure this order is completed?' :
+                            'Are you sure you want to cancel this order?'}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
