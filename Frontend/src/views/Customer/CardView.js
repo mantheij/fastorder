@@ -18,7 +18,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
 import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
-import config from "../config";
+import config from "../../config";
 
 const CardView = () => {
     const { tableId } = useParams();

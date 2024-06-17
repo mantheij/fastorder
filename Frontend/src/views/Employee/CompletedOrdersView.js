@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }
     from '@mui/material';
-import useEmployeeController from '../controller/EmployeeController';
+import useEmployeeController from '../../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue } from '@mui/material/colors';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import RestoreIcon from '@mui/icons-material/Restore';
-import config from '../config'
+import config from '../../config'
 
 const ClockBar = ({ currentTime }) => {
     return (

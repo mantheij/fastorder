@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import LockIcon from '@mui/icons-material/Lock';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
-import config from '../config';
+import config from '../../config';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;

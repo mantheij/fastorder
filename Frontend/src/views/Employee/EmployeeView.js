@@ -12,7 +12,7 @@ import {
     Grid,
     Typography
 } from '@mui/material';
-import useEmployeeController from '../controller/EmployeeController';
+import useEmployeeController from '../../controller/EmployeeController';
 import {createTheme} from '@mui/material/styles';
 import {blue, green, red} from '@mui/material/colors';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -22,7 +22,7 @@ import TableBarIcon from '@mui/icons-material/TableBar';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import {format} from "date-fns";
-import config from "../config";
+import config from "../../config";
 // import io from 'socket.io-client';  // For real-time updates
 
 /**

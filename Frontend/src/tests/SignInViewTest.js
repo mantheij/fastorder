@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import SignInView from '../views/SignInView';
+import SignInView from '../views/SignIn/SignInView';
 
 describe('SignInView component', () => {
     test('renders sign in form', () => {

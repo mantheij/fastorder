@@ -34,7 +34,7 @@ import ContactSupport from '@mui/icons-material/ContactSupport';
 
 import { useNavigate, useParams } from "react-router-dom";
 import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
-import config from "../config";
+import config from "../../config";
 
 const ProductView = () => {
     const { tableId } = useParams();
