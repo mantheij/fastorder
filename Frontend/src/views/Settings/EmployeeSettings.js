@@ -37,7 +37,7 @@ function EmployeeSettings() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState('ROLE_ADMIN'); // Default to ROLE_ADMIN
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [selectedUserId, setSelectedUserId] = useState(null);
@@ -50,7 +50,6 @@ function EmployeeSettings() {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [isEditRoleDisabled, setIsEditRoleDisabled] = useState(true); // Initial state can be true or false based on your logic
-
 
     useEffect(() => {
         fetchUsers();
@@ -82,7 +81,7 @@ function EmployeeSettings() {
                 username,
                 email,
                 password,
-                role: [role],
+                role: [role], // Ensure role is sent as an array
             }, { timeout: 5000 });
 
             if (response.status === 200) {
@@ -90,7 +89,7 @@ function EmployeeSettings() {
                 setUsername('');
                 setEmail('');
                 setPassword('');
-                setRole('');
+                setRole('ROLE_ADMIN'); // Reset to default ROLE_ADMIN
                 setSuccessMessage('User added successfully');
                 setOpenSnackbar(true);
                 fetchUsers(); // Reload the user list
@@ -137,7 +136,7 @@ function EmployeeSettings() {
             setOldPassword('');
             setNewPassword('');
             setUsername('');
-            setRole('');
+            setRole(''); // Reset to default ROLE_ADMIN
             setEditType('');
             fetchUsers(); // Reload the user list
         } catch (error) {
@@ -312,7 +311,7 @@ function EmployeeSettings() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                     >
-                        <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
+                        <MenuItem value="admin">ROLE_ADMIN</MenuItem>
                         <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
                     </Select>
                 </DialogContent>
@@ -331,7 +330,7 @@ function EmployeeSettings() {
                     <Button onClick={() => handleOpenEditDialog('username')} fullWidth variant="outlined" sx={{ mt: 2 }}>
                         Edit Username
                     </Button>
-                    <Button onClick={() => handleOpenEditDialog('role')} fullWidth variant="outlined" sx={{ mt: 2 }} disabled={{isEditRoleDisabled}}>
+                    <Button onClick={() => handleOpenEditDialog('role')} fullWidth variant="outlined" sx={{ mt: 2 }} disabled={isEditRoleDisabled}>
                         Edit Role
                     </Button>
                     <Button onClick={() => handleOpenEditDialog('password')} fullWidth variant="outlined" sx={{ mt: 2 }}>
@@ -367,8 +366,8 @@ function EmployeeSettings() {
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                         >
-                            <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
-                            <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
+                            <MenuItem value="admin">ROLE_ADMIN</MenuItem>
+                            <MenuItem value="">ROLE_USER</MenuItem>
                         </Select>
                     )}
                     {editType === 'password' && (
