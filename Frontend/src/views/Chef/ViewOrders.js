@@ -4,7 +4,7 @@ import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Pap
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
-import { format } from "date-fns";
+import config from "../../config";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
@@ -15,7 +15,7 @@ const ViewOrders = () => {
 
     const fetchCompletedOrders = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/orders');
+            const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
             const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
 
             const allOrderDetails = completedOrders.flatMap(order => order.orderDetails);
@@ -53,11 +53,11 @@ const ViewOrders = () => {
     };
 
     const handleOrderClick = () => {
-        axios.get('http://localhost:8080/api/orders')
+        axios.get(`${config.apiBaseUrl}/api/orders`)
             .then(response => {
                 const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
                 const updatePromises = completedOrders.map(order =>
-                    axios.patch(`http://localhost:8080/api/orders/${order.orderId}/status`, { status: 'paid' })
+                    axios.patch(`${config.apiBaseUrl}/api/orders/${order.orderId}/status`, { status: 'paid' })
                 );
                 Promise.all(updatePromises)
                     .then(results => {
