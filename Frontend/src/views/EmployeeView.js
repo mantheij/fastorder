@@ -296,172 +296,171 @@ const EmployeeView = () => {
                 console.error('Fehler beim PATCH:', error);
             });
 
-        const theme = createTheme({
-            palette: {
-                primary: {
-                    light: blue[300],
-                    main: blue[500],
-                    dark: blue[700],
-                    darker: blue[900],
-                },
-                green: {
-                    light: green[300],
-                    main: green[500],
-                },
-                red: {
-                    light: red[300],
-                    main: red[500],
-                },
-                grey: {
-                    dark: '#333333',
-                    hover: '#666666',
-                },
+
+    }
+    const theme = createTheme({
+        palette: {
+            primary: {
+                light: blue[300],
+                main: blue[500],
+                dark: blue[700],
+                darker: blue[900],
             },
-        });
+            green: {
+                light: green[300],
+                main: green[500],
+            },
+            red: {
+                light: red[300],
+                main: red[500],
+            },
+            grey: {
+                dark: '#333333',
+                hover: '#666666',
+            },
+        },
+    });
+    const handleCheckboxChange = (orderId, productId) => {
+        setCheckedItems(prev => ({
+            ...prev,
+            [orderId]: {
+                ...prev[orderId],
+                [productId]: !prev[orderId]?.[productId]
+            }
+        }));
+    };
+    return (
+        <div style={{paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto'}}>
+            <ClockBar currentTime={currentTime}/>
 
-        const handleCheckboxChange = (orderId, productId) => {
-            setCheckedItems(prev => ({
-                ...prev,
-                [orderId]: {
-                    ...prev[orderId],
-                    [productId]: !prev[orderId]?.[productId]
-                }
-            }));
-        };
+            <Box style={{marginTop: '56px'}}>
+                <Grid container spacing={2} justifyContent="center">
+                    {boxes.length === 0 ? (
+                        <Typography variant="h6" align="center" sx={{marginTop: '20px'}}>
+                            No orders
+                        </Typography>
+                    ) : (
+                        boxes.map((item, index) => (
+                            <Grid item key={index}>
+                                <Box key={item.orderStatus}
+                                     sx={{
+                                         bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                         color: 'black',
+                                         textAlign: 'center',
+                                         padding: '10px',
+                                         borderRadius: '8px',
+                                         marginTop: '5px',
+                                         wordWrap: 'break-word',
+                                         display: 'flex',
+                                         flexDirection: 'column',
+                                         alignItems: 'center',
+                                         maxWidth: '100%',
+                                         boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.2)'
+                                     }}>
 
-        return (
-            <div style={{paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto'}}>
-                <ClockBar currentTime={currentTime}/>
-
-                <Box style={{marginTop: '56px'}}>
-                    <Grid container spacing={2} justifyContent="center">
-                        {boxes.length === 0 ? (
-                            <Typography variant="h6" align="center" sx={{marginTop: '20px'}}>
-                                No orders
-                            </Typography>
-                        ) : (
-                            boxes.map((item, index) => (
-                                <Grid item key={index}>
-                                    <Box key={item.orderStatus}
-                                         sx={{
-                                             bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                             color: 'black',
-                                             textAlign: 'center',
-                                             padding: '10px',
-                                             borderRadius: '8px',
-                                             marginTop: '5px',
-                                             wordWrap: 'break-word',
-                                             display: 'flex',
-                                             flexDirection: 'column',
-                                             alignItems: 'center',
-                                             maxWidth: '100%',
-                                             boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.2)'
-                                         }}>
-
-                                        <Typography variant="h3" gutterBottom sx={{
-                                            color: theme.palette.primary.main,
+                                    <Typography variant="h3" gutterBottom sx={{
+                                        color: theme.palette.primary.main,
+                                        padding: '5px',
+                                        borderRadius: '4px',
+                                        textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>
+                                        <Box component="span" sx={{
+                                            fontSize: '3rem',
+                                            display: 'inline-flex',
+                                            position: 'relative',
+                                            top: '8px',
                                             padding: '5px',
                                             borderRadius: '4px',
-                                            textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
                                         }}>
-                                            <Box component="span" sx={{
-                                                fontSize: '3rem',
-                                                display: 'inline-flex',
-                                                position: 'relative',
-                                                top: '8px',
-                                                padding: '5px',
-                                                borderRadius: '4px',
-                                            }}>
-                                                <TableBarIcon sx={{
-                                                    fontSize: 'inherit', filter:
-                                                        'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))'
-                                                }}/>
-                                            </Box>
-                                            {item.tableNumber}</Typography>
-
-                                        <Typography sx={{
-                                            fontSize: '0.9rem', marginBottom: '8px', textShadow:
-                                                '0px 2px 4px rgba(0, 0, 0, 0.2)'
-                                        }}>{item.orderTime}</Typography>
-
-                                        <Typography sx={{
-                                            fontSize: '0.7rem', marginBottom: '8px', textShadow:
-                                                '0px 2px 4px rgba(0, 0, 0, 0.2)'
-                                        }}>{item.orderDate}</Typography>
-
-                                        {item.text.map((product) => (
-                                            <Box key={product.id} sx={{display: 'flex', alignItems: 'center'}}>
-                                                <Checkbox
-                                                    checked={checkedItems[item.orderId]?.[product.id] || false}
-                                                    onChange={() => handleCheckboxChange(item.orderId, product.id)}
-                                                />
-                                                <Typography
-                                                    sx={{
-                                                        textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
-                                                        textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
-                                                    }}
-                                                    dangerouslySetInnerHTML={{__html: product.content}}
-                                                />
-                                            </Box>
-                                        ))}
-
-                                        <Box sx={{marginTop: '20px'}}>
-                                            <Button variant="contained" size="small"
-                                                    onClick={() => handleDialogOpen(index, 'delete')} sx={{
-                                                color: theme.palette.green.main,
-                                                bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                                border: `2px solid ${theme.palette.green.main}`,
-                                                '&:hover': {bgcolor: theme.palette.green.light}
-                                            }}><CheckIcon/></Button>
-
-                                            <Button variant="contained" size="small"
-                                                    onClick={() => toggleProgressVisibility(index)} sx={{
-                                                marginLeft: '8px',
-                                                marginRight: '8px',
-                                                color: 'black',
-                                                bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                                border: '2px solid black',
-                                                '&:hover': {bgcolor: 'lightgrey'}
-                                            }}>{item.orderStatus === 'in_work' ? (
-                                                <CircularProgress size={20} sx={{color: 'black'}}/>) : (
-                                                <AccessTimeIcon/>)}
-                                            </Button>
-
-                                            <Button variant="contained" size="small"
-                                                    onClick={() => handleDialogOpen(index,
-                                                        'cancel')} sx={{
-                                                color: theme.palette.red.main,
-                                                bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                                border: `2px solid ${theme.palette.red.main}`,
-                                                '&:hover': {bgcolor: theme.palette.red.light}
-                                            }}><CloseIcon/></Button>
+                                            <TableBarIcon sx={{
+                                                fontSize: 'inherit', filter:
+                                                    'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))'
+                                            }}/>
                                         </Box>
-                                    </Box>
-                                </Grid>
-                            )))}
-                    </Grid>
-                </Box>
-                <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-                    <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
-                        Completed Orders
-                    </Button>
-                </Box>
+                                        {item.tableNumber}</Typography>
 
-                <Dialog open={dialogOpen} onClose={handleDialogClose}>
-                    <DialogTitle>Confirmation</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {actionType === 'delete' ? 'Are you sure this order is completed?' :
-                                'Are you sure you want to cancel this order?'}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleAction}>Yes</Button>
-                        <Button onClick={handleDialogClose}>No</Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        );
-    };
+                                    <Typography sx={{
+                                        fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>{item.orderTime}</Typography>
+
+                                    <Typography sx={{
+                                        fontSize: '0.7rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>{item.orderDate}</Typography>
+
+                                    {item.text.map((product) => (
+                                        <Box key={product.id} sx={{display: 'flex', alignItems: 'center'}}>
+                                            <Checkbox
+                                                checked={checkedItems[item.orderId]?.[product.id] || false}
+                                                onChange={() => handleCheckboxChange(item.orderId, product.id)}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
+                                                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                                }}
+                                                dangerouslySetInnerHTML={{__html: product.content}}
+                                            />
+                                        </Box>
+                                    ))}
+
+                                    <Box sx={{marginTop: '20px'}}>
+                                        <Button variant="contained" size="small"
+                                                onClick={() => handleDialogOpen(index, 'delete')} sx={{
+                                            color: theme.palette.green.main,
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: `2px solid ${theme.palette.green.main}`,
+                                            '&:hover': {bgcolor: theme.palette.green.light}
+                                        }}><CheckIcon/></Button>
+
+                                        <Button variant="contained" size="small"
+                                                onClick={() => toggleProgressVisibility(index)} sx={{
+                                            marginLeft: '8px',
+                                            marginRight: '8px',
+                                            color: 'black',
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: '2px solid black',
+                                            '&:hover': {bgcolor: 'lightgrey'}
+                                        }}>{item.orderStatus === 'in_work' ? (
+                                            <CircularProgress size={20} sx={{color: 'black'}}/>) : (
+                                            <AccessTimeIcon/>)}
+                                        </Button>
+
+                                        <Button variant="contained" size="small"
+                                                onClick={() => handleDialogOpen(index,
+                                                    'cancel')} sx={{
+                                            color: theme.palette.red.main,
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: `2px solid ${theme.palette.red.main}`,
+                                            '&:hover': {bgcolor: theme.palette.red.light}
+                                        }}><CloseIcon/></Button>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                        )))}
+                </Grid>
+            </Box>
+            <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
+                    Completed Orders
+                </Button>
+            </Box>
+
+            <Dialog open={dialogOpen} onClose={handleDialogClose}>
+                <DialogTitle>Confirmation</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {actionType === 'delete' ? 'Are you sure this order is completed?' :
+                            'Are you sure you want to cancel this order?'}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAction}>Yes</Button>
+                    <Button onClick={handleDialogClose}>No</Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
 };
 export default EmployeeView;

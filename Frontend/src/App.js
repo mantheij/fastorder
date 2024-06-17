@@ -6,7 +6,6 @@ import CustomerView from "./views/CustomerView";
 import SignInView from "./views/SignInView";
 import "./App.css";
 import { TablesProvider } from "./model/TablesContext";
-import EmployeeView from "./views/EmployeeView";
 import CustomerStartUpButton from "./views/CustomerView";
 import CardView from "./views/CardView";
 import CompletedOrdersView from "./views/CompletedOrdersView";
@@ -19,6 +18,7 @@ import HomeView from "./views/Chef/HomeView";
 import Cookies from "js-cookie";
 import { AuthProvider } from './AuthContext';
 import EmployeeSettings from "./views/Settings/EmployeeSettings"; // Import the AuthProvider
+import EmployeeView from "./views/EmployeeView"
 
 function App() {
     const [accessGranted, setAccessGranted] = useState(false);
