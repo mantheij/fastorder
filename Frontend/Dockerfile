@@ -14,7 +14,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the application code
-COPY ../../../OneDrive/Desktop/änderung .
+COPY . .
 
 # Build the React application
 RUN npm run build
@@ -26,7 +26,7 @@ FROM nginx:alpine
 COPY --from=0 /app/build /usr/share/nginx/html
 
 # Copy nginx configuration file
-COPY ../../../OneDrive/Desktop/änderung/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose the port nginx is running on
 EXPOSE 80
