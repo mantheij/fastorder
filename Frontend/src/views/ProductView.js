@@ -30,6 +30,7 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+import ContactSupport from '@mui/icons-material/ContactSupport';
 
 import { useNavigate, useParams } from "react-router-dom";
 import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
@@ -181,6 +182,12 @@ const ProductView = () => {
         return availableSizes.length > 0;
     };
 
+    const handleCallWaiter = () => {
+        setAlertMessage('Waiter has been called');
+        setAlertSeverity('info');
+        setAlertOpen(true);
+    };
+
     return (
         <Container maxWidth={false}>
             <Grid>
@@ -248,36 +255,38 @@ const ProductView = () => {
                     <ListItem>
                         <ListItemText secondary="Select Size and Quantity" />
                     </ListItem>
-                    <ListItem>
-                        <Select
-                            value={selectedProduct.size || ''}
-                            onChange={handleSizeChange}
-                            fullWidth
-                        >
-                            {selectedProduct.availableSizes?.length > 0 ? (
-                                selectedProduct.availableSizes.map(p => (
-                                    <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
-                                        {`${p.size} - $${p.price}`}
-                                    </MenuItem>
-                                ))
-                            ) : (
-                                <MenuItem disabled>No sizes available</MenuItem>
-                            )}
-                        </Select>
-                    </ListItem>
-                    <ListItem>
-                        <TextField
-                            label="Quantity"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            variant="outlined"
-                            value={selectedProduct.quantity}
-                            onChange={handleQuantityChange}
-                            fullWidth
-                        />
-                    </ListItem>
+                    <Grid container spacing={2} style={{ padding: '0 16px' }}>
+                        <Grid item xs={12} sm={6}>
+                            <Select
+                                value={selectedProduct.size || ''}
+                                onChange={handleSizeChange}
+                                fullWidth
+                            >
+                                {selectedProduct.availableSizes?.length > 0 ? (
+                                    selectedProduct.availableSizes.map(p => (
+                                        <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
+                                            {`${p.size} - $${p.price}`}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>No sizes available</MenuItem>
+                                )}
+                            </Select>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Quantity"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant="outlined"
+                                value={selectedProduct.quantity}
+                                onChange={handleQuantityChange}
+                                fullWidth
+                            />
+                        </Grid>
+                    </Grid>
                     <ListItem>
                         <TextField
                             label="Extras"
@@ -291,9 +300,9 @@ const ProductView = () => {
                             fullWidth
                         />
                     </ListItem>
-                    <ListItem>
+                    <div style={{ position: 'fixed', bottom: '20px', right: '20px', width: 'calc(100% - 40px)', zIndex: 1000 }}>
                         <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to Cart</Button>
-                    </ListItem>
+                    </div>
                     <ListItem>
                         <div>
                             <Accordion style={{ width: "98.3vw", height: "auto" }}>
@@ -301,12 +310,12 @@ const ProductView = () => {
                                                   id="panel1-header"
                                                   aria-controls="panel1-content"
                                 >
-                                    <Typography>Ingredients and allergens</Typography>
+                                    <Typography style={{fontSize: "1.2rem"}}>Ingredients and allergens</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
-                                        Ingredients: {selectedProduct.ingredients} <br />
-                                        Allergens: {selectedProduct.allergens}
+                                        <Typography style={{ fontWeight: "bold"}}>Ingredients:</Typography> {selectedProduct.ingredients} <br />
+                                        <Typography style={{ fontWeight: "bold"}}>Allergens:</Typography> {selectedProduct.allergens}
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
@@ -315,7 +324,7 @@ const ProductView = () => {
                                                   id="panel2-header"
                                                   aria-controls="panel2-content"
                                 >
-                                    <Typography>Nutritional values</Typography>
+                                    <Typography style={{fontSize: "1.2rem"}}>Nutritional values</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
@@ -353,7 +362,11 @@ const ProductView = () => {
                     <ShoppingCartOutlinedIcon />
                 </Fab>
             </Badge>
+            <Fab color="secondary" aria-label="call-waiter" style={{ position: 'fixed', left: 20, bottom: 50, zIndex: 1 }} onClick={handleCallWaiter}>
+                <ContactSupport />
+            </Fab>
         </Container>
     );
 };
+
 export default ProductView;

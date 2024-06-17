@@ -1,10 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-    Box, Button, Typography, InputBase, IconButton, Paper, Divider,
-    Accordion, AccordionSummary, AccordionDetails,
-    List, ListItem, ListItemText, Checkbox, Dialog, DialogTitle,
-    DialogContent, DialogActions, Modal, TextField, InputLabel, Select, FormControl, MenuItem, DialogContentText
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+    FormControl,
+    IconButton,
+    InputBase,
+    InputLabel,
+    List,
+    ListItem,
+    ListItemText,
+    MenuItem,
+    Modal,
+    Paper,
+    Select,
+    TextField,
+    Typography,
+    Snackbar,
+    Alert,
+    Grid
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,6 +36,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from "@mui/icons-material/Close";
+import UploadIcon from '@mui/icons-material/Upload';
 
 const modalStyle = {
     position: 'absolute',
@@ -93,11 +118,20 @@ const Settings = () => {
         price: '',
         quantity: '',
         productCategoryId: '',
-        size: ''
+        size: '',
+        allergens: '',
+        ingredients: '',
+        nutrition: '',
+        imageUrl: ''
     });
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState(null);
+    const [productImage, setProductImage] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     /**
      * useEffect hook to load product categories and products from the server when the component mounts.
@@ -214,10 +248,17 @@ const Settings = () => {
         setSelectedProducts(newSelected);
     };
 
+    const handleFileChange = (event) => {
+        setProductImage(event.target.files[0]);
+        setNewProduct({ ...newProduct, imageUrl: '' });
+        setSnackbarMessage('Image selected: ' + event.target.files[0].name);
+        setSnackbarOpen(true);
+    };
+
     /**
      * Formats the new product data and sends a POST request to add the product to the server.
      */
-    const handleAddProduct = () => {
+    const handleAddProduct = async () => {
         const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
         const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
         const formattedPrice = parseFloat(cleanedPrice);
@@ -227,23 +268,83 @@ const Settings = () => {
             price: formattedPrice,
             quantity: formattedQuantity,
             imgName,
-            allergens: "allergens",
-            ingredients: "ingredients",
-            nutrition: "nutrition"
+            allergens: newProduct.allergens || "allergens are empty",
+            ingredients: newProduct.ingredients || "ingredients are empty",
+            nutrition: newProduct.nutrition || "nutrition's are empty"
         };
 
-        axios.post('http://localhost:8080/api/products', productData)
-            .then(response => {
-                console.log('Product added successfully:', response.data);
-                const newProducts = { ...products };
-                newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
-                newProducts[productData.productCategoryId].push(response.data);
-                setProducts(newProducts);
-                setIsAddModalOpen(false);
-            })
-            .catch(error => {
-                console.error('Error adding product:', error);
+        const token = getToken();
+
+        try {
+            if (productImage) {
+                try {
+                    console.log('Uploading image:', productImage);
+                    setSnackbarMessage('Uploading image...');
+                    setSnackbarOpen(true);
+                    const formData = new FormData();
+                    formData.append('file', productImage, imgName);
+                    const response = await axios.post('http://localhost:8080/api/images/upload', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    console.log('Image uploaded successfully', response.data);
+                    productData.imageUrl = response.data;
+                    setSnackbarMessage('Image uploaded successfully');
+                    setSnackbarOpen(true);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    setSnackbarMessage('');
+                    setSnackbarOpen(false);
+                    setErrorMessage('Error uploading image. Do you want to add the product without the image?');
+                    setConfirmDialogOpen(true);
+                    return;
+                }
+            } else if (newProduct.imageUrl) {
+                try {
+                    console.log('Downloading image from URL:', newProduct.imageUrl);
+                    setSnackbarMessage('Downloading image...');
+                    setSnackbarOpen(true);
+                    const response = await axios.post('http://localhost:8080/api/images/download', {
+                        imageUrl: newProduct.imageUrl,
+                        filename: imgName
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    console.log('Image downloaded and uploaded successfully', response.data);
+                    productData.imageUrl = response.data;
+                    setSnackbarMessage('Image downloaded and uploaded successfully');
+                    setSnackbarOpen(true);
+                } catch (error) {
+                    console.error('Error downloading image:', error);
+                    setSnackbarMessage('');
+                    setSnackbarOpen(false);
+                    setErrorMessage('Error downloading image from URL. Do you want to add the product without the image?');
+                    setConfirmDialogOpen(true);
+                    return;
+                }
+            }
+
+            setSnackbarMessage('');
+            setSnackbarOpen(false);
+            console.log('Sending product data to server:', productData);
+            const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
+            console.log('Product added successfully:', productResponse.data);
+            const newProducts = { ...products };
+            newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
+            newProducts[productData.productCategoryId].push(productResponse.data);
+            setProducts(newProducts);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
     };
 
     /**
@@ -280,13 +381,13 @@ const Settings = () => {
      */
     const deleteSelectedProducts = () => {
         axios.all(Array.from(selectedProducts).map(productId =>
-            axios.delete(`http://localhost:8080/api/products/${productId}`)
-        )).then(() => {
-            console.log('All selected products deleted successfully');
-            fetchProducts(); // Fetch all products again to reflect the deletions
-            setSelectedProducts(new Set());
-            setDeleteDialogOpen(false);
-        }).catch(error => {
+            axios.delete(`http://localhost:8080/api/products/${productId}`)))
+            .then(() => {
+                console.log('All selected products deleted successfully');
+                fetchProducts();
+                setSelectedProducts(new Set());
+                setDeleteDialogOpen(false);
+            }).catch(error => {
             console.error('Failed to delete products', error);
         });
     };
@@ -412,6 +513,78 @@ const Settings = () => {
         </Dialog>
     );
 
+    const renderConfirmDialog = () => (
+        <Dialog
+            open={confirmDialogOpen}
+            onClose={() => setConfirmDialogOpen(false)}
+            aria-labelledby="confirm-dialog-title"
+            aria-describedby="confirm-dialog-description"
+        >
+            <DialogTitle id="confirm-dialog-title">{"Image Upload/Download Error"}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="confirm-dialog-description">
+                    {errorMessage}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={async () => {
+                        setConfirmDialogOpen(false);
+                        setSnackbarOpen(false);
+                        await handleAddProductWithoutImage();
+                    }}
+                    color="primary"
+                    variant="contained"
+                >
+                    Yes
+                </Button>
+                <Button
+                    onClick={() => setConfirmDialogOpen(false)}
+                    color="error"
+                    variant="contained"
+                >
+                    No
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+
+    const handleAddProductWithoutImage = async () => {
+        const imgName = `${newProduct.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
+        const cleanedPrice = newProduct.price.replace('€', '').replace(',', '.');
+        const formattedPrice = parseFloat(cleanedPrice);
+        const formattedQuantity = parseInt(newProduct.quantity, 10);
+        const productData = {
+            ...newProduct,
+            price: formattedPrice,
+            quantity: formattedQuantity,
+            imgName,
+            allergens: newProduct.allergens || "allergens are empty",
+            ingredients: newProduct.ingredients || "ingredients are empty",
+            nutrition: newProduct.nutrition || "nutrition's are empty",
+            imageUrl: ''
+        };
+
+        const token = getToken();
+
+        try {
+            console.log('Sending product data to server:', productData);
+            const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('Product added successfully:', productResponse.data);
+            const newProducts = { ...products };
+            newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
+            newProducts[productData.productCategoryId].push(productResponse.data);
+            setProducts(newProducts);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
+    };
+
 
     /**
      * Finds a product by its ID in the products state.
@@ -476,14 +649,16 @@ const Settings = () => {
                 <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddCategoryModalOpen} sx={{ flex: 1 }}>
                     Add Category
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteCategoryDialogOpen} sx={{ flex: 1 }}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon />}
+                        onClick={handleDeleteCategoryDialogOpen} sx={{ flex: 1 }}>
                     Delete Category
                 </Button>
                 <Divider orientation="vertical" flexItem />
                 <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddModalOpen} sx={{ flex: 1 }}>
                     Add Product
                 </Button>
-                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteProducts} sx={{ flex: 1 }}>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteProducts}
+                        sx={{ flex: 1 }}>
                     Delete Products
                 </Button>
             </Box>
@@ -546,36 +721,77 @@ const Settings = () => {
                             <CloseIcon />
                         </IconButton>
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name} onChange={handleNewProductChange} />
-                    <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price} onChange={handleNewProductChange} placeholder="0.00" />
-                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal" value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
 
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel id="category-label">Category</InputLabel>
-                        <Select
-                            labelId="category-label"
-                            id="category-select"
-                            name="productCategoryId"
-                            value={newProduct.productCategoryId}
-                            label="Category"
-                            onChange={handleNewProductChange}
-                        >
-                            {categories.map((category) => (
-                                <MenuItem key={category.categoryId} value={category.categoryId}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={6}>
+                            <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
+                                       onChange={handleNewProductChange} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price}
+                                       onChange={handleNewProductChange} placeholder="0.00" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                                       value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="category-label">Category</InputLabel>
+                                <Select
+                                    labelId="category-label"
+                                    id="category-select"
+                                    name="productCategoryId"
+                                    value={newProduct.productCategoryId}
+                                    label="Category"
+                                    onChange={handleNewProductChange}
+                                >
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.categoryId} value={category.categoryId}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
+                                       onChange={handleNewProductChange} placeholder="0,0L" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                                       value={newProduct.allergens || ""} onChange={handleNewProductChange}
+                                       placeholder="List of allergens" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                                       value={newProduct.ingredients || ""} onChange={handleNewProductChange}
+                                       placeholder="List of ingredients" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                                       value={newProduct.nutrition || ""} onChange={handleNewProductChange}
+                                       placeholder="List of nutrition" />
+                        </Grid>
 
-                    <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size} onChange={handleNewProductChange} placeholder="0,0L" />
-                    <TextField label="Allergens" name="allergens" fullWidth margin="normal" value={newProduct.allergens || ""} onChange={handleNewProductChange} disabled />
-                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal" value={newProduct.ingredients || ""} onChange={handleNewProductChange} disabled />
-                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal" value={newProduct.nutrition || ""} onChange={handleNewProductChange} disabled />
+                        <Grid item xs={12} sm={9}>
+                            <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
+                                       value={newProduct.imageUrl} onChange={handleNewProductChange}
+                                       placeholder="http://example.com/image.jpg" />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <Button variant="contained" component="label" startIcon={<UploadIcon />} fullWidth>
+                                Upload Local
+                                <input type="file" hidden name="productImage" onChange={handleFileChange} />
+                            </Button>
+                        </Grid>
 
-                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
-                        Submit
-                    </Button>
+                        <Grid item xs={12}>
+                            <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Modal>
 
@@ -644,8 +860,10 @@ const Settings = () => {
                             <CloseIcon />
                         </IconButton>
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name} onChange={handleNewCategoryChange} />
-                    <TextField label="Description" name="description" fullWidth margin="normal" value={newCategory.description} onChange={handleNewCategoryChange} />
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name}
+                               onChange={handleNewCategoryChange} />
+                    <TextField label="Description" name="description" fullWidth margin="normal"
+                               value={newCategory.description} onChange={handleNewCategoryChange} />
 
                     <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{ mt: 2 }}>
                         Submit
@@ -655,6 +873,12 @@ const Settings = () => {
 
             {renderDeleteConfirmDialog()}
             {renderDeleteCategoryConfirmDialog()}
+            {renderConfirmDialog()}
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage ? "info" : "error"} sx={{ width: '100%' }}>
+                    {snackbarMessage || errorMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
