@@ -1,40 +1,51 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Paper, Button } from "@mui/material";
+import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
+import { format } from "date-fns";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
     const [orderDetails, setOrderDetails] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const navigate = useNavigate();
 
+    const fetchCompletedOrders = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/orders');
+            const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
+
+            const allOrderDetails = completedOrders.flatMap(order => order.orderDetails);
+
+            // Grouping order details by product name
+            const groupedDetails = allOrderDetails.reduce((acc, detail) => {
+                const existing = acc.find(item => item.productName === detail.productName);
+                if (existing) {
+                    existing.quantity += detail.quantity;
+                    existing.totalPrice += detail.price * detail.quantity;
+                } else {
+                    acc.push({ ...detail, totalPrice: detail.price * detail.quantity });
+                }
+                return acc;
+            }, []);
+
+            setOrderDetails(groupedDetails);
+
+            const total = completedOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+            setTotalPrice(total);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    };
+
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/orders/open`)
-            .then(response => {
-                const tableOrders = response.data.filter(order => order.tableId === parseInt(tableId));
-                const allOrderDetails = tableOrders.flatMap(order => order.orderDetails);
+        fetchCompletedOrders();
+        const interval = setInterval(fetchCompletedOrders, 20000);
 
-                // Grouping order details by product name
-                const groupedDetails = allOrderDetails.reduce((acc, detail) => {
-                    const existing = acc.find(item => item.productName === detail.productName);
-                    if (existing) {
-                        existing.quantity += detail.quantity;
-                        existing.totalPrice += detail.price * detail.quantity;
-                    } else {
-                        acc.push({ ...detail, totalPrice: detail.price * detail.quantity });
-                    }
-                    return acc;
-                }, []);
-
-                setOrderDetails(groupedDetails);
-
-                const total = tableOrders.reduce((acc, order) => acc + order.totalPrice, 0);
-                setTotalPrice(total);
-            })
-            .catch(error => console.error('Error fetching orders:', error));
+        return () => clearInterval(interval);
     }, [tableId]);
 
     const formatPrice = (price) => {
@@ -42,7 +53,38 @@ const ViewOrders = () => {
     };
 
     const handleOrderClick = () => {
+        axios.get('http://localhost:8080/api/orders')
+            .then(response => {
+                const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
+                const updatePromises = completedOrders.map(order =>
+                    axios.patch(`http://localhost:8080/api/orders/${order.orderId}/status`, { status: 'paid' })
+                );
+                Promise.all(updatePromises)
+                    .then(results => {
+                        console.log('Orders updated successfully:', results);
+                        // Refresh the orders to exclude paid orders
+                        navigate('/chef');
+                    })
+                    .catch(error => {
+                        console.error('Error updating orders:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching orders:', error);
+            });
+    };
 
+    const handleOpenConfirmDialog = () => {
+        setConfirmDialogOpen(true);
+    };
+
+    const handleCloseConfirmDialog = () => {
+        setConfirmDialogOpen(false);
+    };
+
+    const handleConfirmPay = () => {
+        handleOrderClick();
+        setConfirmDialogOpen(false);
     };
 
     return (
@@ -81,12 +123,27 @@ const ViewOrders = () => {
             <Button
                 variant="contained"
                 color="error"
-                onClick={handleOrderClick}
+                onClick={handleOpenConfirmDialog}
                 sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mt: 2, alignSelf: 'center' }}
             >
                 <PaymentIcon sx={{ mr: 1 }} />
                 Pay
             </Button>
+            <Dialog
+                open={confirmDialogOpen}
+                onClose={handleCloseConfirmDialog}
+            >
+                <DialogTitle>Confirm Payment</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to mark this table as paid?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
+                    <Button onClick={handleConfirmPay} color="error">Confirm</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
