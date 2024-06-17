@@ -538,14 +538,17 @@ const Settings = () => {
 
     const handleUpdateProduct = () => {
         const imgName = `${productToEdit.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
-        const cleanedPrice = productToEdit.price.replace('€', '').replace(',', '.');
+        const priceString = String(productToEdit.price);
+        const cleanedPrice = priceString.replace('€', '').replace(',', '.');
         const formattedPrice = parseFloat(cleanedPrice);
         const formattedQuantity = parseInt(productToEdit.quantity, 10);
         const productData = {
-            ...productToEdit,
+            name: productToEdit.name,
             price: formattedPrice,
-            quantity: formattedQuantity,
             imgName,
+            quantity: formattedQuantity,
+            productCategoryId: productToEdit.categoryId,
+            size: productToEdit.size,
             allergens: "allergens",
             ingredients: "ingredients",
             nutrition: "nutrition"
