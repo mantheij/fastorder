@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
-
+import config from "../config";
 const EmployeeController = () => {
     const [boxes, setBoxes] = useState([]);
 
@@ -15,7 +15,7 @@ const EmployeeController = () => {
     };
 
     const deleteBox = (orderId, index) => {
-        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: 'completed' })
+        axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, { status: 'completed' })
             .then(response => {
                 console.log('PATCH erfolgreich:', response.data);
                 setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
@@ -36,7 +36,7 @@ const EmployeeController = () => {
     };
 
     const cancelOrder = (orderId, index) => {
-        axios.delete(`http://localhost:8080/api/orders/${orderId}`)
+        axios.delete(`${config.apiBaseUrl}/api/orders/${orderId}`)
             .then(response => {
                 console.log("Order deleted successfully");
                 setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));

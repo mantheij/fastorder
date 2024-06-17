@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from "@mui/icons-material/Close";
+import config from "../../config";
 
 const modalStyle = {
     position: 'absolute',
@@ -103,7 +104,7 @@ const Settings = () => {
      * useEffect hook to load product categories and products from the server when the component mounts.
      */
     useEffect(() => {
-        axios.get('http://localhost:8080/api/productCategories')
+        axios.get(`${config.apiBaseUrl}/api/productCategories`)
             .then(response => {
                 setCategories(response.data);
                 fetchProducts();
@@ -115,7 +116,7 @@ const Settings = () => {
      * Fetches the list of products from the server and groups them by category.
      */
     const fetchProducts = () => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get(`${config.apiBaseUrl}/api/products`)
             .then(response => {
                 const categorizedProducts = response.data.reduce((acc, product) => {
                     acc[product.categoryId] = [...(acc[product.categoryId] || []), product];
@@ -232,7 +233,7 @@ const Settings = () => {
             nutrition: "nutrition"
         };
 
-        axios.post('http://localhost:8080/api/products', productData)
+        axios.post(`${config.apiBaseUrl}/api/products`, productData)
             .then(response => {
                 console.log('Product added successfully:', response.data);
                 const newProducts = { ...products };
@@ -250,7 +251,7 @@ const Settings = () => {
      * Sends a POST request to add the new category to the server.
      */
     const handleAddCategory = () => {
-        axios.post('http://localhost:8080/api/productCategories', newCategory)
+        axios.post(`${config.apiBaseUrl}/api/productCategories`, newCategory)
             .then(response => {
                 console.log('Category added successfully:', response.data);
                 setCategories([...categories, response.data]);
@@ -280,7 +281,7 @@ const Settings = () => {
      */
     const deleteSelectedProducts = () => {
         axios.all(Array.from(selectedProducts).map(productId =>
-            axios.delete(`http://localhost:8080/api/products/${productId}`)
+            axios.delete(`${config.apiBaseUrl}/api/products/${productId}`)
         )).then(() => {
             console.log('All selected products deleted successfully');
             fetchProducts(); // Fetch all products again to reflect the deletions
@@ -295,7 +296,7 @@ const Settings = () => {
      * Sends a DELETE request to remove the selected category from the server and updates the state.
      */
     const deleteCategory = () => {
-        axios.delete(`http://localhost:8080/api/productCategories/${categoryToDelete}`)
+        axios.delete(`${config.apiBaseUrl}/api/productCategories/${categoryToDelete}`)
             .then(() => {
                 console.log('Category deleted successfully');
                 setCategories(categories.filter(category => category.categoryId !== categoryToDelete));
@@ -458,7 +459,7 @@ const Settings = () => {
             nutrition: "nutrition"
         };
 
-        axios.put(`http://localhost:8080/api/products/${productToEdit.productId}`, productData)
+        axios.put(`${config.apiBaseUrl}/api/products/${productToEdit.productId}`, productData)
             .then(response => {
                 console.log('Product updated successfully:', response.data);
                 fetchProducts();

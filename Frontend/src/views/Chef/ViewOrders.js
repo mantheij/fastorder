@@ -4,6 +4,7 @@ import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Pap
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
+import config from "../../config";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
@@ -12,7 +13,7 @@ const ViewOrders = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/orders/open`)
+        axios.get(`${config.apiBaseUrl}/api/orders/open`)
             .then(response => {
                 const tableOrders = response.data.filter(order => order.tableId === parseInt(tableId));
                 const allOrderDetails = tableOrders.flatMap(order => order.orderDetails);

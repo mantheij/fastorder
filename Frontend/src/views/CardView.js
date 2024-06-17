@@ -18,6 +18,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
 import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
+import config from "../config";
 
 const CardView = () => {
     const { tableId } = useParams();
@@ -60,7 +61,7 @@ const CardView = () => {
 
             // Prüfen Sie die Verfügbarkeit der Produkte
             const checkAvailabilityPromises = cart.map(item =>
-                axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                axios.get(`${config.apiBaseUrl}/api/products/${item.productId}`, {
                     headers: {
                         Authorization: `Bearer ${authToken}`
                     }
@@ -80,7 +81,7 @@ const CardView = () => {
             }
 
             // Bestellung erstellen
-            await axios.post('http://localhost:8080/api/orders', orderData, {
+            await axios.post(`${config.apiBaseUrl}/api/orders`, orderData, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
@@ -91,7 +92,7 @@ const CardView = () => {
                 const productData = availabilityResponses.find(response => response.data.productId === item.productId).data;
                 const newQuantity = productData.quantity - item.quantity;
 
-                return axios.put(`http://localhost:8080/api/products/${item.productId}`, {
+                return axios.put(`${config.apiBaseUrl}/api/products/${item.productId}`, {
                     name: productData.name,
                     price: productData.price,
                     imgName: productData.imgName,

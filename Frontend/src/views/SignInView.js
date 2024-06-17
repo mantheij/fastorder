@@ -1,94 +1,154 @@
-import React, { useState } from 'react';
-import { Typography, Box, Button, TextField, Snackbar } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { blue } from '@mui/material/colors';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom"; // Import useNavigate hook
-import EmployeeView from "./EmployeeView";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import LockIcon from '@mui/icons-material/Lock';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import config from '../config';
 
-const SignInView = () => {
-    // State variables
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+function SignInView({ onButtonClick }) {
+    const navigate = useNavigate();
+    const [showLogin, setShowLogin] = useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const navigate = useNavigate(); // React Router's useNavigate hook
 
-    // MUI theme customization
-    const theme = createTheme({
-        palette: {
-            primary: {
-                light: blue[300],
-                main: blue[500],
-                dark: blue[700],
-                darker: blue[900],
-            },
-        },
-    });
+    const handleGuestLogin = () => {
+        onButtonClick("guest");
+        navigate("/table-selection");
+    };
 
-    // Handle sign in
-    const handleSignIn = (e) => {
-        e.preventDefault();
-        if (username === '' || password === '') {
+    const handleLogin = async () => {
+        if (!username || !password) {
+            setError("Both fields are required");
             setOpenSnackbar(true);
             return;
         }
-
-        if (username === 'chef' && password === '123') {
-            // Redirect to EmployeeView
-            navigate('/orders');
-        } else {
-            // Handle invalid credentials
-            console.log('Invalid credentials');
+        try {
+            const response = await axios.post(`${config.apiBaseUrl}/api/auth/signin`,
+                { username, password },
+                { timeout: 5000 } // Set timeout to 5 seconds
+            );
+            if (response.status === 200) {
+                const role = response.data.roles.includes("ROLE_ADMIN") ? "admin" : "employee";
+                onButtonClick(role);
+                navigate(role === "admin" ? "/chef" : "/orders");
+            }
+        } catch (error) {
+            if (error.response) {
+                setError("Invalid credentials");
+            } else if (error.request) {
+                setError("No connection to the server");
+            } else {
+                setError("An unknown error occurred");
+            }
+            setOpenSnackbar(true);
         }
     };
 
-    // Close Snackbar
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
 
     return (
-        <div style={{ padding: '20px', minHeight: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main, marginBottom: '20px', fontWeight: 'bold' }}>Sign In</Typography>
+        <Container component="main" maxWidth="xs">
             <Box
-                component="form"
                 sx={{
-                    '& .MuiTextField-root': { m: 1, width: '25ch' },
+                    marginTop: 8,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    position: 'relative',
                 }}
-                noValidate
-                autoComplete="off"
-                onSubmit={handleSignIn}
             >
-                <TextField
-                    id="username"
-                    label="Username"
-                    variant="outlined"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <TextField
-                    id="password"
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <Button variant="contained" size="large" type="submit" sx={{ marginTop: '10px', backgroundColor: theme.palette.primary.main }}>Sign In</Button>
+                <IconButton
+                    color="primary"
+                    aria-label="login as employee/admin"
+                    onClick={() => setShowLogin(!showLogin)}
+                    sx={{ position: 'absolute', top: 0, right: 0 }}
+                >
+                    <LockIcon />
+                </IconButton>
+                <Typography component="h1" variant="h5">
+                    Sign In
+                </Typography>
+                <Box component="form" onSubmit={(e) => e.preventDefault()} sx={{ mt: 1 }}>
+                    {showLogin ? (
+                        <>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="username"
+                                label="Username"
+                                name="username"
+                                autoComplete="username"
+                                autoFocus
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <Button
+                                type="button"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                                onClick={handleLogin}
+                            >
+                                Login
+                            </Button>
+                            <Grid container justifyContent="center">
+                                <Grid item>
+                                    <Link href="#" variant="body2" onClick={() => setShowLogin(false)}>
+                                        Login as Guest
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                        </>
+                    ) : (
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            sx={{ mt: 3, mb: 2 }}
+                            onClick={handleGuestLogin}
+                        >
+                            Login as Guest
+                        </Button>
+                    )}
+                </Box>
             </Box>
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                message="Please fill in all fields."
-            />
-        </div>
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
+        </Container>
     );
-};
+}
 
 export default SignInView;
