@@ -110,8 +110,8 @@ const CompletedOrdersView = () => {
         <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
             <ClockBar currentTime={currentTime} />
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '70px' }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/orders')}>
+            <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '70px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders')} sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}>
                     Back
                 </Button>
             </Box>
@@ -155,7 +155,7 @@ const CompletedOrdersView = () => {
                                             '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
 
                                     <Button variant="contained" color="primary" size="small"    style={{ minWidth: '30px',
-                                        minHeight: '30px', padding: '5px' }}onClick={() => handleDialogOpen(index)}>
+                                        minHeight: '30px', padding: '5px', background: "linear-gradient(to top, #0383E2, #5DADF0)" }} onClick={() => handleDialogOpen(index)}>
                                         <RestoreIcon/>
                                     </Button>
                                 </Box>
