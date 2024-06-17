@@ -30,6 +30,7 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+import ContactSupport from '@mui/icons-material/ContactSupport';
 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -179,6 +180,12 @@ const ProductView = () => {
     const isProductAvailable = (product) => {
         const availableSizes = drinks.filter(p => p.name === product.name && p.quantity > 0);
         return availableSizes.length > 0;
+    };
+
+    const handleCallWaiter = () => {
+        setAlertMessage('Waiter has been called');
+        setAlertSeverity('info');
+        setAlertOpen(true);
     };
 
     return (
@@ -353,6 +360,9 @@ const ProductView = () => {
                     <ShoppingCartOutlinedIcon />
                 </Fab>
             </Badge>
+            <Fab color="secondary" aria-label="call-waiter" style={{ position: 'fixed', left: 20, bottom: 50, zIndex: 1 }} onClick={handleCallWaiter}>
+                <ContactSupport />
+            </Fab>
         </Container>
     );
 };

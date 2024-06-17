@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress, Checkbox } from '@mui/material';
 import useEmployeeController from '../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
 import { blue, green, red } from '@mui/material/colors';
@@ -7,6 +7,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { format } from "date-fns";
 // import io from 'socket.io-client';  // For real-time updates
 
 /**
@@ -16,10 +18,16 @@ import axios from 'axios';
  */
 const ClockBar = ({ currentTime }) => {
     return (
-        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position: 'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                {currentTime.toLocaleTimeString()}
-            </Typography>
+        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
+                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                    {currentTime.toLocaleTimeString()}
+                </Typography>
+                <Typography variant="subtitle1" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 1 }}>
+                    {currentTime.toLocaleDateString()}
+                </Typography>
+            </Box>
         </Box>
     );
 };
@@ -59,14 +67,29 @@ const EmployeeView = () => {
     const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes } = useEmployeeController();
 
     /**
-     * State to manage the audio for notifications.
-     */
-    const [audio] = useState(new Audio('/audio/iphone_14_notification.mp3')); // Pfad relativ zum public-Verzeichnis
-
-    /**
      * State to track if the user has interacted with the page.
      */
     const [userInteracted, setUserInteracted] = useState(false);
+
+    /**
+     * State to track previous orders.
+     */
+    const [prevOpenOrders, setPrevOpenOrders] = useState([]);
+
+    /**
+     * State to manage the checked items.
+     */
+    const [checkedItems, setCheckedItems] = useState({});
+
+    /**
+     * State to manage help requests.
+     */
+    const [helpRequests, setHelpRequests] = useState([]);
+
+    /**
+     * Navigation hook.
+     */
+    const navigate = useNavigate();
 
     /**
      * Effect to handle user interaction.
@@ -83,13 +106,6 @@ const EmployeeView = () => {
             window.removeEventListener('click', handleUserInteraction);
         };
     }, []);
-
-    /**
-     * Preload the audio file to reduce delay.
-     */
-    useEffect(() => {
-        audio.load();
-    }, [audio]);
 
     /**
      * Effect to update the current time every second.
@@ -114,36 +130,36 @@ const EmployeeView = () => {
                     Notification.requestPermission();
                 }
 
-                const response = await axios.get('http://localhost:8080/api/orders/open');
-                const orders = response.data.map(order => ({
-                    tableNumber: order.tableId,
-                    orderTime: order.datetime,
-                    text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
-                }));
+                const response = await axios.get('http://localhost:8080/api/orders');
+                const openOrders = response.data
+                    .filter(order => order.status === 'in_work' || order.status === 'open')
+                    .map(order => {
+                        const orderTimeReal = new Date(order.datetime);
+                        return {
+                            orderStatus: order.status,
+                            tableNumber: order.tableId,
+                            orderId: order.orderId,
+                            orderTimeReal,
+                            orderTime: `${format(orderTimeReal, 'HH:mm')} Uhr`,
+                            orderDate: `${format(orderTimeReal, 'dd.MM.yyyy')}`,
+                            text: order.orderDetails.map((detail, index) => ({
+                                id: `${order.orderId}-${index}`,
+                                content: `-(x${detail.quantity}) ${detail.productName} ${detail.productSize}`
+                            }))
+                        };
+                    })
+                    .sort((a, b) => a.orderTimeReal - b.orderTimeReal);
 
-                if (orders.length > boxes.length) { // Check if there are new orders
-                    if (userInteracted) {
-                        audio.play();
-                    }
+                if (openOrders.length > prevOpenOrders.length && userInteracted) {
                     if (Notification.permission === 'granted') {
                         new Notification('New Order', { body: 'You have new orders' });
-                    } else if (Notification.permission !== 'denied') {
-                        Notification.requestPermission().then(permission => {
-                            if (permission === 'granted') {
-                                new Notification('New Order', { body: 'You have new orders' });
-                                audio.play(); // Ensure the sound is played after the permission is granted
-                            }
-                        });
                     }
                 }
 
-                setBoxes(orders);
+                setPrevOpenOrders(openOrders);
+                setBoxes(openOrders);
             } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log('Request canceled:', error.message);
-                } else {
-                    console.error('Error loading orders:', error);
-                }
+                console.error('Error loading orders:', error);
             }
         };
 
@@ -151,31 +167,56 @@ const EmployeeView = () => {
         const interval = setInterval(fetchOrders, 20000);  // Refresh orders every 20 seconds
 
         return () => clearInterval(interval);
-    }, [setBoxes, boxes, audio, userInteracted]);
+    }, [setBoxes, userInteracted, prevOpenOrders]);
+
+    /**
+     * Effect to fetch help requests from the server every 10 seconds.
+     */
+    useEffect(() => {
+        const fetchHelpRequests = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/help-requests');
+                const newHelpRequests = response.data.map(request => request.tableId);
+                if (newHelpRequests.length > helpRequests.length) {
+                    newHelpRequests.forEach(tableId => {
+                        if (!helpRequests.includes(tableId)) {
+                            if (Notification.permission === 'granted') {
+                                new Notification('Help Request', { body: `Table ${tableId} needs help` });
+                            }
+                            setHelpRequests(prevRequests => [...prevRequests, tableId]);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching help requests:', error);
+            }
+        };
+
+        fetchHelpRequests();
+        const interval = setInterval(fetchHelpRequests, 10000);
+
+        return () => clearInterval(interval);
+    }, [helpRequests]);
 
     /**
      * Effect to handle real-time updates using WebSocket (currently commented out).
      */
-    /*
+    /* ToDo: Benutzen von Websockets für bessere Benachrichtigung? Ebenfalls für Kellner rufen.
     useEffect(() => {
-        const socket = io('http://localhost:8080');  // Connect to the server via WebSocket
+        const socket = io('http://localhost:8080');  // Verbindungsaufbau zum Server
         socket.on('newOrder', (order) => {
-            // Add the new order to the boxes state
             setBoxes(prevBoxes => [...prevBoxes, {
                 tableNumber: order.tableId,
                 orderTime: order.datetime,
                 text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
             }]);
-            // Show push notification with sound
-            if (userInteracted) {
-                audio.play();
-            }
+            // Benachrichtigung?
             if (Notification.permission === 'granted') {
                 new Notification('New Order', { body: `New order from table ${order.tableId}` });
             }
         });
 
-        // Request notification permission on component mount
+        // Check ob Berechtigung vorhanden, ansonsten Frage um Berechtigung falls nicht vorhanden
         if (Notification.permission !== 'granted') {
             Notification.requestPermission();
         }
@@ -183,7 +224,7 @@ const EmployeeView = () => {
         return () => {
             socket.disconnect();
         };
-    }, [audio, setBoxes, userInteracted]);
+    }, [setBoxes, userInteracted]);
     */
 
     /**
@@ -212,9 +253,11 @@ const EmployeeView = () => {
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
-                deleteBox(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                deleteBox(orderId, actionIndex);
             } else if (actionType === 'cancel') {
-                cancelOrder(actionIndex);
+                const orderId = boxes[actionIndex].orderId;
+                cancelOrder(orderId, actionIndex);
             }
             setDialogOpen(false);
             setActionIndex(null);
@@ -225,7 +268,18 @@ const EmployeeView = () => {
     /**
      * Toggles the visibility of the progress spinner.
      */
-    const toggleProgressVisibility = () => {
+    const toggleProgressVisibility = (index) => {
+        const orderId = boxes[index].orderId;
+        const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
+        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
+            .then(response => {
+                console.log('PATCH erfolgreich:', response.data);
+                setBoxes(prevBoxes => prevBoxes.map((box, i) => i === index ? { ...box, orderStatus: newStatus } : box));
+            })
+            .catch(error => {
+                console.error('Fehler beim PATCH:', error);
+            });
+
         setProgressVisible(!progressVisible);
     };
 
@@ -252,6 +306,16 @@ const EmployeeView = () => {
         },
     });
 
+    const handleCheckboxChange = (orderId, productId) => {
+        setCheckedItems(prev => ({
+            ...prev,
+            [orderId]: {
+                ...prev[orderId],
+                [productId]: !prev[orderId]?.[productId]
+            }
+        }));
+    };
+
     return (
         <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
             <ClockBar currentTime={currentTime} />
@@ -262,7 +326,7 @@ const EmployeeView = () => {
                         <Grid item key={index}>
                             <Box
                                 sx={{
-                                    bgcolor: item.inProgress ? 'lightgrey' : 'white',
+                                    bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
                                     color: 'black',
                                     textAlign: 'center',
                                     padding: '10px',
@@ -281,12 +345,27 @@ const EmployeeView = () => {
 
                                 <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
 
-                                <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                                {item.text.map((product) => (
+                                    <Box key={product.id} sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Checkbox
+                                            checked={checkedItems[item.orderId]?.[product.id] || false}
+                                            onChange={() => handleCheckboxChange(item.orderId, product.id)}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
+                                                textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                            }}
+                                        >
+                                            {product.content}
+                                        </Typography>
+                                    </Box>
+                                ))}
 
                                 <Box sx={{ marginTop: '20px' }}>
                                     <Button variant="contained" size="small" onClick={() => handleDialogOpen(index, 'delete')} sx={{ color: theme.palette.green.main, bgcolor: item.inProgress ? 'lightgrey' : 'white', border: `2px solid ${theme.palette.green.main}`, '&:hover': { bgcolor: theme.palette.green.light } }}><CheckIcon /></Button>
 
-                                    <Button variant="contained" size="small" onClick={() => { toggleInProgress(index); toggleProgressVisibility(); }} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
+                                    <Button variant="contained" size="small" onClick={() => { toggleInProgress(index); toggleProgressVisibility(index); }} sx={{ marginLeft: '8px', marginRight: '8px', color: 'black', bgcolor: item.inProgress ? 'lightgrey' : 'white', border: '2px solid black', '&:hover': { bgcolor: 'lightgrey' } }}>
                                         {item.inProgress ? (
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                     </Button>
@@ -297,6 +376,12 @@ const EmployeeView = () => {
                         </Grid>
                     ))}
                 </Grid>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')}>
+                    Completed Orders
+                </Button>
             </Box>
 
             <Dialog open={dialogOpen} onClose={handleDialogClose}>
