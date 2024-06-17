@@ -7,15 +7,10 @@ import de.hhn.labfastord.repositories.ProductCategoryRepository;
 import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * The ProductController class manages the web requests related to products.
@@ -116,20 +111,6 @@ public class ProductController {
             product.setAllergens(newProductDTO.getAllergens());
             product.setIngredients(newProductDTO.getIngredients());
             product.setNutrition(newProductDTO.getNutrition());
-
-            if (newProductDTO.getFile() != null && !newProductDTO.getFile().isEmpty()) {
-                try {
-                    String fileName = newProductDTO.getFile().getOriginalFilename();
-                    Path path = Paths.get("../Frontend/public/images/products/" + fileName);
-                    Files.write(path, newProductDTO.getFile().getBytes());
-                    product.setImgName(fileName);
-                } catch (IOException e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-                }
-            } else {
-                product.setImgName(newProductDTO.getImgName());
-            }
-
             try {
                 product.setCategory(productCategoryRepository.findById(newProductDTO.getProductCategoryId())
                         .orElseThrow(NullPointerException::new));
