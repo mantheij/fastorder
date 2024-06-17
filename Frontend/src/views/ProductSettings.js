@@ -497,59 +497,77 @@ const Settings = () => {
                     <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Add New Product
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
-                               onChange={handleNewProductChange} />
-                    <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price}
-                               onChange={handleNewProductChange} placeholder="0.00" />
-                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
-                               value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
 
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel id="category-label">Category</InputLabel>
-                        <Select
-                            labelId="category-label"
-                            id="category-select"
-                            name="productCategoryId"
-                            value={newProduct.productCategoryId}
-                            label="Category"
-                            onChange={handleNewProductChange}
-                        >
-                            {categories.map((category) => (
-                                <MenuItem key={category.categoryId} value={category.categoryId}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
-                               onChange={handleNewProductChange} placeholder="0,0L" />
-                    <TextField label="Allergens" name="allergens" fullWidth margin="normal"
-                               value={newProduct.allergens || ""} onChange={handleNewProductChange}
-                               placeholder="List of allergens" />
-                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
-                               value={newProduct.ingredients || ""} onChange={handleNewProductChange}
-                               placeholder="List of ingredients" />
-                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
-                               value={newProduct.nutrition || ""} onChange={handleNewProductChange}
-                               placeholder="List of nutrition" />
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={9}>
+                        <Grid item xs={6}>
+                            <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
+                                       onChange={handleNewProductChange} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Price €" name="price" fullWidth margin="normal" value={newProduct.price}
+                                       onChange={handleNewProductChange} placeholder="0.00" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                                       value={newProduct.quantity} onChange={handleNewProductChange} placeholder="0" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="category-label">Category</InputLabel>
+                                <Select
+                                    labelId="category-label"
+                                    id="category-select"
+                                    name="productCategoryId"
+                                    value={newProduct.productCategoryId}
+                                    label="Category"
+                                    onChange={handleNewProductChange}
+                                >
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.categoryId} value={category.categoryId}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
+                                       onChange={handleNewProductChange} placeholder="0,0L" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                                       value={newProduct.allergens || ""} onChange={handleNewProductChange}
+                                       placeholder="List of allergens" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                                       value={newProduct.ingredients || ""} onChange={handleNewProductChange}
+                                       placeholder="List of ingredients" />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                                       value={newProduct.nutrition || ""} onChange={handleNewProductChange}
+                                       placeholder="List of nutrition" />
+                        </Grid>
+
+                        <Grid item xs={12} sm={9}>
                             <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
                                        value={newProduct.imageUrl} onChange={handleNewProductChange}
                                        placeholder="http://example.com/image.jpg" />
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={12} sm={3}>
                             <Button variant="contained" component="label" startIcon={<UploadIcon />} fullWidth>
                                 Upload Local
                                 <input type="file" hidden name="productImage" onChange={handleFileChange} />
                             </Button>
                         </Grid>
-                    </Grid>
 
-                    <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
-                        Submit
-                    </Button>
+                        <Grid item xs={12}>
+                            <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{ mt: 2 }}>
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Modal>
 
