@@ -255,36 +255,38 @@ const ProductView = () => {
                     <ListItem>
                         <ListItemText secondary="Select Size and Quantity" />
                     </ListItem>
-                    <ListItem>
-                        <Select
-                            value={selectedProduct.size || ''}
-                            onChange={handleSizeChange}
-                            fullWidth
-                        >
-                            {selectedProduct.availableSizes?.length > 0 ? (
-                                selectedProduct.availableSizes.map(p => (
-                                    <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
-                                        {`${p.size} - $${p.price}`}
-                                    </MenuItem>
-                                ))
-                            ) : (
-                                <MenuItem disabled>No sizes available</MenuItem>
-                            )}
-                        </Select>
-                    </ListItem>
-                    <ListItem>
-                        <TextField
-                            label="Quantity"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            variant="outlined"
-                            value={selectedProduct.quantity}
-                            onChange={handleQuantityChange}
-                            fullWidth
-                        />
-                    </ListItem>
+                    <Grid container spacing={2} style={{ padding: '0 16px' }}>
+                        <Grid item xs={12} sm={6}>
+                            <Select
+                                value={selectedProduct.size || ''}
+                                onChange={handleSizeChange}
+                                fullWidth
+                            >
+                                {selectedProduct.availableSizes?.length > 0 ? (
+                                    selectedProduct.availableSizes.map(p => (
+                                        <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
+                                            {`${p.size} - $${p.price}`}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>No sizes available</MenuItem>
+                                )}
+                            </Select>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Quantity"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant="outlined"
+                                value={selectedProduct.quantity}
+                                onChange={handleQuantityChange}
+                                fullWidth
+                            />
+                        </Grid>
+                    </Grid>
                     <ListItem>
                         <TextField
                             label="Extras"
@@ -298,9 +300,9 @@ const ProductView = () => {
                             fullWidth
                         />
                     </ListItem>
-                    <ListItem>
+                    <div style={{ position: 'fixed', bottom: '20px', right: '20px', width: 'calc(100% - 40px)', zIndex: 1000 }}>
                         <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to Cart</Button>
-                    </ListItem>
+                    </div>
                     <ListItem>
                         <div>
                             <Accordion style={{ width: "98.3vw", height: "auto" }}>
@@ -366,4 +368,5 @@ const ProductView = () => {
         </Container>
     );
 };
+
 export default ProductView;
