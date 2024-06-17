@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import RestoreIcon from '@mui/icons-material/Restore';
+import config from '../config'
 
 const ClockBar = ({ currentTime }) => {
     return (
