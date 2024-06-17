@@ -37,6 +37,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from '@mui/icons-material/Upload';
+import config from "../../config";
 
 const modalStyle = {
     position: 'absolute',
@@ -137,7 +138,7 @@ const Settings = () => {
      * useEffect hook to load product categories and products from the server when the component mounts.
      */
     useEffect(() => {
-        axios.get('http://localhost:8080/api/productCategories')
+        axios.get(`${config.apiBaseUrl}/api/productCategories`)
             .then(response => {
                 setCategories(response.data);
                 fetchProducts();
@@ -149,7 +150,7 @@ const Settings = () => {
      * Fetches the list of products from the server and groups them by category.
      */
     const fetchProducts = () => {
-        axios.get('http://localhost:8080/api/products')
+        axios.get(`${config.apiBaseUrl}/api/products`)
             .then(response => {
                 const categorizedProducts = response.data.reduce((acc, product) => {
                     acc[product.categoryId] = [...(acc[product.categoryId] || []), product];
@@ -273,85 +274,25 @@ const Settings = () => {
             nutrition: newProduct.nutrition || "nutrition's are empty"
         };
 
-        const token = getToken();
-
-        try {
-            if (productImage) {
-                try {
-                    console.log('Uploading image:', productImage);
-                    setSnackbarMessage('Uploading image...');
-                    setSnackbarOpen(true);
-                    const formData = new FormData();
-                    formData.append('file', productImage, imgName);
-                    const response = await axios.post('http://localhost:8080/api/images/upload', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    console.log('Image uploaded successfully', response.data);
-                    productData.imageUrl = response.data;
-                    setSnackbarMessage('Image uploaded successfully');
-                    setSnackbarOpen(true);
-                } catch (error) {
-                    console.error('Error uploading image:', error);
-                    setSnackbarMessage('');
-                    setSnackbarOpen(false);
-                    setErrorMessage('Error uploading image. Do you want to add the product without the image?');
-                    setConfirmDialogOpen(true);
-                    return;
-                }
-            } else if (newProduct.imageUrl) {
-                try {
-                    console.log('Downloading image from URL:', newProduct.imageUrl);
-                    setSnackbarMessage('Downloading image...');
-                    setSnackbarOpen(true);
-                    const response = await axios.post('http://localhost:8080/api/images/download', {
-                        imageUrl: newProduct.imageUrl,
-                        filename: imgName
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    console.log('Image downloaded and uploaded successfully', response.data);
-                    productData.imageUrl = response.data;
-                    setSnackbarMessage('Image downloaded and uploaded successfully');
-                    setSnackbarOpen(true);
-                } catch (error) {
-                    console.error('Error downloading image:', error);
-                    setSnackbarMessage('');
-                    setSnackbarOpen(false);
-                    setErrorMessage('Error downloading image from URL. Do you want to add the product without the image?');
-                    setConfirmDialogOpen(true);
-                    return;
-                }
-            }
-
-            setSnackbarMessage('');
-            setSnackbarOpen(false);
-            console.log('Sending product data to server:', productData);
-            const productResponse = await axios.post('http://localhost:8080/api/products', productData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+        axios.post(`${config.apiBaseUrl}/api/products`, productData)
+            .then(response => {
+                console.log('Product added successfully:', response.data);
+                const newProducts = { ...products };
+                newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
+                newProducts[productData.productCategoryId].push(response.data);
+                setProducts(newProducts);
+                setIsAddModalOpen(false);
+            })
+            .catch(error => {
+                console.error('Error adding product:', error);
             });
-            console.log('Product added successfully:', productResponse.data);
-            const newProducts = { ...products };
-            newProducts[productData.productCategoryId] = newProducts[productData.productCategoryId] || [];
-            newProducts[productData.productCategoryId].push(productResponse.data);
-            setProducts(newProducts);
-            setIsAddModalOpen(false);
-        } catch (error) {
-            console.error('Error adding product:', error);
-        }
     };
 
     /**
      * Sends a POST request to add the new category to the server.
      */
     const handleAddCategory = () => {
-        axios.post('http://localhost:8080/api/productCategories', newCategory)
+        axios.post(`${config.apiBaseUrl}/api/productCategories`, newCategory)
             .then(response => {
                 console.log('Category added successfully:', response.data);
                 setCategories([...categories, response.data]);
@@ -381,7 +322,7 @@ const Settings = () => {
      */
     const deleteSelectedProducts = () => {
         axios.all(Array.from(selectedProducts).map(productId =>
-            axios.delete(`http://localhost:8080/api/products/${productId}`)))
+            axios.delete(`${config.apiBaseUrl}/api/products/${productId}`)))
             .then(() => {
                 console.log('All selected products deleted successfully');
                 fetchProducts();
@@ -396,7 +337,7 @@ const Settings = () => {
      * Sends a DELETE request to remove the selected category from the server and updates the state.
      */
     const deleteCategory = () => {
-        axios.delete(`http://localhost:8080/api/productCategories/${categoryToDelete}`)
+        axios.delete(`${config.apiBaseUrl}/api/productCategories/${categoryToDelete}`)
             .then(() => {
                 console.log('Category deleted successfully');
                 setCategories(categories.filter(category => category.categoryId !== categoryToDelete));
@@ -631,7 +572,7 @@ const Settings = () => {
             nutrition: "nutrition"
         };
 
-        axios.put(`http://localhost:8080/api/products/${productToEdit.productId}`, productData)
+        axios.put(`${config.apiBaseUrl}/api/products/${productToEdit.productId}`, productData)
             .then(response => {
                 console.log('Product updated successfully:', response.data);
                 fetchProducts();

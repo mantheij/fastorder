@@ -9,7 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import TableBarIcon from '@mui/icons-material/TableBar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { format } from "date-fns";
+import {format} from "date-fns";
+import config from "../config";
 // import io from 'socket.io-client';  // For real-time updates
 
 /**
@@ -129,7 +130,7 @@ const EmployeeView = () => {
                 if (Notification.permission !== 'granted') {
                     Notification.requestPermission();
                 }
-                const response = await axios.get('http://localhost:8080/api/orders');
+                const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
                 const openOrders = response.data
                     .filter(order => order.status === 'in_work' || order.status === 'open')
                     .map(order => ({
@@ -153,6 +154,9 @@ const EmployeeView = () => {
                 }
 
                 setPrevOpenOrders(openOrders);
+                //const inWorkOrders = allOrders.filter(order => order.orderStatus === 'in_work');
+                //const notInWorkOrders = allOrders.filter(order => order.orderStatus === 'open');
+
                 setBoxes(openOrders);
             } catch (error) {
                 console.error('Error loading completed orders:', error);
@@ -279,14 +283,15 @@ const EmployeeView = () => {
     const toggleProgressVisibility = (index) => {
         const orderId = boxes[index].orderId;
         const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
-        axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
-            .then(response => {
-                console.log('PATCH erfolgreich:', response.data);
-                setBoxes(prevBoxes => prevBoxes.map((box, i) => i === index ? { ...box, orderStatus: newStatus } : box));
-            })
-            .catch(error => {
-                console.error('Fehler beim PATCH:', error);
-            });
+        axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, { status: newStatus })
+                .then(response => {
+                    console.log('PATCH erfolgreich:', response.data);
+                    setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== index));
+                })
+                .catch(error => {
+                    console.error('Fehler beim PATCH:', error);
+                });
+        toggleInProgress(index)
 
         setProgressVisible(!progressVisible);
     };
@@ -403,14 +408,18 @@ const EmployeeView = () => {
                                             <CircularProgress size={20} sx={{ color: 'black' }} />) : (<AccessTimeIcon />)}
                                         </Button>
 
-                                    <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
-                                        'cancel')} sx={{ color: theme.palette.red.main, bgcolor: item.inProgress ?
-                                            'lightgrey' : 'white', border: `2px solid ${theme.palette.red.main}`,
-                                        '&:hover': { bgcolor: theme.palette.red.light} }}><CloseIcon /></Button>
+                                        <Button variant="contained" size="small" onClick={() => handleDialogOpen(index,
+                                            'cancel')} sx={{
+                                            color: theme.palette.red.main,
+                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
+                                            border: `2px solid ${theme.palette.red.main}`,
+                                            '&:hover': { bgcolor: theme.palette.red.light }
+                                        }}><CloseIcon /></Button>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Grid>
-                    ))}
+                            </Grid>
+                        ))
+                    )}
                 </Grid>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import RestoreIcon from '@mui/icons-material/Restore';
+import config from '../config'
 
 const ClockBar = ({ currentTime }) => {
     return (
@@ -43,7 +44,7 @@ const CompletedOrdersView = () => {
     useEffect(() => {
         const fetchCompletedOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/orders');
+                const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
                 const completedOrders = response.data
                     .filter(order => order.status === 'completed' || order.status === 'payed')
                     .map(order => ({
