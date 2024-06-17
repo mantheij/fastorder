@@ -69,10 +69,10 @@ public class TablesController {
             return tablesRepository.findById(id)
                     .map(existingTable -> {
                         existingTable.setName(newTableDto.getName());
-                        existingTable.setLocx(newTableDto.getLocx());
-                        existingTable.setLocy(newTableDto.getLocy());
-                        existingTable.setSizex(newTableDto.getSizex());
-                        existingTable.setSizey(newTableDto.getSizey());
+                        existingTable.setArea(newTableDto.getArea());
+                        existingTable.setOccupied(newTableDto.isOccupied());
+                        existingTable.setWidth(newTableDto.getWidth());
+                        existingTable.setHeight(newTableDto.getHeight());
                         return ResponseEntity.ok(tablesRepository.save(existingTable));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -93,10 +93,10 @@ public class TablesController {
         try {
             Tables table = new Tables();
             table.setName(newTableDTO.getName());
-            table.setLocx(newTableDTO.getLocx());
-            table.setLocy(newTableDTO.getLocy());
-            table.setSizex(newTableDTO.getSizex());
-            table.setSizey(newTableDTO.getSizey());
+            table.setArea(newTableDTO.getArea());
+            table.setOccupied(newTableDTO.isOccupied());
+            table.setWidth(newTableDTO.getWidth());
+            table.setHeight(newTableDTO.getHeight());
             return ResponseEntity.ok(tablesRepository.save(table));
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();

@@ -61,16 +61,15 @@ components:
           format: "int64"
         name:
           type: "string"
-        sizex:
+        area:
           type: "integer"
           format: "int32"
-        sizey:
+        occupied:
+          type: "boolean"
+        width:
           type: "integer"
           format: "int32"
-        locx:
-          type: "integer"
-          format: "int32"
-        locy:
+        height:
           type: "integer"
           format: "int32"
     NewTableDTO:
@@ -78,16 +77,15 @@ components:
       properties:
         name:
           type: "string"
-        sizex:
+        area:
           type: "integer"
           format: "int32"
-        sizey:
+        occupied:
+          type: "boolean"
+        width:
           type: "integer"
           format: "int32"
-        locx:
-          type: "integer"
-          format: "int32"
-        locy:
+        height:
           type: "integer"
           format: "int32"
     ProductDTO:
