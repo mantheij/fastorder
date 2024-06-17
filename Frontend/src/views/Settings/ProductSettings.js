@@ -520,302 +520,302 @@ const Settings = () => {
             nutrition: newProduct.nutrition || "nutrition's are empty",
             imageUrl: ''
         };
+    };
+    const handleEditProduct = (productId) => {
+        const product = findProduct(productId);
+        setProductToEdit(product);
+        setIsEditModalOpen(true);
+    };
 
-        const handleEditProduct = (productId) => {
-            const product = findProduct(productId);
-            setProductToEdit(product);
-            setIsEditModalOpen(true);
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
+        setProductToEdit(null);
+    };
+
+    const handleEditProductChange = (event) => {
+        setProductToEdit({...productToEdit, [event.target.name]: event.target.value});
+    };
+
+    const handleUpdateProduct = () => {
+        const imgName = `${productToEdit.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
+        const cleanedPrice = productToEdit.price.replace('€', '').replace(',', '.');
+        const formattedPrice = parseFloat(cleanedPrice);
+        const formattedQuantity = parseInt(productToEdit.quantity, 10);
+        const productData = {
+            ...productToEdit,
+            price: formattedPrice,
+            quantity: formattedQuantity,
+            imgName,
+            allergens: "allergens",
+            ingredients: "ingredients",
+            nutrition: "nutrition"
         };
 
-        const handleEditModalClose = () => {
-            setIsEditModalOpen(false);
-            setProductToEdit(null);
-        };
+        axios.put(`${config.apiBaseUrl}/api/products/${productToEdit.productId}`, productData)
+            .then(response => {
+                console.log('Product updated successfully:', response.data);
+                fetchProducts();
+                setIsEditModalOpen(false);
+                setProductToEdit(null);
+            })
+            .catch(error => {
+                console.error('Error updating product:', error);
+            });
+    };
 
-        const handleEditProductChange = (event) => {
-            setProductToEdit({...productToEdit, [event.target.name]: event.target.value});
-        };
 
-        const handleUpdateProduct = () => {
-            const imgName = `${productToEdit.name.toLowerCase().replace(/ /g, '_')}.jpeg`;
-            const cleanedPrice = productToEdit.price.replace('€', '').replace(',', '.');
-            const formattedPrice = parseFloat(cleanedPrice);
-            const formattedQuantity = parseInt(productToEdit.quantity, 10);
-            const productData = {
-                ...productToEdit,
-                price: formattedPrice,
-                quantity: formattedQuantity,
-                imgName,
-                allergens: "allergens",
-                ingredients: "ingredients",
-                nutrition: "nutrition"
-            };
+    return (
+        <Box sx={{padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}>
+            <Box sx={{display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%'}}>
+                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddCategoryModalOpen}
+                        sx={{flex: 1}}>
+                    Add Category
+                </Button>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon/>}
+                        onClick={handleDeleteCategoryDialogOpen} sx={{flex: 1}}>
+                    Delete Category
+                </Button>
+                <Divider orientation="vertical" flexItem/>
+                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddModalOpen} sx={{flex: 1}}>
+                    Add Product
+                </Button>
+                <Button variant="contained" color="error" startIcon={<DeleteIcon/>} onClick={handleDeleteProducts}
+                        sx={{flex: 1}}>
+                    Delete Products
+                </Button>
+            </Box>
+            <Paper sx={{p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2}}>
+                <InputBase
+                    sx={{ml: 1, flex: 1}}
+                    placeholder="Search Products"
+                    inputProps={{'aria-label': 'search products'}}
+                    onChange={handleFilterChange}
+                />
+                <IconButton sx={{p: '10px'}} aria-label="search">
+                    <SearchIcon/>
+                </IconButton>
+            </Paper>
 
-            axios.put(`${config.apiBaseUrl}/api/products/${productToEdit.productId}`, productData)
-                .then(response => {
-                    console.log('Product updated successfully:', response.data);
-                    fetchProducts();
-                    setIsEditModalOpen(false);
-                    setProductToEdit(null);
-                })
-                .catch(error => {
-                    console.error('Error updating product:', error);
-                });
-        };
+            {categories.map(category => (
+                <Accordion key={category.categoryId}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                        <Typography>{category.name}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <List>
+                            {filteredProducts(category.categoryId).map(product => (
+                                <ListItem key={product.productId} secondaryAction={
+                                    <>
+                                        <Checkbox
+                                            edge="end"
+                                            onChange={() => handleToggleProduct(product.productId)}
+                                            checked={selectedProducts.has(product.productId)}
+                                        />
+                                        <IconButton edge="end" aria-label="edit"
+                                                    onClick={() => handleEditProduct(product.productId)}>
+                                            <EditIcon/>
+                                        </IconButton>
+                                    </>
+                                }>
+                                    <ListItemText
+                                        primary={product.name}
+                                        secondary={`Price:  ${formatPrice(product.price)}, Size: ${product.size}`}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </AccordionDetails>
+                </Accordion>
+            ))}
 
-        return (
-            <Box sx={{padding: 4, maxHeight: 'calc(100vh - 150px)', overflow: 'auto'}}>
-                <Box sx={{display: 'flex', gap: 2, justifyContent: 'space-between', width: '100%'}}>
-                    <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddCategoryModalOpen}
-                            sx={{flex: 1}}>
-                        Add Category
-                    </Button>
-                    <Button variant="contained" color="error" startIcon={<DeleteIcon/>}
-                            onClick={handleDeleteCategoryDialogOpen} sx={{flex: 1}}>
-                        Delete Category
-                    </Button>
-                    <Divider orientation="vertical" flexItem/>
-                    <Button variant="contained" startIcon={<AddIcon/>} onClick={handleAddModalOpen} sx={{flex: 1}}>
-                        Add Product
-                    </Button>
-                    <Button variant="contained" color="error" startIcon={<DeleteIcon/>} onClick={handleDeleteProducts}
-                            sx={{flex: 1}}>
-                        Delete Products
+            <Modal open={isAddModalOpen} onClose={handleAddModalClose}>
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
+                        Add New Product
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleAddModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon/>
+                        </IconButton>
+                    </Typography>
+
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={6}>
+                            <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
+                                       onChange={handleNewProductChange}/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Price €" name="price" fullWidth margin="normal"
+                                       value={newProduct.price}
+                                       onChange={handleNewProductChange} placeholder="0.00"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                                       value={newProduct.quantity} onChange={handleNewProductChange}
+                                       placeholder="0"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="category-label">Category</InputLabel>
+                                <Select
+                                    labelId="category-label"
+                                    id="category-select"
+                                    name="productCategoryId"
+                                    value={newProduct.productCategoryId}
+                                    label="Category"
+                                    onChange={handleNewProductChange}
+                                >
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.categoryId} value={category.categoryId}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
+                                       onChange={handleNewProductChange} placeholder="0,0L"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                                       value={newProduct.allergens || ""} onChange={handleNewProductChange}
+                                       placeholder="List of allergens"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                                       value={newProduct.ingredients || ""} onChange={handleNewProductChange}
+                                       placeholder="List of ingredients"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                                       value={newProduct.nutrition || ""} onChange={handleNewProductChange}
+                                       placeholder="List of nutrition"/>
+                        </Grid>
+
+                        <Grid item xs={12} sm={9}>
+                            <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
+                                       value={newProduct.imageUrl} onChange={handleNewProductChange}
+                                       placeholder="http://example.com/image.jpg"/>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <Button variant="contained" component="label" startIcon={<UploadIcon/>} fullWidth>
+                                Upload Local
+                                <input type="file" hidden name="productImage" onChange={handleFileChange}/>
+                            </Button>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2}}>
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Modal>
+
+            <Modal open={isEditModalOpen} onClose={handleEditModalClose}>
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
+                        Edit Product
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleEditModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon/>
+                        </IconButton>
+                    </Typography>
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={productToEdit?.name || ''}
+                               onChange={handleEditProductChange}/>
+                    <TextField label="Price €" name="price" fullWidth margin="normal"
+                               value={productToEdit?.price || ''}
+                               onChange={handleEditProductChange} placeholder="0.00"/>
+                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                               value={productToEdit?.quantity || ''} onChange={handleEditProductChange}
+                               placeholder="0"/>
+
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel id="category-label">Category</InputLabel>
+                        <Select
+                            labelId="category-label"
+                            id="category-select"
+                            name="productCategoryId"
+                            value={productToEdit?.productCategoryId || ''}
+                            label="Category"
+                            onChange={handleEditProductChange}
+                        >
+                            {categories.map((category) => (
+                                <MenuItem key={category.categoryId} value={category.categoryId}>
+                                    {category.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <TextField label="Size" name="size" fullWidth margin="normal" value={productToEdit?.size || ''}
+                               onChange={handleEditProductChange} placeholder="0,0L"/>
+                    <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                               value={productToEdit?.allergens || ""} onChange={handleEditProductChange} disabled/>
+                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                               value={productToEdit?.ingredients || ""} onChange={handleEditProductChange}
+                               disabled/>
+                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                               value={productToEdit?.nutrition || ""} onChange={handleEditProductChange} disabled/>
+
+                    <Button variant="contained" color="primary" onClick={handleUpdateProduct} sx={{mt: 2}}>
+                        Submit
                     </Button>
                 </Box>
-                <Paper sx={{p: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2}}>
-                    <InputBase
-                        sx={{ml: 1, flex: 1}}
-                        placeholder="Search Products"
-                        inputProps={{'aria-label': 'search products'}}
-                        onChange={handleFilterChange}
-                    />
-                    <IconButton sx={{p: '10px'}} aria-label="search">
-                        <SearchIcon/>
-                    </IconButton>
-                </Paper>
+            </Modal>
 
-                {categories.map(category => (
-                    <Accordion key={category.categoryId}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                            <Typography>{category.name}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <List>
-                                {filteredProducts(category.categoryId).map(product => (
-                                    <ListItem key={product.productId} secondaryAction={
-                                        <>
-                                            <Checkbox
-                                                edge="end"
-                                                onChange={() => handleToggleProduct(product.productId)}
-                                                checked={selectedProducts.has(product.productId)}
-                                            />
-                                            <IconButton edge="end" aria-label="edit"
-                                                        onClick={() => handleEditProduct(product.productId)}>
-                                                <EditIcon/>
-                                            </IconButton>
-                                        </>
-                                    }>
-                                        <ListItemText
-                                            primary={product.name}
-                                            secondary={`Price:  ${formatPrice(product.price)}, Size: ${product.size}`}
-                                        />
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </AccordionDetails>
-                    </Accordion>
-                ))}
+            <Modal open={isAddCategoryModalOpen} onClose={handleAddCategoryModalClose}>
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2" sx={{mb: 2}}>
+                        Add New Category
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleAddCategoryModalClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <CloseIcon/>
+                        </IconButton>
+                    </Typography>
+                    <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name}
+                               onChange={handleNewCategoryChange}/>
+                    <TextField label="Description" name="description" fullWidth margin="normal"
+                               value={newCategory.description} onChange={handleNewCategoryChange}/>
 
-                <Modal open={isAddModalOpen} onClose={handleAddModalClose}>
-                    <Box sx={modalStyle}>
-                        <Typography variant="h6" component="h2" sx={{mb: 2}}>
-                            Add New Product
-                            <IconButton
-                                aria-label="close"
-                                onClick={handleAddModalClose}
-                                sx={{
-                                    position: 'absolute',
-                                    right: 8,
-                                    top: 8,
-                                }}
-                            >
-                                <CloseIcon/>
-                            </IconButton>
-                        </Typography>
+                    <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{mt: 2}}>
+                        Submit
+                    </Button>
+                </Box>
+            </Modal>
 
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={6}>
-                                <TextField label="Name" name="name" fullWidth margin="normal" value={newProduct.name}
-                                           onChange={handleNewProductChange}/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Price €" name="price" fullWidth margin="normal"
-                                           value={newProduct.price}
-                                           onChange={handleNewProductChange} placeholder="0.00"/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
-                                           value={newProduct.quantity} onChange={handleNewProductChange}
-                                           placeholder="0"/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl fullWidth margin="normal">
-                                    <InputLabel id="category-label">Category</InputLabel>
-                                    <Select
-                                        labelId="category-label"
-                                        id="category-select"
-                                        name="productCategoryId"
-                                        value={newProduct.productCategoryId}
-                                        label="Category"
-                                        onChange={handleNewProductChange}
-                                    >
-                                        {categories.map((category) => (
-                                            <MenuItem key={category.categoryId} value={category.categoryId}>
-                                                {category.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
-                                           onChange={handleNewProductChange} placeholder="0,0L"/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Allergens" name="allergens" fullWidth margin="normal"
-                                           value={newProduct.allergens || ""} onChange={handleNewProductChange}
-                                           placeholder="List of allergens"/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
-                                           value={newProduct.ingredients || ""} onChange={handleNewProductChange}
-                                           placeholder="List of ingredients"/>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
-                                           value={newProduct.nutrition || ""} onChange={handleNewProductChange}
-                                           placeholder="List of nutrition"/>
-                            </Grid>
-
-                            <Grid item xs={12} sm={9}>
-                                <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
-                                           value={newProduct.imageUrl} onChange={handleNewProductChange}
-                                           placeholder="http://example.com/image.jpg"/>
-                            </Grid>
-                            <Grid item xs={12} sm={3}>
-                                <Button variant="contained" component="label" startIcon={<UploadIcon/>} fullWidth>
-                                    Upload Local
-                                    <input type="file" hidden name="productImage" onChange={handleFileChange}/>
-                                </Button>
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2}}>
-                                    Submit
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Modal>
-
-                <Modal open={isEditModalOpen} onClose={handleEditModalClose}>
-                    <Box sx={modalStyle}>
-                        <Typography variant="h6" component="h2" sx={{mb: 2}}>
-                            Edit Product
-                            <IconButton
-                                aria-label="close"
-                                onClick={handleEditModalClose}
-                                sx={{
-                                    position: 'absolute',
-                                    right: 8,
-                                    top: 8,
-                                }}
-                            >
-                                <CloseIcon/>
-                            </IconButton>
-                        </Typography>
-                        <TextField label="Name" name="name" fullWidth margin="normal" value={productToEdit?.name || ''}
-                                   onChange={handleEditProductChange}/>
-                        <TextField label="Price €" name="price" fullWidth margin="normal"
-                                   value={productToEdit?.price || ''}
-                                   onChange={handleEditProductChange} placeholder="0.00"/>
-                        <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
-                                   value={productToEdit?.quantity || ''} onChange={handleEditProductChange}
-                                   placeholder="0"/>
-
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel id="category-label">Category</InputLabel>
-                            <Select
-                                labelId="category-label"
-                                id="category-select"
-                                name="productCategoryId"
-                                value={productToEdit?.productCategoryId || ''}
-                                label="Category"
-                                onChange={handleEditProductChange}
-                            >
-                                {categories.map((category) => (
-                                    <MenuItem key={category.categoryId} value={category.categoryId}>
-                                        {category.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        <TextField label="Size" name="size" fullWidth margin="normal" value={productToEdit?.size || ''}
-                                   onChange={handleEditProductChange} placeholder="0,0L"/>
-                        <TextField label="Allergens" name="allergens" fullWidth margin="normal"
-                                   value={productToEdit?.allergens || ""} onChange={handleEditProductChange} disabled/>
-                        <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
-                                   value={productToEdit?.ingredients || ""} onChange={handleEditProductChange}
-                                   disabled/>
-                        <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
-                                   value={productToEdit?.nutrition || ""} onChange={handleEditProductChange} disabled/>
-
-                        <Button variant="contained" color="primary" onClick={handleUpdateProduct} sx={{mt: 2}}>
-                            Submit
-                        </Button>
-                    </Box>
-                </Modal>
-
-                <Modal open={isAddCategoryModalOpen} onClose={handleAddCategoryModalClose}>
-                    <Box sx={modalStyle}>
-                        <Typography variant="h6" component="h2" sx={{mb: 2}}>
-                            Add New Category
-                            <IconButton
-                                aria-label="close"
-                                onClick={handleAddCategoryModalClose}
-                                sx={{
-                                    position: 'absolute',
-                                    right: 8,
-                                    top: 8,
-                                }}
-                            >
-                                <CloseIcon/>
-                            </IconButton>
-                        </Typography>
-                        <TextField label="Name" name="name" fullWidth margin="normal" value={newCategory.name}
-                                   onChange={handleNewCategoryChange}/>
-                        <TextField label="Description" name="description" fullWidth margin="normal"
-                                   value={newCategory.description} onChange={handleNewCategoryChange}/>
-
-                        <Button variant="contained" color="primary" onClick={handleAddCategory} sx={{mt: 2}}>
-                            Submit
-                        </Button>
-                    </Box>
-                </Modal>
-
-                {renderDeleteConfirmDialog()}
-                {renderDeleteCategoryConfirmDialog()}
-                {renderConfirmDialog()}
-                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
-                    <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage ? "info" : "error"}
-                           sx={{width: '100%'}}>
-                        {snackbarMessage || errorMessage}
-                    </Alert>
-                </Snackbar>
-            </Box>
-        );
-    };
+            {renderDeleteConfirmDialog()}
+            {renderDeleteCategoryConfirmDialog()}
+            {renderConfirmDialog()}
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage ? "info" : "error"}
+                       sx={{width: '100%'}}>
+                    {snackbarMessage || errorMessage}
+                </Alert>
+            </Snackbar>
+        </Box>
+    );
 };
 export default Settings;
