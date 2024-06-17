@@ -7,6 +7,7 @@ import de.hhn.labfastord.repositories.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * The OrderDetailController class handles the web requests for managing order details.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:80", "http://react:80", "http://localhost:3000"}, maxAge = 3600)
 @RestController
 @RequestMapping("/api/orderDetails")
 public class OrderDetailController {
@@ -27,6 +28,7 @@ public class OrderDetailController {
      *
      * @return all order details as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderDetailDTO>> getAllOrderDetails() {
         try {
@@ -43,6 +45,7 @@ public class OrderDetailController {
      * @param id the order detail ID.
      * @return the order detail as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDetailDTO> getOrderDetailById(@PathVariable Long id) {
         try {

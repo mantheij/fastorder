@@ -8,6 +8,7 @@ import de.hhn.labfastord.repositories.ProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * The ProductCategoryController class manages the web requests for product categories.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:80", "http://react:80", "http://localhost:3000"}, maxAge = 3600)
 @RestController
 @RequestMapping("/api/productCategories")
 public class ProductCategoryController {
@@ -63,6 +64,7 @@ public class ProductCategoryController {
      * @param newProductCategoryDTO the category data.
      * @return the updated category as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductCategoryDTO> updateProductCategory(@PathVariable Long id, @RequestBody NewProductCategoryDTO newProductCategoryDTO) {
         try {
@@ -84,6 +86,7 @@ public class ProductCategoryController {
      * @param newProductCategoryDTO the new category data.
      * @return the created category as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductCategoryDTO> createProductCategory(@RequestBody NewProductCategoryDTO newProductCategoryDTO) {
         try {
@@ -103,6 +106,7 @@ public class ProductCategoryController {
      * @param id the category ID.
      * @return a confirmation message as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProductCategory(@PathVariable Long id) {
         try {

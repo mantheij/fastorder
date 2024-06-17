@@ -1,5 +1,5 @@
 # ./mvnw install
-# docker build --build-arg JAR_FILE=target/*.jar -t lab/fastorder .
+# docker build --build-arg JAR_FILE=target/*.jar -t gerschdi/fastorderbackend:3 .
 FROM eclipse-temurin:21-jdk-alpine
 VOLUME /tmp
 ARG JAR_FILE

@@ -11,6 +11,7 @@ import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * The OrderController class manages the web requests related to orders.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:80", "http://react:80", "http://localhost:3000"}, maxAge = 3600)
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -38,6 +39,7 @@ public class OrderController {
      *
      * @return all orders as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
         try {
@@ -53,6 +55,7 @@ public class OrderController {
      *
      * @return all orders as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/open")
     public ResponseEntity<List<OrderDTO>> getAllOpenOrders() {
         try {
@@ -71,6 +74,7 @@ public class OrderController {
      * @param id the order ID.
      * @return the order as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
         try {
@@ -88,6 +92,7 @@ public class OrderController {
      * @param orderDTO the order data.
      * @return updated order as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
         try {
@@ -145,6 +150,7 @@ public class OrderController {
      * @param id the order ID.
      * @return a confirmation message as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {
