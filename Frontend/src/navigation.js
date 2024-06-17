@@ -56,12 +56,6 @@ export default function LabelBottomNavigation({ userRole, onLogout }) {
                     sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
                 />
             )}
-            <BottomNavigationAction
-                label="User"
-                value="/user"
-                icon={<AccountCircle />}
-                sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
-            />
             {userRole === "admin" && (
                 <BottomNavigationAction
                     label="Settings"
