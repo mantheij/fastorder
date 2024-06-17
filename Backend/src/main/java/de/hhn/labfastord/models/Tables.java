@@ -15,10 +15,10 @@ public class Tables {
     private Long tableId;
     @NotNull
     private String name;
-    private Integer sizex;
-    private Integer sizey;
-    private Integer locx;
-    private Integer locy;
+    private Integer area;
+    private boolean occupied;
+    private Integer width;
+    private Integer height;
 
     public Tables() {
     }

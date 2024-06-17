@@ -6,6 +6,7 @@ import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * The TablesController class manages the web requests related to tables.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:80", "http://react:80", "http://localhost:3000"}, maxAge = 3600)
 @RestController
 @RequestMapping("/api/tables")
 public class TablesController {
@@ -61,16 +62,17 @@ public class TablesController {
      * @param newTableDto the newTableDto data to update
      * @return the updated table as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Tables> updateTable(@PathVariable Long id, @RequestBody NewTableDTO newTableDto) {
         try {
             return tablesRepository.findById(id)
                     .map(existingTable -> {
                         existingTable.setName(newTableDto.getName());
-                        existingTable.setLocx(newTableDto.getLocx());
-                        existingTable.setLocy(newTableDto.getLocy());
-                        existingTable.setSizex(newTableDto.getSizex());
-                        existingTable.setSizey(newTableDto.getSizey());
+                        existingTable.setArea(newTableDto.getArea());
+                        existingTable.setOccupied(newTableDto.isOccupied());
+                        existingTable.setWidth(newTableDto.getWidth());
+                        existingTable.setHeight(newTableDto.getHeight());
                         return ResponseEntity.ok(tablesRepository.save(existingTable));
                     })
                     .orElseGet(() -> ResponseEntity.notFound().build());
@@ -85,15 +87,16 @@ public class TablesController {
      * @param newTableDTO the new table data.
      * @return the created product as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Tables> createTable(@RequestBody NewTableDTO newTableDTO) {
         try {
             Tables table = new Tables();
             table.setName(newTableDTO.getName());
-            table.setLocx(newTableDTO.getLocx());
-            table.setLocy(newTableDTO.getLocy());
-            table.setSizex(newTableDTO.getSizex());
-            table.setSizey(newTableDTO.getSizey());
+            table.setArea(newTableDTO.getArea());
+            table.setOccupied(newTableDTO.isOccupied());
+            table.setWidth(newTableDTO.getWidth());
+            table.setHeight(newTableDTO.getHeight());
             return ResponseEntity.ok(tablesRepository.save(table));
         } catch (DataAccessException e) {
             return ResponseEntity.internalServerError().build();
@@ -107,6 +110,7 @@ public class TablesController {
      * @param id the Table ID.
      * @return a confirmation message as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {

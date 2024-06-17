@@ -8,6 +8,7 @@ import de.hhn.labfastord.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * The ProductController class manages the web requests related to products.
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:80", "http://react:80", "http://localhost:3000"}, maxAge = 3600)
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -65,6 +66,7 @@ public class ProductController {
      * @param newProductDTO the product data.
      * @return the updated product as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody NewProductDTO newProductDTO) {
         try {
@@ -99,6 +101,7 @@ public class ProductController {
      * @param newProductDTO the new product data.
      * @return the created product as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@RequestBody NewProductDTO newProductDTO) {
         try {
@@ -132,6 +135,7 @@ public class ProductController {
      * @param id the product ID.
      * @return a confirmation message as ResponseEntity.
      */
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
         try {

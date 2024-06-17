@@ -5,593 +5,12 @@ info:
   version: "1.0.0"
 servers:
   - url: "localhost:8080"
-paths:
-  /api/productCategories:
-    get:
-      summary: "GET api/productCategories"
-      operationId: "getAllProductCategories"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/ProductCategoryDTO"
-    post:
-      summary: "POST api/productCategories"
-      operationId: "createProductCategory"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewProductCategoryDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductCategoryDTO"
-  /api/productCategories/{id}:
-    get:
-      summary: "GET api/productCategories/{id}"
-      operationId: "getProductCategoryById"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductCategoryDTO"
-    put:
-      summary: "PUT api/productCategories/{id}"
-      operationId: "updateProductCategory"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewProductCategoryDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductCategoryDTO"
-    delete:
-      summary: "DELETE api/productCategories/{id}"
-      operationId: "deleteProductCategory"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/orderDetails:
-    get:
-      summary: "GET api/orderDetails"
-      operationId: "getAllOrderDetails"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/OrderDetailDTO"
-  /api/orderDetails/{id}:
-    get:
-      summary: "GET api/orderDetails/{id}"
-      operationId: "getOrderDetailById"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/OrderDetailDTO"
-  /api/tables:
-    get:
-      summary: "GET api/tables"
-      operationId: "getAllTables"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Tables"
-    post:
-      summary: "POST api/tables"
-      operationId: "createTable"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewTableDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Tables"
-  /api/tables/{id}:
-    get:
-      summary: "GET api/tables/{id}"
-      operationId: "getTableById"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Tables"
-    put:
-      summary: "PUT api/tables/{id}"
-      operationId: "updateTable"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewTableDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Tables"
-    delete:
-      summary: "DELETE api/tables/{id}"
-      operationId: "deleteTables"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/products:
-    get:
-      summary: "GET api/products"
-      operationId: "getAllProducts"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/ProductDTO"
-    post:
-      summary: "POST api/products"
-      operationId: "createProduct"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewProductDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductDTO"
-  /api/products/{id}:
-    get:
-      summary: "GET api/products/{id}"
-      operationId: "getProductById"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductDTO"
-    put:
-      summary: "PUT api/products/{id}"
-      operationId: "updateProduct"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewProductDTO"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ProductDTO"
-    delete:
-      summary: "DELETE api/products/{id}"
-      operationId: "deleteProduct"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/orders:
-    get:
-      summary: "GET api/orders"
-      operationId: "getAllOrders"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/OrderDTO"
-    post:
-      summary: "POST api/orders"
-      operationId: "createOrder"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "object"
-              properties:
-                orderDetails:
-                  type: "array"
-                  items:
-                    properties:
-                      quantity:
-                        type: "integer"
-                        format: "int32"
-                      product:
-                        type: "object"
-                        properties:
-                          productId:
-                            type: "integer"
-                            format: "int64"
-                tableId:
-                  type: "integer"
-                  format: "int64"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/OrderDTO"
-  /api/orders/open:
-    get:
-      summary: "GET api/orders/open"
-      operationId: "getAllOpenOrders"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/OrderDTO"
-  /api/orders/{id}:
-    get:
-      summary: "GET api/orders/{id}"
-      operationId: "getOrderById"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/OrderDTO"
-    delete:
-      summary: "DELETE api/orders/{id}"
-      operationId: "deleteOrder"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/orders/{id}/status:
-    patch:
-      summary: "PATCH api/orders/{id}/status"
-      operationId: "updateOrderStatus"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                status:
-                  type: "string"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/OrderDTO"
-  /api/test/admin:
-    get:
-      summary: "GET api/test/admin"
-      operationId: "adminAccess"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/test/all:
-    get:
-      summary: "GET api/test/all"
-      operationId: "allAccess"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/test/user:
-    get:
-      summary: "GET api/test/user"
-      operationId: "userAccess"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /api/auth/signin:
-    post:
-      summary: "POST api/auth/signin"
-      operationId: "authenticateUser"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/JwtResponse"
-  /api/auth/signup:
-    post:
-      summary: "POST api/auth/signup"
-      operationId: "registerUser"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignupRequest"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-  /api/user/all:
-    get:
-      summary: "GET api/user/all"
-      operationId: "getAllUsers"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/User"
-  /api/user/delete/{id}:
-    delete:
-      summary: "DELETE api/user/delete/{id}"
-      operationId: "deleteUser"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-  /api/user/changePassword/{id}:
-    put:
-      summary: "PUT api/user/changePassword/{id}"
-      operationId: "changePassword"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PasswordChange"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-  /api/user/changeRole/{id}:
-    put:
-      summary: "PUT api/user/changeRole/{id}"
-      operationId: "changeRole"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "string"
-              enum:
-                - "ROLE_USER"
-                - "ROLE_ADMIN"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-  /api/user/changeUsername/{id}:
-    put:
-      summary: "PUT api/user/changeUsername/{id}"
-      operationId: "changeUsername"
-      parameters:
-        - name: "id"
-          in: "path"
-          required: true
-          schema:
-            type: "integer"
-            format: "int64"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: "string"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "object"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     ProductCategoryDTO:
       type: "object"
@@ -642,16 +61,15 @@ components:
           format: "int64"
         name:
           type: "string"
-        sizex:
+        area:
           type: "integer"
           format: "int32"
-        sizey:
+        occupied:
+          type: "boolean"
+        width:
           type: "integer"
           format: "int32"
-        locx:
-          type: "integer"
-          format: "int32"
-        locy:
+        height:
           type: "integer"
           format: "int32"
     NewTableDTO:
@@ -659,16 +77,15 @@ components:
       properties:
         name:
           type: "string"
-        sizex:
+        area:
           type: "integer"
           format: "int32"
-        sizey:
+        occupied:
+          type: "boolean"
+        width:
           type: "integer"
           format: "int32"
-        locx:
-          type: "integer"
-          format: "int32"
-        locy:
+        height:
           type: "integer"
           format: "int32"
     ProductDTO:
@@ -870,3 +287,653 @@ components:
           type: "string"
         newPassword:
           type: "string"
+security:
+  - bearerAuth: []
+paths:
+  /api/productCategories:
+    get:
+      summary: "GET api/productCategories"
+      operationId: "getAllProductCategories"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ProductCategoryDTO"
+    post:
+      summary: "POST api/productCategories"
+      operationId: "createProductCategory"
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProductCategoryDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductCategoryDTO"
+  /api/productCategories/{id}:
+    get:
+      summary: "GET api/productCategories/{id}"
+      operationId: "getProductCategoryById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductCategoryDTO"
+    put:
+      summary: "PUT api/productCategories/{id}"
+      operationId: "updateProductCategory"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProductCategoryDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductCategoryDTO"
+    delete:
+      summary: "DELETE api/productCategories/{id}"
+      operationId: "deleteProductCategory"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/orderDetails:
+    get:
+      summary: "GET api/orderDetails"
+      operationId: "getAllOrderDetails"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/OrderDetailDTO"
+  /api/orderDetails/{id}:
+    get:
+      summary: "GET api/orderDetails/{id}"
+      operationId: "getOrderDetailById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDetailDTO"
+  /api/tables:
+    get:
+      summary: "GET api/tables"
+      operationId: "getAllTables"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Tables"
+    post:
+      summary: "POST api/tables"
+      operationId: "createTable"
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewTableDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Tables"
+  /api/tables/{id}:
+    get:
+      summary: "GET api/tables/{id}"
+      operationId: "getTableById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Tables"
+    put:
+      summary: "PUT api/tables/{id}"
+      operationId: "updateTable"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewTableDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Tables"
+    delete:
+      summary: "DELETE api/tables/{id}"
+      operationId: "deleteTables"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/products:
+    get:
+      summary: "GET api/products"
+      operationId: "getAllProducts"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ProductDTO"
+    post:
+      summary: "POST api/products"
+      operationId: "createProduct"
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProductDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductDTO"
+  /api/products/{id}:
+    get:
+      summary: "GET api/products/{id}"
+      operationId: "getProductById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductDTO"
+    put:
+      summary: "PUT api/products/{id}"
+      operationId: "updateProduct"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProductDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductDTO"
+    delete:
+      summary: "DELETE api/products/{id}"
+      operationId: "deleteProduct"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/orders:
+    get:
+      summary: "GET api/orders"
+      operationId: "getAllOrders"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/OrderDTO"
+    post:
+      summary: "POST api/orders"
+      operationId: "createOrder"
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                orderDetails:
+                  type: "array"
+                  items:
+                    properties:
+                      quantity:
+                        type: "integer"
+                        format: "int32"
+                      product:
+                        type: "object"
+                        properties:
+                          productId:
+                            type: "integer"
+                            format: "int64"
+                tableId:
+                  type: "integer"
+                  format: "int64"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+  /api/orders/open:
+    get:
+      summary: "GET api/orders/open"
+      operationId: "getAllOpenOrders"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/OrderDTO"
+  /api/orders/{id}:
+    get:
+      summary: "GET api/orders/{id}"
+      operationId: "getOrderById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+    delete:
+      summary: "DELETE api/orders/{id}"
+      operationId: "deleteOrder"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/orders/{id}/status:
+    patch:
+      summary: "PATCH api/orders/{id}/status"
+      operationId: "updateOrderStatus"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                status:
+                  type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+  /api/test/admin:
+    get:
+      summary: "GET api/test/admin"
+      operationId: "adminAccess"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/test/all:
+    get:
+      summary: "GET api/test/all"
+      operationId: "allAccess"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/test/user:
+    get:
+      summary: "GET api/test/user"
+      operationId: "userAccess"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/auth/signin:
+    post:
+      summary: "POST api/auth/signin"
+      operationId: "authenticateUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JwtResponse"
+  /api/auth/signup:
+    post:
+      summary: "POST api/auth/signup"
+      operationId: "registerUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/user/all:
+    get:
+      summary: "GET api/user/all"
+      operationId: "getAllUsers"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/User"
+  /api/user/delete/{id}:
+    delete:
+      summary: "DELETE api/user/delete/{id}"
+      operationId: "deleteUser"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/user/changePassword/{id}:
+    put:
+      summary: "PUT api/user/changePassword/{id}"
+      operationId: "changePassword"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/user/changeRole/{id}:
+    put:
+      summary: "PUT api/user/changeRole/{id}"
+      operationId: "changeRole"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+              enum:
+                - "ROLE_USER"
+                - "ROLE_ADMIN"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/user/changeUsername/{id}:
+    put:
+      summary: "PUT api/user/changeUsername/{id}"
+      operationId: "changeUsername"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
