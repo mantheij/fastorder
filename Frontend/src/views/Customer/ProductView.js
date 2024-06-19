@@ -241,7 +241,8 @@ const ProductView = () => {
             <Drawer
                 anchor="bottom"
                 open={bottomSheetOpen}
-                onClose={handleCloseBottomSheet}>
+                onClose={handleCloseBottomSheet}
+                sx={{ '& .MuiDrawer-paper': { width:'40%', margin: 'auto'}}}>
                 <List>
                     <ListItem sx={{display:'flex', justifyContent:'center',alignItems:'center'}}>
                         <ListItemAvatar sx={{ fontSize: 100 }}>

@@ -2,14 +2,12 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import TableBar from "@mui/icons-material/TableBarOutlined";
 import { AccountCircle, Settings, SummarizeOutlined, ExitToApp } from "@mui/icons-material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ChecklistRtlIcon from '@mui/icons-material/ChecklistRtl';
 import Cookies from "js-cookie";
-import {createTheme} from "@mui/material/styles";
-import {blue} from "@mui/material/colors";
-
+import { createTheme } from "@mui/material/styles";
+import { blue } from "@mui/material/colors";
 
 export default function LabelBottomNavigation({ userRole, onLogout }) {
     const [value, setValue] = React.useState("/");
@@ -36,7 +34,7 @@ export default function LabelBottomNavigation({ userRole, onLogout }) {
                 darker: blue[900],
             }
         }
-    })
+    });
 
     return (
         <BottomNavigation
@@ -53,39 +51,52 @@ export default function LabelBottomNavigation({ userRole, onLogout }) {
             onChange={handleChange}
         >
             {userRole === "admin" && (
-            <BottomNavigationAction
-                value="/chef"
-                icon={<img src="/logo.png" alt="Special" style={{width: 45, height: 45 }}/>}
-            />
+                <BottomNavigationAction
+                    value="/chef"
+                    icon={<img src="/logo.png" alt="Special" style={{ width: 45, height: 45 }} />}
+                    sx={{ '& .MuiSvgIcon-root': { color: value === '/chef' ? theme.palette.primary.main : 'black' } }}
+                />
             )}
             <BottomNavigationAction
                 label="Order"
                 value="/table-selection"
-                icon={<AddShoppingCartIcon style={{ color: theme.palette.primary.main,  width: 35, height: 35 }}/>}
-                sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
+                icon={<AddShoppingCartIcon style={{ width: 35, height: 35 }} />}
+                sx={{
+                    '&:hover': { backgroundColor: '#f0f0f0' },
+                    '& .MuiSvgIcon-root': { color: value === '/table-selection' ? theme.palette.primary.main : 'black' }
+                }}
             />
             {userRole !== "guest" && (
                 <BottomNavigationAction
                     label="Employee"
                     value="/orders"
-                    icon={<ChecklistRtlIcon style={{ color: theme.palette.primary.main, width: 35, height: 35 }}/>}
-                    sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
+                    icon={<ChecklistRtlIcon style={{ width: 35, height: 35 }} />}
+                    sx={{
+                        '&:hover': { backgroundColor: '#f0f0f0' },
+                        '& .MuiSvgIcon-root': { color: value === '/orders' ? theme.palette.primary.main : 'black' }
+                    }}
                 />
             )}
             {userRole === "admin" && (
                 <BottomNavigationAction
                     label="Settings"
                     value="/settings"
-                    icon={<Settings style={{ color: theme.palette.primary.main, width: 35, height: 35 }}/>}
-                    sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
+                    icon={<Settings style={{ width: 35, height: 35 }} />}
+                    sx={{
+                        '&:hover': { backgroundColor: '#f0f0f0' },
+                        '& .MuiSvgIcon-root': { color: value === '/settings' ? theme.palette.primary.main : 'black' }
+                    }}
                 />
             )}
             <BottomNavigationAction
                 label="Logout"
                 value="/logout"
-                icon={<ExitToApp style={{ color: theme.palette.primary.main, width: 35, height: 35 }}/>}
+                icon={<ExitToApp style={{ width: 35, height: 35 }} />}
                 onClick={handleLogout}
-                sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
+                sx={{
+                    '&:hover': { backgroundColor: '#f0f0f0' },
+                    '& .MuiSvgIcon-root': { color: value === '/logout' ? theme.palette.primary.main : 'black' }
+                }}
             />
         </BottomNavigation>
     );
