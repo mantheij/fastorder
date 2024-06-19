@@ -54,7 +54,7 @@ const CardView = () => {
 
             const orderData = {
                 orderDetails,
-                tableId: 1
+                tableId: tableId
             };
 
             const authToken = Cookies.get('authToken');
