@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:16.1
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=orderDB
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    healthcheck:
+      test: "pg_isready -U postgres"
+
+  spring:
+    image: labfast-backend
+    container_name: spring
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  react:
+    image: labfast-frontend
+    container_name: react
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - "80:80"
+    depends_on:
+      - spring
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+
