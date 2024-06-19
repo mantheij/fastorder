@@ -99,7 +99,7 @@ Stellen Sie sicher, dass Docker und Docker Compose installiert sind.
 
    - Navigieren Sie zum `frontend`-Verzeichnis
      ```bash
-     cd backend
+     cd frontend
      ```
    - Danach muss mithilfe der Dockerfile das Image gebildet werden
    ```bash
