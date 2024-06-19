@@ -4,6 +4,8 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import TableBar from "@mui/icons-material/TableBarOutlined";
 import { AccountCircle, Settings, SummarizeOutlined, ExitToApp } from "@mui/icons-material";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ChecklistRtlIcon from '@mui/icons-material/ChecklistRtl';
 import Cookies from "js-cookie";
 import {createTheme} from "@mui/material/styles";
 import {blue} from "@mui/material/colors";
@@ -57,16 +59,16 @@ export default function LabelBottomNavigation({ userRole, onLogout }) {
             />
             )}
             <BottomNavigationAction
-                label="Selection"
+                label="Order"
                 value="/table-selection"
-                icon={<TableBar style={{ color: theme.palette.primary.main,  width: 35, height: 35 }}/>}
+                icon={<AddShoppingCartIcon style={{ color: theme.palette.primary.main,  width: 35, height: 35 }}/>}
                 sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
             />
             {userRole !== "guest" && (
                 <BottomNavigationAction
                     label="Employee"
                     value="/orders"
-                    icon={<SummarizeOutlined style={{ color: theme.palette.primary.main, width: 35, height: 35 }}/>}
+                    icon={<ChecklistRtlIcon style={{ color: theme.palette.primary.main, width: 35, height: 35 }}/>}
                     sx={{ '&:hover': { backgroundColor: '#f0f0f0' } }} // Hover-Effekt
                 />
             )}
