@@ -31,6 +31,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import ContactSupport from '@mui/icons-material/ContactSupport';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 import { useNavigate, useParams } from "react-router-dom";
 import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
@@ -110,9 +112,11 @@ const ProductView = () => {
         setSelectedProduct({ ...selectedProduct, size: newSize, price: selectedSize.price });
     };
 
-    const handleQuantityChange = (event) => {
-        const newQuantity = Number(event.target.value);
-        setSelectedProduct({ ...selectedProduct, quantity: newQuantity });
+    const handleQuantityChange = (increment) => {
+        const newQuantity = selectedProduct.quantity + increment;
+        if (newQuantity > 0) {
+            setSelectedProduct({ ...selectedProduct, quantity: newQuantity });
+        }
     };
 
     const handleExtraChange = (event) => {
@@ -239,7 +243,7 @@ const ProductView = () => {
                 open={bottomSheetOpen}
                 onClose={handleCloseBottomSheet}>
                 <List>
-                    <ListItem>
+                    <ListItem sx={{display:'flex', justifyContent:'center',alignItems:'center'}}>
                         <ListItemAvatar sx={{ fontSize: 100 }}>
                             <Avatar
                                 src={`${selectedProduct.imgName}`}
@@ -249,119 +253,89 @@ const ProductView = () => {
                         </ListItemAvatar>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary={selectedProduct.name} />
+                        <ListItemText primary={selectedProduct.name}
+                                      style={{ width: '200px', textAlign: 'center' }}/>
                     </ListItem>
                     <ListItem>
-                        <ListItemText secondary="Select Size and Quantity" />
+                        <ListItemText secondary="Select Size and Quantity"
+                                      style={{ width: '200px', textAlign: 'center' }}/>
                     </ListItem>
-                    <Grid container spacing={2} style={{ padding: '0 16px' }}>
-                        <Grid item xs={12} sm={6}>
+                    <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ padding: '0 16px' }}>
+                        <Grid item xs={12} container justifyContent="center" alignItems="center">
                             <Select
                                 value={selectedProduct.size || ''}
                                 onChange={handleSizeChange}
-                                fullWidth
+                                style={{ width: '300px', textAlign: 'center' }}
                             >
-                                {selectedProduct.availableSizes?.length > 0 ? (
-                                    selectedProduct.availableSizes.map(p => (
-                                        <MenuItem key={p.size} value={p.size} disabled={p.quantity === 0}>
-                                            {`${p.size} - $${p.price}`}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem disabled>No sizes available</MenuItem>
-                                )}
+                                {selectedProduct.availableSizes && selectedProduct.availableSizes.map((option) => (
+                                    <MenuItem key={option.size} value={option.size}>
+                                        {option.size} - ${option.price}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} container justifyContent="center" alignItems="center">
+                            <IconButton onClick={() => handleQuantityChange(-1)}>
+                                <RemoveIcon />
+                            </IconButton>
                             <TextField
-                                label="Quantity"
                                 type="number"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
                                 variant="outlined"
                                 value={selectedProduct.quantity}
-                                onChange={handleQuantityChange}
-                                fullWidth
+                                inputProps={{ min: 1 }}
+                                style={{ width: '60px', textAlign: 'center' }}
+                            />
+                            <IconButton onClick={() => handleQuantityChange(1)}>
+                                <AddIcon />
+                            </IconButton>
+                        </Grid>
+                        <Grid item xs={12} container justifyContent="center" alignItems="center">
+                            <TextField
+                                label="Extras"
+                                variant="outlined"
+                                value={extras}
+                                onChange={handleExtraChange}
+                                style={{ minWidth: '300px', textAlign: 'center', width: 'fit-content' }}
                             />
                         </Grid>
+                        <Grid item xs={12} container justifyContent="center" alignItems="center">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddToCart}
+                                style={{ display: 'block', margin: '0 auto', minWidth: '300px' }}
+                            >
+                                Add to Cart
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <ListItem>
-                        <TextField
-                            label="Extras"
-                            type="text"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            variant="outlined"
-                            value={extras}
-                            onChange={handleExtraChange}
-                            fullWidth
-                        />
-                    </ListItem>
-                    <div style={{ position: 'fixed', bottom: '20px', right: '20px', width: 'calc(100% - 40px)', zIndex: 1000 }}>
-                        <Button onClick={handleAddToCart} color="primary" variant="contained" fullWidth>Add to Cart</Button>
-                    </div>
-                    <ListItem>
-                        <div>
-                            <Accordion style={{ width: "98.3vw", height: "auto" }}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}
-                                                  id="panel1-header"
-                                                  aria-controls="panel1-content"
-                                >
-                                    <Typography style={{fontSize: "1.2rem"}}>Ingredients and allergens</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        <Typography style={{ fontWeight: "bold"}}>Ingredients:</Typography> {selectedProduct.ingredients} <br />
-                                        <Typography style={{ fontWeight: "bold"}}>Allergens:</Typography> {selectedProduct.allergens}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}
-                                                  id="panel2-header"
-                                                  aria-controls="panel2-content"
-                                >
-                                    <Typography style={{fontSize: "1.2rem"}}>Nutritional values</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        {selectedProduct.nutrition}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                    </ListItem>
                 </List>
             </Drawer>
             <Snackbar
                 open={alertOpen}
                 autoHideDuration={6000}
                 onClose={() => setAlertOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
-                <Alert severity={alertSeverity} sx={{ width: '100%' }}>
+                <Alert onClose={() => setAlertOpen(false)} severity={alertSeverity}>
                     {alertMessage}
                 </Alert>
             </Snackbar>
+            <Fab color="primary" aria-label="cart" onClick={() => setOpenDialog(true)} style={{ position: 'fixed', bottom: 16, right: 16 }}>
+                <Badge badgeContent={cart.length} color="secondary">
+                    <ShoppingCartOutlinedIcon />
+                </Badge>
+            </Fab>
             <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>Your Cart</DialogTitle>
+                <DialogTitle>Cart</DialogTitle>
                 <DialogContent>
                     {renderCartItems()}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Close</Button>
+                    <Button variant="contained" color="primary" onClick={handleOpenCardView}>Checkout</Button>
                 </DialogActions>
             </Dialog>
-            <Badge badgeContent={cart.length} color="error" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                   sx={{ position: 'fixed', right: 25, bottom: 95, zIndex: 1 }}>
-                <Fab color="primary" aria-label="cart" style={{ position: 'fixed', right: 20, bottom: 50, zIndex: 0 }}
-                     onClick={handleOpenCardView}>
-                    <ShoppingCartOutlinedIcon />
-                </Fab>
-            </Badge>
-            <Fab color="secondary" aria-label="call-waiter" style={{ position: 'fixed', left: 20, bottom: 50, zIndex: 1 }} onClick={handleCallWaiter}>
+            <Fab color="primary" aria-label="call waiter" onClick={handleCallWaiter} style={{ position: 'fixed', bottom: 90, right: 16 }}>
                 <ContactSupport />
             </Fab>
         </Container>
