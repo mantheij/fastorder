@@ -305,7 +305,7 @@ const ProductView = () => {
                                 color="primary"
                                 onClick={handleAddToCart}
                                 sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}
-                                style={{ display: 'block', margin: '0 auto', minWidth: '300px' }}
+                                style={{ display: 'block', marginBottom:'20px', margin: '0 auto', minWidth: '300px' }}
                             >
                                 Add to Cart
                             </Button>
