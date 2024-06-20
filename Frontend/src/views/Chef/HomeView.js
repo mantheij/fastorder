@@ -103,7 +103,7 @@ const HomeView = () => {
                                                     height: `${item.height / 1024 * 100}vh`,
                                                     backgroundColor: getTableColor(item.occupied),
                                                     color: item.occupied ? 'white' : 'black',
-                                                    fontSize: "2.5vh",
+                                                    fontSize: "3vh",
                                                     boxShadow: '0 4px 6px 2px rgba(0, 0, 0, 0.25)',
                                                     '&:hover': {
                                                         backgroundColor: getTableColor(item.occupied),
