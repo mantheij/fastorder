@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Grid } from "@mui/material";
+import { Tabs, Tab, Grid, Button, Box } from "@mui/material";
 import { useTables } from "../../model/TablesContext";
 import { useNavigate } from "react-router-dom";
 
@@ -21,53 +21,77 @@ const HomeView = () => {
     const navigate = useNavigate();
 
     /**
-     * Handles click events on area selection buttons, updating the selectedArea state.
-     * @param {number} area - The area number that was clicked.
+     * Handles change events on tabs, updating the selectedArea state.
+     * @param {event} event - The event that was triggered.
+     * @param {number} newValue - The new area number that was selected.
      */
-    const handleAreaClick = (area) => {
-        setSelectedArea(area);
+    const handleTabChange = (event, newValue) => {
+        setSelectedArea(newValue);
     };
 
     const handleTableClick = (tableId) => {
         navigate(`tableDetails/${tableId}`);
     };
 
-    return (
-        <>
-            {/* Grid container for area selection buttons */}
-            <Grid container spacing={0.5} justifyContent="space-between" sx={{ marginBottom: 5 }}>
-                {/* Button for selecting Area 1 */}
-                <Grid item xs={6} sm={6}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)' }}
-                        onClick={() => handleAreaClick(1)}
-                    >
-                        Area 1
-                    </Button>
-                </Grid>
+    const getBackgroundColor = () => {
+        return selectedArea === 1 ? '#f0f4f8' : '#E0F2F1';
+    };
 
-                {/* Button for selecting Area 2 */}
-                <Grid item xs={6} sm={6}>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        fullWidth
-                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)' }}
-                        onClick={() => handleAreaClick(2)}
-                    >
-                        Area 2
-                    </Button>
-                </Grid>
-            </Grid>
+    const getTableColor = (occupied) => {
+        return occupied ? (selectedArea === 1 ? "#BBDEFB" : "#C8E6C9") : (selectedArea === 1 ? "#E3F2FD" : "#DCEDC8");
+    };
+
+    return (
+        <Box sx={{ width: '100vw', height: '100vh', backgroundColor: getBackgroundColor(), overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            {/* Tabs for area selection */}
+            <Tabs
+                value={selectedArea}
+                onChange={handleTabChange}
+                variant="fullWidth"
+                centered
+                sx={{ marginBottom: 0 }}
+                TabIndicatorProps={{
+                    style: {
+                        backgroundColor: '#000000',
+                        height: '3px'
+                    }
+                }}
+            >
+                <Tab
+                    label="Area 1"
+                    value={1}
+                    sx={{
+                        fontSize: '2.5vh',
+                        fontWeight: 'bold',
+                        backgroundColor: selectedArea === 1 ? 'rgba(2, 136, 209, 0.2)' : 'transparent',
+                        color: selectedArea === 1 ? '#FFFFFF' : '#0288D1',
+                        '&.Mui-selected': {
+                            color: '#FFFFFF',
+                            backgroundColor: '#0288D1'
+                        }
+                    }}
+                />
+                <Tab
+                    label="Area 2"
+                    value={2}
+                    sx={{
+                        fontSize: '2.5vh',
+                        fontWeight: 'bold',
+                        backgroundColor: selectedArea === 2 ? 'rgba(56, 142, 60, 0.2)' : 'transparent',
+                        color: selectedArea === 2 ? '#FFFFFF' : '#388E3C',
+                        '&.Mui-selected': {
+                            color: '#FFFFFF',
+                            backgroundColor: '#388E3C'
+                        }
+                    }}
+                />
+            </Tabs>
 
             {/* Main grid container for displaying grids based on the selected area */}
-            <Grid container spacing={"4vh"} alignItems="center" justifyContent="flex-start">
+            <Grid container spacing={2} alignItems="center" justifyContent="center" sx={{ flexGrow: 1, overflow: 'auto', paddingTop: '1vh', paddingBottom: '10vh' }}>
                 {grids[selectedArea]?.map((row, rowIndex) => (
                     <Grid item xs={12} key={rowIndex}>
-                        <Grid container justifyContent="flex-start" spacing={2}>
+                        <Grid container justifyContent="center" spacing={2}>
                             {row.map((item, itemIndex) => (
                                 item && (
                                     <Grid item key={itemIndex} xs={4} sx={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -77,12 +101,12 @@ const HomeView = () => {
                                                 sx={{
                                                     width: `${item.width / 768 * 100}vw`,
                                                     height: `${item.height / 1024 * 100}vh`,
-                                                    backgroundColor: item.occupied ? "#EA6E6E" : "#DCEDFB",
+                                                    backgroundColor: getTableColor(item.occupied),
                                                     color: item.occupied ? 'white' : 'black',
                                                     fontSize: "2.5vh",
                                                     boxShadow: '0 4px 6px 2px rgba(0, 0, 0, 0.25)',
                                                     '&:hover': {
-                                                        backgroundColor: item.occupied ? "#EA6E6E" : "#DCEDFB",
+                                                        backgroundColor: getTableColor(item.occupied),
                                                         boxShadow: '0 4px 6px 2px rgba(0, 0, 0, 0.25)'
                                                     }
                                                 }}
@@ -105,7 +129,7 @@ const HomeView = () => {
                     </Grid>
                 ))}
             </Grid>
-        </>
+        </Box>
     );
 };
 

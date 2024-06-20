@@ -63,7 +63,7 @@ export const TablesProvider = ({ children }) => {
     const area1Grid = [
         [getTableById(1), getTableById(2), getTableById(3)],
         [getTableById(18), getTableById(4), getTableById(5)],
-        [getTableById(18), getTableById(6)],
+        [getTableById(6)],
         [getTableById(7), getTableById(8), getTableById(9)]
     ];
 

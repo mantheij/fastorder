@@ -19,6 +19,9 @@ const TableSelectionView = () => {
         }
     };
 
+    // Sort tables by tableId
+    const sortedTables = tables.filter(table => table.tableId !== 18).sort((a, b) => a.tableId - b.tableId);
+
     return (
         <div style={{
             padding: 0,
@@ -60,10 +63,10 @@ const TableSelectionView = () => {
                     id="table-select"
                     value={selectedTable}
                     onChange={handleSelectTable}
-                    label="Tisch..."
+                    label="Table..."
                 >
-                    {tables.map((table) => (
-                        <MenuItem key={table.id} value={table.id}>{table.id}</MenuItem>
+                    {sortedTables.map((table) => (
+                        <MenuItem key={table.tableId} value={table.tableId}>{table.name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
@@ -82,7 +85,7 @@ const TableSelectionView = () => {
                     }
                 }}
             >
-                confirm
+                Confirm
             </Button>
         </div>
     );
