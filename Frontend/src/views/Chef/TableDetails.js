@@ -5,10 +5,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PaymentIcon from '@mui/icons-material/Payment';
+import { useTables } from "../../model/TablesContext";
 
 const TableDetails = () => {
     const navigate = useNavigate();
     const { tableId } = useParams();
+    const { tables } = useTables();
+
+    const table = tables.find(t => t.tableId === parseInt(tableId));
 
     const handleOrderClick = () => {
         navigate(`/product/${tableId}`);
@@ -19,44 +23,80 @@ const TableDetails = () => {
     };
 
     const handlePayClick = () => {
-
         console.log('Zahlen Button Clicked');
     };
 
+    const isArea2 = table && table.area === 2;
+    const getBackgroundColor = () => {
+        return isArea2 ? '#388E3C' : '#1976d2';
+    };
+
+    const getScreenBackgroundColor = () => {
+        return isArea2 ? '#E0F2F1' : '#f0f4f8';
+    };
+
+    const buttonStyles = {
+        width: '100%',
+        height: '60px',
+        fontSize: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+    };
+
     return (
-        <Box sx={{ padding: 4, bgcolor: '#f0f4f8', minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Paper sx={{ width: '100%', maxWidth: 600, padding: 2, mb: 2, display: 'flex', alignItems: 'center', bgcolor: '#1976d2', color: 'white', boxSizing: 'border-box' }}>
+        <Box sx={{ padding: 4, bgcolor: getScreenBackgroundColor(), minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Paper sx={{ width: '100%', maxWidth: 700, padding: 3, mb: 3, display: 'flex', alignItems: 'center', bgcolor: getBackgroundColor(), color: 'white', boxSizing: 'border-box' }}>
                 <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
                     <ArrowBackIcon />
                 </IconButton>
-                <Typography variant="h4" component="h1" sx={{ ml: 2, flexGrow: 1 }}>
+                <Typography variant="h3" component="h1" sx={{ ml: 3, flexGrow: 1 }}>
                     Table {tableId}
                 </Typography>
             </Paper>
-            <Paper sx={{ width: '100%', maxWidth: 600, padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, boxSizing: 'border-box' }}>
+            <Paper sx={{ width: '100%', maxWidth: 700, padding: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, boxSizing: 'border-box' }}>
                 <Button
                     variant="contained"
-                    color="primary"
+                    sx={{
+                        ...buttonStyles,
+                        backgroundColor: getBackgroundColor(),
+                        '&:hover': {
+                            backgroundColor: getBackgroundColor(),
+                            opacity: 0.9
+                        }
+                    }}
                     onClick={handleOrderClick}
-                    sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}
                 >
                     <ShoppingCartIcon sx={{ mr: 1 }} />
                     Order
                 </Button>
                 <Button
                     variant="contained"
-                    color="secondary"
+                    sx={{
+                        ...buttonStyles,
+                        backgroundColor: '#8c4aff',
+                        '&:hover': {
+                            backgroundColor: '#8c4aff',
+                            opacity: 0.9
+                        }
+                    }}
                     onClick={handleViewOrdersClick}
-                    sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}
                 >
                     <VisibilityIcon sx={{ mr: 1 }} />
                     View
                 </Button>
                 <Button
                     variant="contained"
-                    color="error"
+                    sx={{
+                        ...buttonStyles,
+                        backgroundColor: '#ff4a4a',
+                        '&:hover': {
+                            backgroundColor: '#ff4a4a',
+                            opacity: 0.9
+                        }
+                    }}
                     onClick={handlePayClick}
-                    sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}
                 >
                     <PaymentIcon sx={{ mr: 1 }} />
                     Pay

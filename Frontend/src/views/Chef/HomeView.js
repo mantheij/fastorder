@@ -38,7 +38,7 @@ const HomeView = () => {
     };
 
     const getTableColor = (occupied) => {
-        return occupied ? (selectedArea === 1 ? "#BBDEFB" : "#C8E6C9") : (selectedArea === 1 ? "#E3F2FD" : "#DCEDC8");
+        return occupied ? (selectedArea === 1 ? "#ff4a4a" : "#ff4a4a") : (selectedArea === 1 ? "#d6edff" : "#DCEDC8");
     };
 
     return (
@@ -52,8 +52,8 @@ const HomeView = () => {
                 sx={{ marginBottom: 0 }}
                 TabIndicatorProps={{
                     style: {
-                        backgroundColor: '#000000',
-                        height: '3px'
+                        backgroundColor: selectedArea == 1 ?  '#aadef8': '#b5f6b7',
+                        height: '5px'
                     }
                 }}
             >
@@ -67,7 +67,7 @@ const HomeView = () => {
                         color: selectedArea === 1 ? '#FFFFFF' : '#0288D1',
                         '&.Mui-selected': {
                             color: '#FFFFFF',
-                            backgroundColor: '#0288D1'
+                            backgroundColor: '#20a9fa'
                         }
                     }}
                 />
@@ -81,7 +81,7 @@ const HomeView = () => {
                         color: selectedArea === 2 ? '#FFFFFF' : '#388E3C',
                         '&.Mui-selected': {
                             color: '#FFFFFF',
-                            backgroundColor: '#388E3C'
+                            backgroundColor: '#3fc143'
                         }
                     }}
                 />

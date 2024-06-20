@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
 import config from "../../config";
+import { useTables } from "../../model/TablesContext";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
@@ -12,6 +13,9 @@ const ViewOrders = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const navigate = useNavigate();
+    const { tables } = useTables();
+
+    const table = tables.find(t => t.tableId === parseInt(tableId));
 
     const fetchCompletedOrders = async () => {
         try {
@@ -87,9 +91,18 @@ const ViewOrders = () => {
         setConfirmDialogOpen(false);
     };
 
+    const isArea2 = table && table.area === 2;
+    const getBackgroundColor = () => {
+        return isArea2 ? '#388E3C' : '#1976d2';
+    };
+
+    const getScreenBackgroundColor = () => {
+        return isArea2 ? '#E0F2F1' : '#f0f4f8';
+    };
+
     return (
-        <Box sx={{ padding: 4, bgcolor: '#f0f4f8', minHeight: '88vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <Paper sx={{ padding: 2, mb: 2, display: 'flex', alignItems: 'center', bgcolor: '#1976d2', color: 'white' }}>
+        <Box sx={{ padding: 4, bgcolor: getScreenBackgroundColor(), minHeight: '88vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Paper sx={{ padding: 2, mb: 2, display: 'flex', alignItems: 'center', bgcolor: getBackgroundColor(), color: 'white' }}>
                 <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
                     <ArrowBackIcon />
                 </IconButton>
@@ -122,9 +135,23 @@ const ViewOrders = () => {
             </Paper>
             <Button
                 variant="contained"
-                color="error"
+                sx={{
+                    width: '100%',
+                    height: '50px',
+                    fontSize: '1.2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 1,
+                    mt: 2,
+                    alignSelf: 'center',
+                    backgroundColor: "#ff4a4a",
+                    '&:hover': {
+                        backgroundColor: "#ff4a4a",
+                        opacity: 0.9
+                    }
+                }}
                 onClick={handleOpenConfirmDialog}
-                sx={{ width: '100%', height: '50px', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mt: 2, alignSelf: 'center' }}
             >
                 <PaymentIcon sx={{ mr: 1 }} />
                 Pay
