@@ -1,6 +1,6 @@
-import React, { useState} from "react";
-import {Button, Grid} from "@mui/material";
-import {useTables} from "../../model/TablesContext";
+import React, { useState } from "react";
+import { Button, Grid } from "@mui/material";
+import { useTables } from "../../model/TablesContext";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -32,34 +32,30 @@ const HomeView = () => {
         navigate(`tableDetails/${tableId}`);
     };
 
-
     return (
         <>
-
             {/* Grid container for area selection buttons */}
-            <Grid container spacing={0.5} justifyContent="space-between" sx={{marginBottom: 5}}>
-
+            <Grid container spacing={0.5} justifyContent="space-between" sx={{ marginBottom: 5 }}>
                 {/* Button for selecting Area 1 */}
                 <Grid item xs={6} sm={6}>
                     <Button
-                        variant ="contained"
-                        color ="primary"
+                        variant="contained"
+                        color="primary"
                         fullWidth
-                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh',fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)'}}
+                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)' }}
                         onClick={() => handleAreaClick(1)}
                     >
                         Area 1
                     </Button>
                 </Grid>
 
-
                 {/* Button for selecting Area 2 */}
                 <Grid item xs={6} sm={6}>
                     <Button
-                        variant ="contained"
-                        color ="success"
+                        variant="contained"
+                        color="success"
                         fullWidth
-                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)'}}
+                        sx={{ height: "5vh", borderRadius: 0, fontSize: '2.5vh', fontWeight: 'bold', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)' }}
                         onClick={() => handleAreaClick(2)}
                     >
                         Area 2
@@ -67,27 +63,23 @@ const HomeView = () => {
                 </Grid>
             </Grid>
 
-
             {/* Main grid container for displaying grids based on the selected area */}
-                <Grid container spacing={"4vh"} alignItems="center" justifyContent="flex-start">
-                    {grids[selectedArea].map((row, rowIndex) => (
-                        <Grid item xs={12} key={rowIndex}>
-                            <Grid container justifyContent="flex-start" spacing={2}>
-                                {row.map((item, itemIndex) => (
-                                    <Grid item key={itemIndex} xs={4} sx={{  justifyContent: 'center', alignItems: 'center' }}>
-                                        {item.placeholder ? (
-                                            // Placeholder for visual alignment
-                                            <div style={{ height: item.height, visibility: 'hidden' }}>Platzhalter</div>
-                                        ) : (
-                                            // Button for each item, colored based on occupation status
+            <Grid container spacing={"4vh"} alignItems="center" justifyContent="flex-start">
+                {grids[selectedArea]?.map((row, rowIndex) => (
+                    <Grid item xs={12} key={rowIndex}>
+                        <Grid container justifyContent="flex-start" spacing={2}>
+                            {row.map((item, itemIndex) => (
+                                item && (
+                                    <Grid item key={itemIndex} xs={4} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+                                        {item.tableId !== 18 ? (
                                             <Button
-                                                onClick={() => handleTableClick(item.id)}
+                                                onClick={() => handleTableClick(item.tableId)}
                                                 sx={{
-                                                    width: item.width,
-                                                    height: item.height,
+                                                    width: `${item.width / 768 * 100}vw`,
+                                                    height: `${item.height / 1024 * 100}vh`,
                                                     backgroundColor: item.occupied ? "#EA6E6E" : "#DCEDFB",
                                                     color: item.occupied ? 'white' : 'black',
-                                                    fontSize:"2.5vh",
+                                                    fontSize: "2.5vh",
                                                     boxShadow: '0 4px 6px 2px rgba(0, 0, 0, 0.25)',
                                                     '&:hover': {
                                                         backgroundColor: item.occupied ? "#EA6E6E" : "#DCEDFB",
@@ -95,17 +87,24 @@ const HomeView = () => {
                                                     }
                                                 }}
                                             >
-                                                {`${item.id}`}
+                                                {`${item.name}`}
                                             </Button>
+                                        ) : (
+                                            <div
+                                                style={{
+                                                    width: `${item.width / 768 * 100}vw`,
+                                                    height: `${item.height / 1024 * 100}vh`,
+                                                    visibility: 'hidden'
+                                                }}
+                                            />
                                         )}
                                     </Grid>
-                                ))}
-                            </Grid>
+                                )
+                            ))}
                         </Grid>
-                    ))}
-                </Grid>
-
-
+                    </Grid>
+                ))}
+            </Grid>
         </>
     );
 };

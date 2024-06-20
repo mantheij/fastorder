@@ -93,7 +93,7 @@ const CompletedOrdersView = () => {
         if (actionIndex !== null) {
             const orderId = boxes[actionIndex].orderId;
             const newStatus = 'open';
-            axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus })
+            axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, { status: newStatus })
                 .then(response => {
                     console.log('PATCH erfolgreich:', response.data);
                     setBoxes(prevBoxes => prevBoxes.filter((_, i) => i !== actionIndex));
