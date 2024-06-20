@@ -10,37 +10,53 @@ import { updateOrdersToPaid } from "./updateOrdersToPaid";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
-    const [orderDetails, setOrderDetails] = useState([]);
+    const [openOrders, setOpenOrders] = useState([]);
+    const [inWorkOrders, setInWorkOrders] = useState([]);
+    const [completedOrders, setCompletedOrders] = useState([]);
+    const [paidOrders, setPaidOrders] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [showWarning, setShowWarning] = useState(false);
     const [showPaidOrders, setShowPaidOrders] = useState(false);
     const navigate = useNavigate();
-    const { tables } = useTables();
+    const { tables, updateTableStatus } = useTables();
 
     const table = tables.find(t => t.tableId === parseInt(tableId));
 
-    const fetchOrders = async (status) => {
+    const fetchOrders = async () => {
         try {
             const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
-            const orders = response.data.filter(order => order.status === status && order.tableId === parseInt(tableId));
+            const orders = response.data.filter(order => order.tableId === parseInt(tableId));
 
-            const allOrderDetails = orders.flatMap(order => order.orderDetails);
+            setOpenOrders(groupOrders(orders.filter(order => order.status === 'open').flatMap(order => order.orderDetails)));
+            setInWorkOrders(groupOrders(orders.filter(order => order.status === 'in_work').flatMap(order => order.orderDetails)));
+            setCompletedOrders(groupOrders(orders.filter(order => order.status === 'completed').flatMap(order => order.orderDetails)));
+            setPaidOrders(groupOrders(orders.filter(order => order.status === 'paid').flatMap(order => order.orderDetails)));
 
-            setOrderDetails(allOrderDetails);
-
-            const total = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+            const total = orders.filter(order => order.status !== 'paid').reduce((acc, order) => acc + order.totalPrice, 0);
             setTotalPrice(total);
         } catch (error) {
             console.error('Error fetching orders:', error);
         }
     };
 
+    const groupOrders = (orders) => {
+        const grouped = {};
+        orders.forEach(order => {
+            const key = `${order.productName}_${order.productSize}`;
+            if (!grouped[key]) {
+                grouped[key] = { ...order };
+            } else {
+                grouped[key].quantity += order.quantity;
+                grouped[key].price += order.price;
+            }
+        });
+        return Object.values(grouped);
+    };
+
     useEffect(() => {
-        fetchOrders(showPaidOrders ? 'paid' : 'completed');
-        const interval = setInterval(() => {
-            fetchOrders(showPaidOrders ? 'paid' : 'completed');
-        }, 20000);
+        fetchOrders();
+        const interval = setInterval(fetchOrders, 20000);
 
         return () => clearInterval(interval);
     }, [tableId, showPaidOrders]);
@@ -60,6 +76,7 @@ const ViewOrders = () => {
     const handleConfirmPay = () => {
         updateOrdersToPaid(tableId, navigate);
         setConfirmDialogOpen(false);
+        updateTableStatus(tableId, false);  // Update the table status to not occupied
     };
 
     const handlePayClick = () => {
@@ -88,7 +105,7 @@ const ViewOrders = () => {
     };
 
     return (
-        <Box sx={{ padding: 4, bgcolor: getScreenBackgroundColor(), minHeight: '88vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ padding: 4, bgcolor: getScreenBackgroundColor(), minHeight: '88vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Paper sx={{ padding: 2, mb: 2, display: 'flex', alignItems: 'center', bgcolor: getBackgroundColor(), color: 'white', width: '100%', maxWidth: 700 }}>
                 <IconButton onClick={() => navigate(-1)} sx={{ color: 'white' }}>
                     <ArrowBackIcon />
@@ -97,29 +114,110 @@ const ViewOrders = () => {
                     Orders for Table {tableId}
                 </Typography>
             </Paper>
-            <Paper sx={{ padding: 2, flexGrow: 1, width: '100%', maxWidth: 700 }}>
-                <List>
-                    {orderDetails.map((detail, index) => (
-                        <React.Fragment key={detail.orderDetailId}>
-                            <ListItem>
-                                <ListItemText
-                                    primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
-                                    secondary={`${formatPrice(detail.price / detail.quantity)}`}
-                                    primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}
-                                    secondaryTypographyProps={{ fontSize: '1rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}
-                                />
-                                <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}>
-                                    {formatPrice(detail.price)}
+            <Box sx={{ flexGrow: 1, width: '100%', maxWidth: 700, overflowY: 'auto' }}>
+                <Paper sx={{ padding: 2 }}>
+                    <List>
+                        {openOrders.length > 0 && (
+                            <>
+                                <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+                                    Open
                                 </Typography>
-                            </ListItem>
-                            {index < orderDetails.length - 1 && <Divider />}
-                        </React.Fragment>
-                    ))}
-                </List>
-                <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: showPaidOrders ? 'rgba(255,74,74,0.5)' : 'rgb(255,74,74)'  }}>
-                    Price: {formatPrice(totalPrice)}
-                </Typography>
-            </Paper>
+                                {openOrders.map((detail, index) => (
+                                    <React.Fragment key={index}>
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
+                                                secondary={`${formatPrice(detail.price / detail.quantity)}`}
+                                                primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}
+                                                secondaryTypographyProps={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 1)' }}
+                                            />
+                                            <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}>
+                                                {formatPrice(detail.price)}
+                                            </Typography>
+                                        </ListItem>
+                                        {index < openOrders.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                ))}
+                                <Divider sx={{ marginY: 2 }} />
+                            </>
+                        )}
+                        {inWorkOrders.length > 0 && (
+                            <>
+                                <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+                                    In Work
+                                </Typography>
+                                {inWorkOrders.map((detail, index) => (
+                                    <React.Fragment key={index}>
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
+                                                secondary={`${formatPrice(detail.price / detail.quantity)}`}
+                                                primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}
+                                                secondaryTypographyProps={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 1)' }}
+                                            />
+                                            <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}>
+                                                {formatPrice(detail.price)}
+                                            </Typography>
+                                        </ListItem>
+                                        {index < inWorkOrders.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                ))}
+                                <Divider sx={{ marginY: 2 }} />
+                            </>
+                        )}
+                        {completedOrders.length > 0 && (
+                            <>
+                                <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+                                    Completed
+                                </Typography>
+                                {completedOrders.map((detail, index) => (
+                                    <React.Fragment key={index}>
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
+                                                secondary={`${formatPrice(detail.price / detail.quantity)}`}
+                                                primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}
+                                                secondaryTypographyProps={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 1)' }}
+                                            />
+                                            <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}>
+                                                {formatPrice(detail.price)}
+                                            </Typography>
+                                        </ListItem>
+                                        {index < completedOrders.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                ))}
+                                <Divider sx={{ marginY: 2 }} />
+                            </>
+                        )}
+                        {showPaidOrders && paidOrders.length > 0 && (
+                            <>
+                                <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold', color: 'rgba(0, 0, 0, 0.5)' }}>
+                                    Paid
+                                </Typography>
+                                {paidOrders.map((detail, index) => (
+                                    <React.Fragment key={index}>
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
+                                                secondary={`${formatPrice(detail.price / detail.quantity)}`}
+                                                primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0,0,0,0.5)' }}
+                                                secondaryTypographyProps={{ fontSize: '1rem', color: 'rgba(0,0,0,0.5)' }}
+                                            />
+                                            <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0,0,0,0.5)' }}>
+                                                {formatPrice(detail.price)}
+                                            </Typography>
+                                        </ListItem>
+                                        {index < paidOrders.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                ))}
+                            </>
+                        )}
+                    </List>
+                    <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: 'rgb(255,74,74)'  }}>
+                        Price: {formatPrice(totalPrice)}
+                    </Typography>
+                </Paper>
+            </Box>
             <Grid container justifyContent="center" alignItems="center" sx={{ mt: 2 }}>
                 <FormControlLabel
                     control={
@@ -148,7 +246,8 @@ const ViewOrders = () => {
                     '&:hover': {
                         backgroundColor: "#ff4a4a",
                         opacity: 0.9
-                    }
+                    },
+                    marginBottom: '100px'
                 }}
                 onClick={handlePayClick}
             >

@@ -1,30 +1,17 @@
-import React, { useState } from "react";
+// src/views/HomeView.js
+
+import React, { useState, useEffect } from "react";
 import { Tabs, Tab, Grid, Button, Box } from "@mui/material";
 import { useTables } from "../../model/TablesContext";
 import { useNavigate } from "react-router-dom";
+import useTableOccupancy from "../../model/useTableOccupancy";
 
-/**
- * The HomeView component is responsible for displaying area selection options and the corresponding grids of tables.
- * Users can select an area, and the UI updates to show tables in that area using Material-UI components.
- */
 const HomeView = () => {
-    /**
-     * State to manage the currently selected area, initialized to area 1.
-     */
     const [selectedArea, setSelectedArea] = useState(1);
-
-    /**
-     * Retrieves the grids data from the useTables context hook, which manages the state of tables and areas.
-     */
     const { grids } = useTables();
-
+    const updatedGrids = useTableOccupancy(grids);
     const navigate = useNavigate();
 
-    /**
-     * Handles change events on tabs, updating the selectedArea state.
-     * @param {event} event - The event that was triggered.
-     * @param {number} newValue - The new area number that was selected.
-     */
     const handleTabChange = (event, newValue) => {
         setSelectedArea(newValue);
     };
@@ -43,7 +30,6 @@ const HomeView = () => {
 
     return (
         <Box sx={{ width: '100vw', height: '100vh', backgroundColor: getBackgroundColor(), overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            {/* Tabs for area selection */}
             <Tabs
                 value={selectedArea}
                 onChange={handleTabChange}
@@ -52,7 +38,7 @@ const HomeView = () => {
                 sx={{ marginBottom: 0 }}
                 TabIndicatorProps={{
                     style: {
-                        backgroundColor: selectedArea == 1 ?  '#aadef8': '#b5f6b7',
+                        backgroundColor: selectedArea == 1 ? '#aadef8' : '#b5f6b7',
                         height: '5px'
                     }
                 }}
@@ -87,9 +73,8 @@ const HomeView = () => {
                 />
             </Tabs>
 
-            {/* Main grid container for displaying grids based on the selected area */}
             <Grid container spacing={2} alignItems="center" justifyContent="center" sx={{ flexGrow: 1, overflow: 'auto', paddingTop: '1vh', paddingBottom: '10vh' }}>
-                {grids[selectedArea]?.map((row, rowIndex) => (
+                {updatedGrids[selectedArea]?.map((row, rowIndex) => (
                     <Grid item xs={12} key={rowIndex}>
                         <Grid container justifyContent="center" spacing={2}>
                             {row.map((item, itemIndex) => (
