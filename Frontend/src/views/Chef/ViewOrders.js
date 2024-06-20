@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, FormControlLabel, Switch, Grid } from "@mui/material";
+import {
+    Box, Typography, List, ListItem, ListItemText, IconButton, Divider, Paper, Button,
+    Snackbar, FormControlLabel, Switch, Grid
+} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
@@ -15,11 +18,10 @@ const ViewOrders = () => {
     const [completedOrders, setCompletedOrders] = useState([]);
     const [paidOrders, setPaidOrders] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [showWarning, setShowWarning] = useState(false);
     const [showPaidOrders, setShowPaidOrders] = useState(false);
     const navigate = useNavigate();
-    const { tables, updateTableStatus } = useTables();
+    const { tables } = useTables();
 
     const table = tables.find(t => t.tableId === parseInt(tableId));
 
@@ -65,23 +67,13 @@ const ViewOrders = () => {
         return price.toFixed(2).replace('.', ',') + '€';
     };
 
-    const handleOpenConfirmDialog = () => {
-        setConfirmDialogOpen(true);
-    };
-
-    const handleCloseConfirmDialog = () => {
-        setConfirmDialogOpen(false);
-    };
-
     const handleConfirmPay = () => {
         updateOrdersToPaid(tableId, navigate);
-        setConfirmDialogOpen(false);
-        updateTableStatus(tableId, false);  // Update the table status to not occupied
     };
 
     const handlePayClick = () => {
         if (showWarning) {
-            handleOpenConfirmDialog();
+            handleConfirmPay();
         } else {
             setShowWarning(true);
         }
@@ -179,7 +171,7 @@ const ViewOrders = () => {
                                                 primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}
                                                 secondaryTypographyProps={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 1)' }}
                                             />
-                                            <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 1)' }}>
                                                 {formatPrice(detail.price)}
                                             </Typography>
                                         </ListItem>
@@ -213,47 +205,46 @@ const ViewOrders = () => {
                             </>
                         )}
                     </List>
-                    <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: 'rgb(255,74,74)'  }}>
+                    <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: 'rgb(255,74,74)' }}>
                         Price: {formatPrice(totalPrice)}
                     </Typography>
                 </Paper>
-            </Box>
-            <Grid container justifyContent="center" alignItems="center" sx={{ mt: 2 }}>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={showPaidOrders}
-                            onChange={handleTogglePaidOrders}
-                            color="primary"
-                        />
-                    }
-                    label="Show Paid Orders"
-                />
-            </Grid>
-            <Button
-                variant="contained"
-                sx={{
-                    width: '100%',
-                    maxWidth: 700,
-                    height: '50px',
-                    fontSize: '1.2rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1,
-                    mt: 2,
-                    backgroundColor: "#ff4a4a",
-                    '&:hover': {
+                <Button
+                    variant="contained"
+                    sx={{
+                        width: '100%',
+                        height: '50px',
+                        fontSize: '1.2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                        mt: 2,
                         backgroundColor: "#ff4a4a",
-                        opacity: 0.9
-                    },
-                    marginBottom: '100px'
-                }}
-                onClick={handlePayClick}
-            >
-                <PaymentIcon sx={{ mr: 1 }} />
-                Pay
-            </Button>
+                        '&:hover': {
+                            backgroundColor: "#ff4a4a",
+                            opacity: 0.9
+                        },
+                    }}
+                    onClick={handlePayClick}
+                >
+                    <PaymentIcon sx={{ mr: 1 }} />
+                    Pay
+                </Button>
+                <Grid container justifyContent="center" alignItems="center" sx={{ mt: 2 }}>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={showPaidOrders}
+                                onChange={handleTogglePaidOrders}
+                                color="primary"
+                            />
+                        }
+                        label="Show Paid Orders"
+                    />
+                </Grid>
+            </Box>
+
             <Snackbar
                 open={showWarning}
                 autoHideDuration={6000}
@@ -265,22 +256,13 @@ const ViewOrders = () => {
                     </Button>
                 }
             />
-            <Dialog
-                open={confirmDialogOpen}
-                onClose={handleCloseConfirmDialog}
-            >
-                <DialogTitle>Confirm Payment</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to mark this table as paid?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
-                    <Button onClick={handleConfirmPay} color="error">Confirm</Button>
-                </DialogActions>
-            </Dialog>
+            <Box sx={{
+                width: "100%",
+                height: "80px"
+            }}>
+            </Box>
         </Box>
+
     );
 };
 
