@@ -1,27 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }
-    from '@mui/material';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Grid,
+    Typography
+} from '@mui/material';
 import useEmployeeController from '../../controller/EmployeeController';
 import { createTheme } from '@mui/material/styles';
-import { blue } from '@mui/material/colors';
+import { blue, green, red } from '@mui/material/colors';
+import RestoreIcon from '@mui/icons-material/Restore';
+import TableBarIcon from '@mui/icons-material/TableBar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import RestoreIcon from '@mui/icons-material/Restore';
-import config from '../../config'
+import config from '../../config';
 
 const ClockBar = ({ currentTime }) => {
     return (
-        <Box sx={{ background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
-                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h5" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
-                    {currentTime.toLocaleTimeString()}
-                </Typography>
-                <Typography variant="subtitle1" align="center" sx={{ color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 1 }}>
-                    {currentTime.toLocaleDateString()}
-                </Typography>
+        <Box sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 1000,
+        }}>
+            <Box sx={{
+                background: '#20a9fa',
+                height: '60px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="h3" align="center"
+                                sx={{ color: 'white', fontWeight: 'bold', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </Typography>
+                    <Typography variant="h5" align="center"
+                                sx={{ color: 'white', fontWeight: 'bold', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 2 }}>
+                        {currentTime.toLocaleDateString()}
+                    </Typography>
+                </Box>
             </Box>
+            <Box sx={{
+                background: '#aadef8',
+                height: '5px',
+                width: '100%',
+            }} />
         </Box>
     );
 };
@@ -51,11 +82,15 @@ const CompletedOrdersView = () => {
                         orderStatus: order.status,
                         tableNumber: order.tableId,
                         orderId: order.orderId,
+                        orderTimeReal: new Date(order.datetime),
                         orderTime: `${format(new Date(order.datetime), 'HH:mm')} Uhr`,
                         orderDate: `${format(new Date(order.datetime), 'dd.MM.yyyy')}`,
-                        text: order.orderDetails.map(detail => `-(x${detail.quantity}) ${detail.productName} 
-                        ${detail.productSize}`).join('<br/>')
-                    }));
+                        text: order.orderDetails.map((detail, index) => ({
+                            id: `${order.orderId}-${index}`,
+                            content: `-(x${detail.quantity}) ${detail.productName} ${detail.productSize}`
+                        }))
+                    }))
+                    .sort((a, b) => a.orderTimeReal - b.orderTimeReal);
                 setBoxes(completedOrders);
             } catch (error) {
                 console.error('Error loading completed orders:', error);
@@ -71,11 +106,23 @@ const CompletedOrdersView = () => {
     const theme = createTheme({
         palette: {
             primary: {
-                light: blue[300],
-                main: blue[500],
+                light: '#20a9fa',
+                main: '#20a9fa',
                 dark: blue[700],
                 darker: blue[900],
-            }
+            },
+            green: {
+                light: green[300],
+                main: green[500],
+            },
+            red: {
+                light: red[300],
+                main: red[500],
+            },
+            grey: {
+                dark: '#333333',
+                hover: '#666666',
+            },
         },
     });
 
@@ -107,16 +154,16 @@ const CompletedOrdersView = () => {
     };
 
     return (
-        <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto' }}>
+        <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto', background: '#f0f4f8' }}>
             <ClockBar currentTime={currentTime} />
 
-            <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '70px' }}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/orders')} sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '80px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders')} sx={{ bgcolor: theme.palette.primary.main }}>
                     Back
                 </Button>
             </Box>
 
-            <Box style={{ marginTop: '30px' }}>
+            <Box style={{ marginTop: '20px' }}>
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.length === 0 ? (
                         <Typography variant="h6" align="center" sx={{ marginTop: '20px' }}>
@@ -138,26 +185,67 @@ const CompletedOrdersView = () => {
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                         maxWidth: '100%',
-                                        boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.16)'
+                                        boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.2)'
                                     }}>
 
-                                    <Typography variant="h3" gutterBottom sx={{ color: theme.palette.primary.main,
-                                        padding: '5px', borderRadius: '4px', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                                    <Typography variant="h3" gutterBottom sx={{
+                                        color: theme.palette.primary.main,
+                                        padding: '5px',
+                                        borderRadius: '4px',
+                                        textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>
+                                        <Box component="span" sx={{
+                                            fontSize: '3rem',
+                                            display: 'inline-flex',
+                                            position: 'relative',
+                                            top: '8px',
+                                            padding: '5px',
+                                            borderRadius: '4px',
+                                        }}>
+                                            <TableBarIcon sx={{
+                                                fontSize: 'inherit', filter:
+                                                    'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))'
+                                            }} />
+                                        </Box>
                                         {item.tableNumber}</Typography>
 
-                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '4px', textShadow:
-                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderTime}</Typography>
+                                    <Typography sx={{
+                                        fontSize: '0.9rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>{item.orderTime}</Typography>
 
-                                    <Typography sx={{ fontSize: '0.9rem', marginBottom: '8px', textShadow:
-                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>{item.orderDate}</Typography>
+                                    <Typography sx={{
+                                        fontSize: '0.7rem', marginBottom: '8px', textShadow:
+                                            '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                    }}>{item.orderDate}</Typography>
 
-                                    <Typography dangerouslySetInnerHTML={{ __html: item.text }} sx={{ textShadow:
-                                            '0px 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                                    {item.text.map((product) => (
+                                        <Box key={product.id} sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                            <Checkbox
+                                                disabled
+                                                checked={true}
+                                                sx={{ paddingLeft: 0 }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    textDecoration: 'line-through',
+                                                    color: 'rgba(0,0,0,0.5)',
+                                                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                                                    marginLeft: 1
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: product.content }}
+                                            />
+                                        </Box>
+                                    ))}
 
-                                    <Button variant="contained" color="primary" size="small"    style={{ minWidth: '30px',
-                                        minHeight: '30px', padding: '5px', background: "linear-gradient(to top, #0383E2, #5DADF0)" }} onClick={() => handleDialogOpen(index)}>
-                                        <RestoreIcon/>
-                                    </Button>
+                                    <Box sx={{ marginTop: '20px' }}>
+                                        <Button variant="contained" size="small"
+                                                onClick={() => handleDialogOpen(index)} sx={{
+                                            color: 'white',
+                                            bgcolor: theme.palette.primary.main,
+                                            '&:hover': { bgcolor: theme.palette.primary.dark }
+                                        }}><RestoreIcon /></Button>
+                                    </Box>
                                 </Box>
                             </Grid>
                         ))

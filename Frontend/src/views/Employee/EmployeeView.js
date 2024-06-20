@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -13,105 +13,67 @@ import {
     Typography
 } from '@mui/material';
 import useEmployeeController from '../../controller/EmployeeController';
-import {createTheme} from '@mui/material/styles';
-import {blue, green, red} from '@mui/material/colors';
+import { createTheme } from '@mui/material/styles';
+import { blue, green, red } from '@mui/material/colors';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import TableBarIcon from '@mui/icons-material/TableBar';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
-import {format} from "date-fns";
+import { useNavigate } from 'react-router-dom';
+import { format } from "date-fns";
 import config from "../../config";
-// import io from 'socket.io-client';  // For real-time updates
 
-/**
- * Displays the current time in a fixed header bar.
- * @param {Object} props - React props
- * @param {Date} props.currentTime - The current time to display
- */
-const ClockBar = ({currentTime}) => {
+const ClockBar = ({ currentTime }) => {
     return (
         <Box sx={{
-            background: "linear-gradient(to top, #0383E2, #5DADF0)", height: '56px', width: '100%', position:
-                'fixed', top: 0, left: 0, zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center'
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 1000,
         }}>
-            <Box sx={{display: 'flex', alignItems: 'center'}}>
-                <Typography variant="h5" align="center"
-                            sx={{color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'}}>
-                    {currentTime.toLocaleTimeString()}
-                </Typography>
-                <Typography variant="subtitle1" align="center"
-                            sx={{color: 'white', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 1}}>
-                    {currentTime.toLocaleDateString()}
-                </Typography>
+            <Box sx={{
+                background: '#20a9fa',
+                height: '60px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="h3" align="center"
+                                sx={{ color: 'white', fontWeight: 'bold', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </Typography>
+                    <Typography variant="h5" align="center"
+                                sx={{ color: 'white', fontWeight: 'bold', textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: 2 }}>
+                        {currentTime.toLocaleDateString()}
+                    </Typography>
+                </Box>
             </Box>
+            <Box sx={{
+                background: '#aadef8',
+                height: '5px',
+                width: '100%',
+            }} />
         </Box>
     );
 };
 
-/**
- * The EmployeeView component manages the display and interactions for employee orders.
- */
+
 const EmployeeView = () => {
-    /**
-     * State to manage the current time for the clock bar.
-     */
     const [currentTime, setCurrentTime] = useState(new Date());
-
-    /**
-     * State to manage the visibility of the confirmation dialog.
-     */
     const [dialogOpen, setDialogOpen] = useState(false);
-
-    /**
-     * State to manage the index of the order being acted upon.
-     */
     const [actionIndex, setActionIndex] = useState(null);
-
-    /**
-     * State to manage the type of action being confirmed ('delete' or 'cancel').
-     */
     const [actionType, setActionType] = useState(null);
-
-    /**
-     * State to manage the visibility of the progress spinner.
-     */
     const [progressVisible, setProgressVisible] = useState(false);
-
-    /**
-     * State to manage the list of order boxes.
-     */
-    const {boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes} = useEmployeeController();
-
-    /**
-     * State to track if the user has interacted with the page.
-     */
+    const { boxes, addOrder, deleteBox, toggleInProgress, cancelOrder, setBoxes } = useEmployeeController();
     const [userInteracted, setUserInteracted] = useState(false);
-
-    /**
-     * State to track previous orders.
-     */
     const [prevOpenOrders, setPrevOpenOrders] = useState([]);
-
-    /**
-     * State to manage the checked items.
-     */
     const [checkedItems, setCheckedItems] = useState({});
-
-    /**
-     * State to manage help requests.
-     */
     const [helpRequests, setHelpRequests] = useState([]);
-
-    /**
-     * Navigation hook.
-     */
     const navigate = useNavigate();
 
-    /**
-     * Effect to handle user interaction.
-     */
     useEffect(() => {
         const handleUserInteraction = () => {
             setUserInteracted(true);
@@ -125,9 +87,6 @@ const EmployeeView = () => {
         };
     }, []);
 
-    /**
-     * Effect to update the current time every second.
-     */
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
@@ -136,10 +95,6 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, []);
 
-    /**
-     * Effect to fetch orders from the server every 20 seconds.
-     * Includes notification logic to alert the user of new orders.
-     */
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -165,14 +120,11 @@ const EmployeeView = () => {
 
                 if (openOrders.length > prevOpenOrders.length && userInteracted) {
                     if (Notification.permission === 'granted') {
-                        new Notification('New Order', {body: 'You have new orders'});
+                        new Notification('New Order', { body: 'You have new orders' });
                     }
                 }
 
                 setPrevOpenOrders(openOrders);
-                //const inWorkOrders = allOrders.filter(order => order.orderStatus === 'in_work');
-                //const notInWorkOrders = allOrders.filter(order => order.orderStatus === 'open');
-
                 setBoxes(openOrders);
             } catch (error) {
                 console.error('Error loading completed orders:', error);
@@ -185,87 +137,18 @@ const EmployeeView = () => {
         return () => clearInterval(interval);
     }, [setBoxes, userInteracted, prevOpenOrders]);
 
-    /**
-     * Effect to fetch help requests from the server every 10 seconds.
-     */
-    // useEffect(() => {
-    //     const fetchHelpRequests = async () => {
-    //         try {
-    //             const response = await axios.get(`${config.apiBaseUrl}/api/help-requests`);
-    //             const newHelpRequests = response.data.map(request => request.tableId);
-    //             if (newHelpRequests.length > helpRequests.length) {
-    //                 newHelpRequests.forEach(tableId => {
-    //                     if (!helpRequests.includes(tableId)) {
-    //                         if (Notification.permission === 'granted') {
-    //                             new Notification('Help Request', {body: `Table ${tableId} needs help`});
-    //                         }
-    //                         setHelpRequests(prevRequests => [...prevRequests, tableId]);
-    //                     }
-    //                 });
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching help requests:', error);
-    //         }
-    //     };
-    //
-    //     fetchHelpRequests();
-    //     const interval = setInterval(fetchHelpRequests, 10000);
-    //
-    //     return () => clearInterval(interval);
-    // }, [helpRequests]);
-
-    /**
-     * Effect to handle real-time updates using WebSocket (currently commented out).
-     */
-    /* ToDo: Benutzen von Websockets für bessere Benachrichtigung? Ebenfalls für Kellner rufen.
-    useEffect(() => {
-        const socket = io('http://localhost:8080');  // Verbindungsaufbau zum Server
-        socket.on('newOrder', (order) => {
-            setBoxes(prevBoxes => [...prevBoxes, {
-                tableNumber: order.tableId,
-                orderTime: order.datetime,
-                text: order.orderDetails.map(detail => `-${detail.productName} (x${detail.quantity})`).join('<br/>')
-            }]);
-            // Benachrichtigung?
-            if (Notification.permission === 'granted') {
-                new Notification('New Order', { body: `New order from table ${order.tableId}` });
-            }
-        });
-
-        // Check ob Berechtigung vorhanden, ansonsten Frage um Berechtigung falls nicht vorhanden
-        if (Notification.permission !== 'granted') {
-            Notification.requestPermission();
-        }
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [setBoxes, userInteracted]);
-    */
-
-    /**
-     * Opens the confirmation dialog.
-     * @param {number} index - The index of the order being acted upon
-     * @param {string} type - The type of action ('delete' or 'cancel')
-     */
     const handleDialogOpen = (index, type) => {
         setActionIndex(index);
         setActionType(type);
         setDialogOpen(true);
     };
 
-    /**
-     * Closes the confirmation dialog.
-     */
     const handleDialogClose = () => {
         setDialogOpen(false);
         setActionIndex(null);
         setActionType(null);
     };
 
-    /**
-     * Handles the action confirmed in the dialog (delete or cancel).
-     */
     const handleAction = () => {
         if (actionIndex !== null && actionType !== null) {
             if (actionType === 'delete') {
@@ -281,28 +164,24 @@ const EmployeeView = () => {
         }
     };
 
-    /**
-     * Toggles the visibility of the progress spinner.
-     */
     const toggleProgressVisibility = (index) => {
         const orderId = boxes[index].orderId;
         const newStatus = boxes[index].orderStatus === 'open' ? 'in_work' : 'open';
-        axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, {status: newStatus})
+        axios.patch(`${config.apiBaseUrl}/api/orders/${orderId}/status`, { status: newStatus })
             .then(response => {
                 console.log('PATCH erfolgreich:', response.data);
-                setBoxes(prevBoxes => prevBoxes.map((box, i) => i === index ? {...box, orderStatus: newStatus} : box));
+                setBoxes(prevBoxes => prevBoxes.map((box, i) => i === index ? { ...box, orderStatus: newStatus } : box));
             })
             .catch(error => {
                 console.error('Fehler beim PATCH:', error);
             });
-
-
     }
+
     const theme = createTheme({
         palette: {
             primary: {
-                light: blue[300],
-                main: blue[500],
+                light: '#20a9fa',
+                main: '#20a9fa',
                 dark: blue[700],
                 darker: blue[900],
             },
@@ -320,6 +199,7 @@ const EmployeeView = () => {
             },
         },
     });
+
     const handleCheckboxChange = (orderId, productId) => {
         setCheckedItems(prev => ({
             ...prev,
@@ -329,14 +209,20 @@ const EmployeeView = () => {
             }
         }));
     };
-    return (
-        <div style={{paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto'}}>
-            <ClockBar currentTime={currentTime}/>
 
-            <Box style={{marginTop: '56px'}}>
+    return (
+        <div style={{ paddingBottom: '56px', minHeight: 'calc(100vh - 56px)', overflowY: 'auto',background: '#f0f4f8'}}>
+            <ClockBar currentTime={currentTime} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '80px' }}>
+                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')} sx={{ bgcolor: theme.palette.primary.main }}>
+                    Completed Orders
+                </Button>
+            </Box>
+
+            <Box style={{ marginTop: '20px' }}>
                 <Grid container spacing={2} justifyContent="center">
                     {boxes.length === 0 ? (
-                        <Typography variant="h6" align="center" sx={{marginTop: '20px'}}>
+                        <Typography variant="h6" align="center" sx={{ marginTop: '20px' }}>
                             No orders
                         </Typography>
                     ) : (
@@ -375,7 +261,7 @@ const EmployeeView = () => {
                                             <TableBarIcon sx={{
                                                 fontSize: 'inherit', filter:
                                                     'drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))'
-                                            }}/>
+                                            }} />
                                         </Box>
                                         {item.tableNumber}</Typography>
 
@@ -390,61 +276,55 @@ const EmployeeView = () => {
                                     }}>{item.orderDate}</Typography>
 
                                     {item.text.map((product) => (
-                                        <Box key={product.id} sx={{display: 'flex', alignItems: 'center'}}>
+                                        <Box key={product.id} sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                                             <Checkbox
                                                 checked={checkedItems[item.orderId]?.[product.id] || false}
                                                 onChange={() => handleCheckboxChange(item.orderId, product.id)}
+                                                sx={{ paddingLeft: 0 }}
                                             />
                                             <Typography
                                                 sx={{
                                                     textDecoration: checkedItems[item.orderId]?.[product.id] ? 'line-through' : 'none',
-                                                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
+                                                    color: checkedItems[item.orderId]?.[product.id] ? 'rgba(0,0,0,0.5)' : 'black',
+                                                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                                                    marginLeft: 1
                                                 }}
-                                                dangerouslySetInnerHTML={{__html: product.content}}
+                                                dangerouslySetInnerHTML={{ __html: product.content }}
                                             />
                                         </Box>
                                     ))}
 
-                                    <Box sx={{marginTop: '20px'}}>
+                                    <Box sx={{ marginTop: '20px' }}>
                                         <Button variant="contained" size="small"
                                                 onClick={() => handleDialogOpen(index, 'delete')} sx={{
-                                            color: theme.palette.green.main,
-                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                            border: `2px solid ${theme.palette.green.main}`,
-                                            '&:hover': {bgcolor: theme.palette.green.light}
-                                        }}><CheckIcon/></Button>
+                                            color: 'white',
+                                            bgcolor: theme.palette.green.main,
+                                            '&:hover': { bgcolor: theme.palette.green.dark }
+                                        }}><CheckIcon /></Button>
 
                                         <Button variant="contained" size="small"
                                                 onClick={() => toggleProgressVisibility(index)} sx={{
                                             marginLeft: '8px',
                                             marginRight: '8px',
                                             color: 'black',
-                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                            border: '2px solid black',
-                                            '&:hover': {bgcolor: 'lightgrey'}
+                                            bgcolor: 'lightgrey',
+                                            '&:hover': { bgcolor: 'grey' }
                                         }}>{item.orderStatus === 'in_work' ? (
-                                            <CircularProgress size={24} sx={{color: 'black'}}/>) : (
-                                            <AccessTimeIcon/>)}
+                                            <CircularProgress size={24} sx={{ color: 'black' }} />) : (
+                                            <AccessTimeIcon />)}
                                         </Button>
 
                                         <Button variant="contained" size="small"
-                                                onClick={() => handleDialogOpen(index,
-                                                    'cancel')} sx={{
-                                            color: theme.palette.red.main,
-                                            bgcolor: item.orderStatus === 'in_work' ? 'lightgrey' : 'white',
-                                            border: `2px solid ${theme.palette.red.main}`,
-                                            '&:hover': {bgcolor: theme.palette.red.light}
-                                        }}><CloseIcon/></Button>
+                                                onClick={() => handleDialogOpen(index, 'cancel')} sx={{
+                                            color: 'white',
+                                            bgcolor: theme.palette.red.main,
+                                            '&:hover': { bgcolor: theme.palette.red.dark }
+                                        }}><CloseIcon /></Button>
                                     </Box>
                                 </Box>
                             </Grid>
                         )))}
                 </Grid>
-            </Box>
-            <Box sx={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-                <Button variant="contained" color="primary" onClick={() => navigate('/orders/completed')} sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}>
-                    Completed Orders
-                </Button>
             </Box>
 
             <Dialog open={dialogOpen} onClose={handleDialogClose}>
@@ -463,4 +343,5 @@ const EmployeeView = () => {
         </div>
     );
 };
+
 export default EmployeeView;
