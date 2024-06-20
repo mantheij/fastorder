@@ -6,7 +6,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PaymentIcon from "@mui/icons-material/Payment";
 import config from "../../config";
 import { useTables } from "../../model/TablesContext";
-import { updateOrderstoPaid } from "./updateOrderstoPaid";
+import { updateOrdersToPaid } from "./updateOrdersToPaid";
 
 const ViewOrders = () => {
     const { tableId } = useParams();
@@ -20,56 +20,16 @@ const ViewOrders = () => {
 
     const table = tables.find(t => t.tableId === parseInt(tableId));
 
-    const fetchCompletedOrders = async () => {
+    const fetchOrders = async (status) => {
         try {
             const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
-            const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
+            const orders = response.data.filter(order => order.status === status && order.tableId === parseInt(tableId));
 
-            const allOrderDetails = completedOrders.flatMap(order => order.orderDetails);
+            const allOrderDetails = orders.flatMap(order => order.orderDetails);
 
-            // Grouping order details by product name
-            const groupedDetails = allOrderDetails.reduce((acc, detail) => {
-                const existing = acc.find(item => item.productName === detail.productName);
-                if (existing) {
-                    existing.quantity += detail.quantity;
-                    existing.totalPrice += detail.price * detail.quantity;
-                } else {
-                    acc.push({ ...detail, totalPrice: detail.price * detail.quantity });
-                }
-                return acc;
-            }, []);
+            setOrderDetails(allOrderDetails);
 
-            setOrderDetails(groupedDetails);
-
-            const total = completedOrders.reduce((acc, order) => acc + order.totalPrice, 0);
-            setTotalPrice(total);
-        } catch (error) {
-            console.error('Error fetching orders:', error);
-        }
-    };
-
-    const fetchPaidOrders = async () => {
-        try {
-            const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
-            const paidOrders = response.data.filter(order => order.status === 'paid' && order.tableId === parseInt(tableId));
-
-            const allOrderDetails = paidOrders.flatMap(order => order.orderDetails);
-
-            // Grouping order details by product name
-            const groupedDetails = allOrderDetails.reduce((acc, detail) => {
-                const existing = acc.find(item => item.productName === detail.productName);
-                if (existing) {
-                    existing.quantity += detail.quantity;
-                    existing.totalPrice += detail.price * detail.quantity;
-                } else {
-                    acc.push({ ...detail, totalPrice: detail.price * detail.quantity });
-                }
-                return acc;
-            }, []);
-
-            setOrderDetails(groupedDetails);
-
-            const total = paidOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+            const total = orders.reduce((acc, order) => acc + order.totalPrice, 0);
             setTotalPrice(total);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -77,17 +37,9 @@ const ViewOrders = () => {
     };
 
     useEffect(() => {
-        if (showPaidOrders) {
-            fetchPaidOrders();
-        } else {
-            fetchCompletedOrders();
-        }
+        fetchOrders(showPaidOrders ? 'paid' : 'completed');
         const interval = setInterval(() => {
-            if (showPaidOrders) {
-                fetchPaidOrders();
-            } else {
-                fetchCompletedOrders();
-            }
+            fetchOrders(showPaidOrders ? 'paid' : 'completed');
         }, 20000);
 
         return () => clearInterval(interval);
@@ -106,7 +58,7 @@ const ViewOrders = () => {
     };
 
     const handleConfirmPay = () => {
-        updateOrderstoPaid(tableId, navigate);
+        updateOrdersToPaid(tableId, navigate);
         setConfirmDialogOpen(false);
     };
 
@@ -148,23 +100,23 @@ const ViewOrders = () => {
             <Paper sx={{ padding: 2, flexGrow: 1, width: '100%', maxWidth: 700 }}>
                 <List>
                     {orderDetails.map((detail, index) => (
-                        <React.Fragment key={detail.productId}>
+                        <React.Fragment key={detail.orderDetailId}>
                             <ListItem>
                                 <ListItemText
-                                    primary={`${detail.quantity}x ${detail.productName}`}
-                                    secondary={`${formatPrice(detail.price)}`}
+                                    primary={`${detail.quantity}x ${detail.productName} (${detail.productSize})`}
+                                    secondary={`${formatPrice(detail.price / detail.quantity)}`}
                                     primaryTypographyProps={{ fontWeight: 'bold', fontSize: '1.2rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}
                                     secondaryTypographyProps={{ fontSize: '1rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}
                                 />
                                 <Typography variant="body1" sx={{ marginLeft: 'auto', fontWeight: 'bold', fontSize: '1.2rem', color: showPaidOrders ? 'rgba(0,0,0,0.5)' : 'rgba(0, 0, 0, 1)' }}>
-                                    {formatPrice(detail.totalPrice)}
+                                    {formatPrice(detail.price)}
                                 </Typography>
                             </ListItem>
                             {index < orderDetails.length - 1 && <Divider />}
                         </React.Fragment>
                     ))}
                 </List>
-                <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: '#ff4a4a' }}>
+                <Typography variant="h6" component="h2" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold', color: showPaidOrders ? 'rgba(255,74,74,0.5)' : 'rgb(255,74,74)'  }}>
                     Price: {formatPrice(totalPrice)}
                 </Typography>
             </Paper>

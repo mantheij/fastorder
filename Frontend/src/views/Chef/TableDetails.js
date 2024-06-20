@@ -6,7 +6,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { useTables } from "../../model/TablesContext";
-import { updateOrderstoPaid } from "./updateOrderstoPaid";
+import { updateOrdersToPaid } from "./updateOrdersToPaid";
 
 const TableDetails = () => {
     const navigate = useNavigate();
@@ -26,7 +26,7 @@ const TableDetails = () => {
 
     const handlePayClick = () => {
         if (showWarning) {
-            updateOrderstoPaid(tableId, navigate);
+            updateOrdersToPaid(tableId, navigate);
         } else {
             setShowWarning(true);
         }

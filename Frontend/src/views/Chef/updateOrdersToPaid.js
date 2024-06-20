@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../../config";
 
-export const updateOrderstoPaid = async (tableId, navigate) => {
+export const updateOrdersToPaid = async (tableId, navigate) => {
     try {
         const response = await axios.get(`${config.apiBaseUrl}/api/orders`);
         const completedOrders = response.data.filter(order => order.status === 'completed' && order.tableId === parseInt(tableId));
