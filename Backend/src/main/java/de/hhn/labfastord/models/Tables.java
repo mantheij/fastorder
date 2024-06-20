@@ -22,4 +22,13 @@ public class Tables {
 
     public Tables() {
     }
+
+    public Tables(String name,  Integer area, boolean occupied,  Integer width,  Integer height) {
+        this.name = name;
+        this.area = area;
+        this.occupied = occupied;
+        this.width = width;
+        this.height = height;
+    }
+
 }

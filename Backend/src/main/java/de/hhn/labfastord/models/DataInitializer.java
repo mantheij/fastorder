@@ -79,11 +79,27 @@ public class DataInitializer implements CommandLineRunner {
             Tables table1 = new Tables();
             table1.setName("1");
             tablesRepository.save(table1);
-            for (int i = 2; i < 10; i++) {
-                Tables tables = new Tables();
-                tables.setName(String.valueOf(i));
-                tablesRepository.save(tables);
-            }
+
+            List<Tables> tablesList = new ArrayList<>();
+            tablesList.add(new Tables("2", 1, false, 200, 125));
+            tablesList.add(new Tables("3", 1, false, 125, 200));
+            tablesList.add(new Tables("4", 1, false, 225, 125));
+            tablesList.add(new Tables("5", 1, false, 125, 225));
+            tablesList.add(new Tables("6", 1, false, 445, 145));
+            tablesList.add(new Tables("7", 1, false, 150, 150));
+            tablesList.add(new Tables("8", 1, false, 150, 150));
+            tablesList.add(new Tables("9", 1, false, 120, 150));
+            tablesList.add(new Tables("10", 2, false, 200, 125));
+            tablesList.add(new Tables("11", 2, false, 200, 125));
+            tablesList.add(new Tables("12", 2, false, 125, 200));
+            tablesList.add(new Tables("13", 2, false, 125, 250));
+            tablesList.add(new Tables("14", 2, false, 125, 150));
+            tablesList.add(new Tables("17", 2, false, 125, 120));
+            tablesList.add(new Tables("15", 2, false, 200, 120));
+            tablesList.add(new Tables("16", 2, false, 200, 120));
+            tablesList.add(new Tables("placeholder", 1, false, 0, 0));
+
+            tablesRepository.saveAll(tablesList);
 
             //add an order
             Order order = new Order();
