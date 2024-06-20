@@ -1,16 +1,18 @@
-import React from "react";
-import { Button, Box, IconButton, Typography, Paper } from "@mui/material";
+import React, { useState } from "react";
+import { Button, Box, IconButton, Typography, Paper, Snackbar } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { useTables } from "../../model/TablesContext";
+import { updateOrderstoPaid } from "./updateOrderstoPaid";
 
 const TableDetails = () => {
     const navigate = useNavigate();
     const { tableId } = useParams();
     const { tables } = useTables();
+    const [showWarning, setShowWarning] = useState(false);
 
     const table = tables.find(t => t.tableId === parseInt(tableId));
 
@@ -23,7 +25,15 @@ const TableDetails = () => {
     };
 
     const handlePayClick = () => {
-        console.log('Zahlen Button Clicked');
+        if (showWarning) {
+            updateOrderstoPaid(tableId, navigate);
+        } else {
+            setShowWarning(true);
+        }
+    };
+
+    const handleCloseWarning = () => {
+        setShowWarning(false);
     };
 
     const isArea2 = table && table.area === 2;
@@ -102,6 +112,17 @@ const TableDetails = () => {
                     Pay
                 </Button>
             </Paper>
+            <Snackbar
+                open={showWarning}
+                autoHideDuration={6000}
+                onClose={handleCloseWarning}
+                message="Press 'Pay' again to confirm payment."
+                action={
+                    <Button color="inherit" size="small" onClick={handleCloseWarning}>
+                        OK
+                    </Button>
+                }
+            />
         </Box>
     );
 };
