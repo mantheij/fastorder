@@ -247,7 +247,7 @@ const ProductView = () => {
                 sx={{
                     '& .MuiDrawer-paper': {
                         width: '100%',
-                        height: isMobile ? '75%' : '55%',
+                        height: '55%',
                         margin: 'auto'
                     }
                 }}
