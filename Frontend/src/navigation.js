@@ -45,7 +45,8 @@ export default function LabelBottomNavigation({ userRole, onLogout }) {
                 bottom: 0,
                 backgroundColor: "#ffffff",
                 boxShadow: "0px 1px 10px rgba(0,0,0,0.3)",
-                borderRadius: "10px 10px 0 0"
+                borderRadius: "10px 10px 0 0",
+                zIndex: 99
             }}
             value={value}
             onChange={handleChange}
