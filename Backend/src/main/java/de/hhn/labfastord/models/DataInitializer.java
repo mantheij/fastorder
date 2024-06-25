@@ -76,8 +76,7 @@ public class DataInitializer implements CommandLineRunner {
             productRepository.saveAll(Arrays.asList(product1, product2, product3, product4, product5));
 
             //add tables
-            Tables table1 = new Tables();
-            table1.setName("1");
+            Tables table1 = new Tables("1", 1, false, 200, 125);
             tablesRepository.save(table1);
 
             List<Tables> tablesList = new ArrayList<>();
