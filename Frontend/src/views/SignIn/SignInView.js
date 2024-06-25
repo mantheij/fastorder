@@ -79,7 +79,7 @@ function SignInView({ onButtonClick }) {
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: '92%',
+                height: '100%',
                 backgroundImage: "url('/background2.png')",
                 backgroundRepeat: 'repeat',
                 opacity: 0.06,
