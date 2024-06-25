@@ -24,20 +24,22 @@ import {
 } from "@mui/material";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import ContactSupport from '@mui/icons-material/ContactSupport';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 import { useNavigate, useParams } from "react-router-dom";
-import {loadCartFromCookies, saveCartToCookies, removeCartFromCookies} from "./utils";
+import { loadCartFromCookies, saveCartToCookies } from "./utils";
 import config from "../../config";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const ProductView = () => {
     const { tableId } = useParams();
     const [drinks, setDrinks] = useState([]);
-    const [uniqueDrinks, setUniqueDrinks] = useState([]);
+    const [groupedDrinks, setGroupedDrinks] = useState({});
+    const [categories, setCategories] = useState([]);
     const [value, setValue] = useState(0);
     const [cart, setCart] = useState([]);
     const [alertOpen, setAlertOpen] = useState(false);
@@ -63,11 +65,24 @@ const ProductView = () => {
         axios.get(`${config.apiBaseUrl}/api/products`)
             .then(response => {
                 setDrinks(response.data);
-                setUniqueDrinks(Array.from(new Set(response.data.map(drink => drink.name)))
-                    .map(name => response.data.find(drink => drink.name === name)));
+                const grouped = groupBy(response.data, 'name');
+                setGroupedDrinks(grouped);
             })
             .catch(error => console.error("Error loading the products:", error));
+
+        axios.get(`${config.apiBaseUrl}/api/productCategories`)
+            .then(response => {
+                setCategories(response.data);
+            })
+            .catch(error => console.error("Error loading the categories:", error));
     }, []);
+
+    const groupBy = (array, key) => {
+        return array.reduce((result, currentValue) => {
+            (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+            return result;
+        }, {});
+    };
 
     const handleOpenCardView = () => {
         if (cart.length === 0) {
@@ -88,16 +103,14 @@ const ProductView = () => {
             setAlertOpen(true);
             return;
         }
-        console.log(selectedProduct.size)
 
         const newCart = [...cart, {
             ...selectedProduct,
             imgName: `${selectedProduct.imgName}`,
-            size: selectedProduct.size, // Größe hinzufügen
-            price: selectedProduct.price, // Preis hinzufügen
-            productId: selectedProduct.productId // Stellen Sie sicher, dass productId hinzugefügt wird
+            size: selectedProduct.size,
+            price: selectedProduct.price,
+            productId: selectedProduct.productId
         }];
-        console.log(newCart)
 
         setCart(newCart);
         saveCartToCookies(tableId, newCart);
@@ -108,23 +121,18 @@ const ProductView = () => {
     };
 
     const handleOpenBottomSheet = (product) => {
-        const productWithImage = {
-            ...product,
-            imgName: `/images/products/${product.imgName}`
-        };
         const availableSizes = drinks.filter(p => p.name === product.name);
         setSelectedProduct({
-            ...productWithImage,
+            name: product.name,
+            imgName: `/images/products/${product.imgName}`,
             availableSizes,
-            size: availableSizes[0]?.size || '', // Setze die erste verfügbare Größe oder eine leere Größe
-            price: availableSizes[0]?.price || 0, // Setze den Preis der ersten verfügbaren Größe oder 0
-            productId: product.productId, // Stellen Sie sicher, dass productId gesetzt ist
+            size: availableSizes[0]?.size || '',
+            price: availableSizes[0]?.price || 0,
+            productId: product.productId,
             quantity: 1
         });
         setBottomSheetOpen(true);
     };
-
-
 
     const handleCloseBottomSheet = () => {
         setBottomSheetOpen(false);
@@ -144,15 +152,12 @@ const ProductView = () => {
         }
     };
 
-
-
     const handleQuantityChange = (increment) => {
         const newQuantity = selectedProduct.quantity + increment;
         if (newQuantity > 0) {
             setSelectedProduct(prevProduct => ({ ...prevProduct, quantity: newQuantity }));
         }
     };
-
 
     const handleRemoveFromCart = (index) => {
         const newCart = [...cart];
@@ -192,7 +197,7 @@ const ProductView = () => {
             if (!searchQuery) {
                 return true;
             }
-            return drink.name.toLowerCase().includes(searchQuery.toLowerCase());
+            return drink[0].name.toLowerCase().includes(searchQuery.toLowerCase());
         });
     };
 
@@ -209,11 +214,10 @@ const ProductView = () => {
         setSearchQuery(event.target.value);
     };
 
-    const filteredDrinks = filterDrinks(uniqueDrinks);
+    const filteredDrinks = Object.values(groupedDrinks).flatMap(group => filterDrinks([group]));
 
     const isProductAvailable = (product) => {
-        const availableSizes = drinks.filter(p => p.name === product.name && p.quantity > 0);
-        return availableSizes.length > 0;
+        return product.some(p => p.quantity > 0);
     };
 
     const handleCallWaiter = () => {
@@ -224,44 +228,48 @@ const ProductView = () => {
 
     return (
         <Container maxWidth={false}>
-            <Grid>
+            <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: 10 }}>
+                <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(`/customerStart/${tableId}`)}>
+                    Back
+                </Button>
                 <Tabs value={value} onChange={(event, newValue) => setValue(newValue)} centered>
-                    <Tab label="All Drinks" />
+                    <Tab label="All Drinks" value={0} />
+                    {categories.map((category, index) => (
+                        <Tab label={category.name} value={category.categoryId} key={index} />
+                    ))}
                 </Tabs>
-                <Grid container justifyContent="flex-end" alignItems="center" spacing={2}>
-                    <IconButton onClick={handleSearchButtonClick}>
-                        <SearchIcon />
-                    </IconButton>
-                </Grid>
-                {isSearchVisible && (
-                    <TextField
-                        label="Search drinks"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}
-                        fullWidth
-                        style={{ marginTop: 10, marginBottom: 10 }}
-                    />
-                )}
+                <IconButton onClick={handleSearchButtonClick}>
+                    <SearchIcon />
+                </IconButton>
             </Grid>
+            {isSearchVisible && (
+                <TextField
+                    label="Search drinks"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    fullWidth
+                    style={{ marginBottom: 10 }}
+                />
+            )}
             <Grid container spacing={2}>
-                {filteredDrinks.filter(drink => drink.categoryId === value || value === 0).map((drink) => (
-                    <Grid item xs={12} sm={6} md={3} key={drink.productId}>
+                {filteredDrinks.filter(group => group.some(drink => drink.categoryId === value || value === 0)).map((group, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
                         <Card>
                             <CardActionArea
-                                onClick={() => isProductAvailable(drink) ? handleOpenBottomSheet(drink) : null}
-                                disabled={!isProductAvailable(drink)}
-                                style={{ opacity: !isProductAvailable(drink) ? 0.5 : 1 }}
+                                onClick={() => isProductAvailable(group) ? handleOpenBottomSheet(group[0]) : null}
+                                disabled={!isProductAvailable(group)}
+                                style={{ opacity: !isProductAvailable(group) ? 0.5 : 1 }}
                             >
                                 <CardMedia
                                     style={{ height: 200, width: '100%', objectFit: 'contain' }}
                                     component="img"
-                                    image={`/images/products/${drink.imgName}`}
-                                    alt={drink.name}
+                                    image={`/images/products/${group[0].imgName}`}
+                                    alt={group[0].name}
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
-                                        {drink.name}
+                                        {group[0].name}
                                     </Typography>
                                 </CardContent>
                             </CardActionArea>
@@ -273,7 +281,7 @@ const ProductView = () => {
                 anchor="bottom"
                 open={bottomSheetOpen}
                 onClose={handleCloseBottomSheet}
-                sx={{ '& .MuiDrawer-paper': { width: '100%', margin: 'auto' } }}
+                sx={{ '& .MuiDrawer-paper': { width: '100%', height: '55%', margin: 'auto' } }}
             >
                 <List>
                     <ListItem sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -286,27 +294,25 @@ const ProductView = () => {
                         </ListItemAvatar>
                     </ListItem>
                     <ListItem>
-                        <ListItemText
-                            primary={selectedProduct.name}
-                            style={{ width: '220px', textAlign: 'center', fontSize: '2rem' }}
-                        />
+                        <Typography variant="h4" sx={{ width: '100%', textAlign: 'center' }}>
+                            {selectedProduct.name}
+                        </Typography>
                     </ListItem>
                     <ListItem>
-                        <ListItemText
-                            secondary="Select Size and Quantity"
-                            style={{ width: '220px', textAlign: 'center', fontSize: '1.4rem' }}
-                        />
+                        <Typography variant="h6" sx={{ width: '100%', textAlign: 'center' }}>
+                            Select Size and Quantity
+                        </Typography>
                     </ListItem>
                     <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ padding: '0 20px' }}>
                         <Grid item xs={12} container justifyContent="center" alignItems="center">
                             <Select
                                 value={selectedProduct.size || ''}
                                 onChange={handleSizeChange}
-                                style={{ width: '300px', textAlign: 'center', fontSize: '1.1rem' }}
+                                style={{ width: '300px', textAlign: 'center', fontSize: '1.5rem' }}
                             >
                                 {selectedProduct.availableSizes && selectedProduct.availableSizes.map((option) => (
-                                    <MenuItem key={option.size} value={option.size} style={{ fontSize: '1.2rem' }}>
-                                        {option.size} - €{option.price}
+                                    <MenuItem key={option.size} value={option.size} style={{ fontSize: '1.5rem' }}>
+                                        {option.size} - {option.price.toFixed(2).replace('.', ',')}€
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -319,8 +325,8 @@ const ProductView = () => {
                                 type="number"
                                 variant="outlined"
                                 value={selectedProduct.quantity}
-                                inputProps={{ min: 1, style: { textAlign: 'center', fontSize: '1.2rem' } }}
-                                style={{ width: '70px', textAlign: 'center' }}
+                                inputProps={{ min: 1, style: { textAlign: 'center', fontSize: '1.5rem' } }}
+                                style={{ width: '100px', textAlign: 'center' }}
                             />
                             <IconButton onClick={() => handleQuantityChange(1)} size="large">
                                 <AddIcon />
@@ -331,9 +337,10 @@ const ProductView = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleAddToCart}
-                                style={{ display: 'block', marginBottom: '100px', minWidth: '300px', fontSize: '1.1rem' }}
+                                style={{ display: 'flex', alignItems: 'center', minWidth: '300px', fontSize: '1.5rem' }}
                             >
-                                Add to Cart
+                                <ShoppingCartIcon style={{ marginRight: '10px' }} />
+                                {`${(selectedProduct.price * selectedProduct.quantity).toFixed(2).replace('.', ',')}€`}
                             </Button>
                         </Grid>
                     </Grid>
