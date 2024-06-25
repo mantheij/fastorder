@@ -273,51 +273,56 @@ const ProductView = () => {
                 anchor="bottom"
                 open={bottomSheetOpen}
                 onClose={handleCloseBottomSheet}
-                sx={{ '& .MuiDrawer-paper': { width:'40%', margin: 'auto'}}}>
+                sx={{ '& .MuiDrawer-paper': { width: '100%', margin: 'auto' } }}
+            >
                 <List>
-                    <ListItem sx={{display:'flex', justifyContent:'center',alignItems:'center'}}>
-                        <ListItemAvatar sx={{ fontSize: 100 }}>
+                    <ListItem sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <ListItemAvatar sx={{ fontSize: 150 }}>
                             <Avatar
                                 src={`${selectedProduct.imgName}`}
                                 alt={selectedProduct.name}
-                                sx={{ width: 128, height: 128 }}
+                                sx={{ width: 200, height: 200 }}
                             />
                         </ListItemAvatar>
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary={selectedProduct.name}
-                                      style={{ width: '200px', textAlign: 'center' }}/>
+                        <ListItemText
+                            primary={selectedProduct.name}
+                            style={{ width: '220px', textAlign: 'center', fontSize: '2rem' }}
+                        />
                     </ListItem>
                     <ListItem>
-                        <ListItemText secondary="Select Size and Quantity"
-                                      style={{ width: '200px', textAlign: 'center' }}/>
+                        <ListItemText
+                            secondary="Select Size and Quantity"
+                            style={{ width: '220px', textAlign: 'center', fontSize: '1.4rem' }}
+                        />
                     </ListItem>
-                    <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ padding: '0 16px' }}>
+                    <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ padding: '0 20px' }}>
                         <Grid item xs={12} container justifyContent="center" alignItems="center">
                             <Select
                                 value={selectedProduct.size || ''}
                                 onChange={handleSizeChange}
-                                style={{ width: '300px', textAlign: 'center' }}
+                                style={{ width: '300px', textAlign: 'center', fontSize: '1.1rem' }}
                             >
                                 {selectedProduct.availableSizes && selectedProduct.availableSizes.map((option) => (
-                                    <MenuItem key={option.size} value={option.size}>
+                                    <MenuItem key={option.size} value={option.size} style={{ fontSize: '1.2rem' }}>
                                         {option.size} - €{option.price}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </Grid>
                         <Grid item xs={12} container justifyContent="center" alignItems="center">
-                            <IconButton onClick={() => handleQuantityChange(-1)}>
+                            <IconButton onClick={() => handleQuantityChange(-1)} size="large">
                                 <RemoveIcon />
                             </IconButton>
                             <TextField
                                 type="number"
                                 variant="outlined"
                                 value={selectedProduct.quantity}
-                                inputProps={{ min: 1 }}
-                                style={{ width: '60px', textAlign: 'center' }}
+                                inputProps={{ min: 1, style: { textAlign: 'center', fontSize: '1.2rem' } }}
+                                style={{ width: '70px', textAlign: 'center' }}
                             />
-                            <IconButton onClick={() => handleQuantityChange(1)}>
+                            <IconButton onClick={() => handleQuantityChange(1)} size="large">
                                 <AddIcon />
                             </IconButton>
                         </Grid>
@@ -326,7 +331,7 @@ const ProductView = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleAddToCart}
-                                style={{ display: 'block', marginBottom:'20px', margin: '0 auto', minWidth: '300px' }}
+                                style={{ display: 'block', marginBottom: '100px', minWidth: '300px', fontSize: '1.1rem' }}
                             >
                                 Add to Cart
                             </Button>
@@ -334,6 +339,7 @@ const ProductView = () => {
                     </Grid>
                 </List>
             </Drawer>
+
             <Snackbar
                 open={alertOpen}
                 autoHideDuration={6000}
