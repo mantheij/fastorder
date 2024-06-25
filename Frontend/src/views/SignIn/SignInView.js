@@ -7,7 +7,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LockIcon from '@mui/icons-material/Lock';
 import Grid from '@mui/material/Grid';
@@ -64,90 +63,125 @@ function SignInView({ onButtonClick }) {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    position: 'relative',
-                }}
-            >
-                <IconButton
-                    color="primary"
-                    aria-label="login as employee/admin"
-                    onClick={() => setShowLogin(!showLogin)}
-                    sx={{ position: 'absolute', top: 0, right: 0 }}
-                >
-                    <LockIcon />
-                </IconButton>
-                <Typography component="h1" variant="h5">
-                    Sign In
-                </Typography>
-                <Box component="form" onSubmit={(e) => e.preventDefault()} sx={{ mt: 1 }}>
-                    {showLogin ? (
-                        <>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="username"
-                                label="Username"
-                                name="username"
-                                autoComplete="username"
-                                autoFocus
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="current-password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <Button
-                                type="button"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                onClick={handleLogin}
-                            >
-                                Login
-                            </Button>
-                            <Grid container justifyContent="center">
-                                <Grid item>
-                                    <Link href="#" variant="body2" onClick={() => setShowLogin(false)}>
-                                        Login as Guest
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                        </>
-                    ) : (
-                        <Button
-                            fullWidth
-                            variant="contained"
+        <div style={{
+            padding: 0,
+            margin: 0,
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            background: "linear-gradient(to top, #0383E2, #5DADF0)",
+            position: 'relative'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '92%',
+                backgroundImage: "url('/background2.png')",
+                backgroundRepeat: 'repeat',
+                opacity: 0.06,
+                zIndex: 1
+            }}></div>
+            <div style={{
+                position: 'relative',
+                zIndex: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%'
+            }}>
+                <Container component="main" maxWidth="xs">
+                    <Box
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            position: 'relative',
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                            padding: 4,
+                            borderRadius: 2,
+                            boxShadow: 3,
+                        }}
+                    >
+                        <img src="/logo.png" alt="Logo" style={{ width: 100, marginBottom: 20 }} />
+                        <h1 style={{ color: "rgba(10,9,8,0.89)" }}>Sign In</h1>
+                        <IconButton
                             color="primary"
-                            sx={{ mt: 3, mb: 2 }}
-                            onClick={handleGuestLogin}
+                            aria-label="login as employee/admin"
+                            onClick={() => setShowLogin(!showLogin)}
+                            sx={{ position: 'absolute', top: 16, right: 16 }}
                         >
-                            Login as Guest
-                        </Button>
-                    )}
-                </Box>
-            </Box>
-            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-                <Alert onClose={handleCloseSnackbar} severity="error">
-                    {error}
-                </Alert>
-            </Snackbar>
-        </Container>
+                            <LockIcon />
+                        </IconButton>
+                        <Box component="form" onSubmit={(e) => e.preventDefault()} sx={{ mt: 1, width: '100%' }}>
+                            {showLogin ? (
+                                <>
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="username"
+                                        label="Username"
+                                        name="username"
+                                        autoComplete="username"
+                                        autoFocus
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        name="password"
+                                        label="Password"
+                                        type="password"
+                                        id="password"
+                                        autoComplete="current-password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <Button
+                                        type="button"
+                                        fullWidth
+                                        variant="contained"
+                                        sx={{ mt: 3, mb: 2 }}
+                                        onClick={handleLogin}
+                                    >
+                                        Login
+                                    </Button>
+                                    <Grid container justifyContent="center">
+                                        <Grid item>
+                                            <Link href="#" variant="body2" onClick={() => setShowLogin(false)}>
+                                                Login as Guest
+                                            </Link>
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            ) : (
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 3, mb: 2 }}
+                                    onClick={handleGuestLogin}
+                                >
+                                    Login as Guest
+                                </Button>
+                            )}
+                        </Box>
+                    </Box>
+                    <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                        <Alert onClose={handleCloseSnackbar} severity="error">
+                            {error}
+                        </Alert>
+                    </Snackbar>
+                </Container>
+            </div>
+        </div>
     );
 }
 

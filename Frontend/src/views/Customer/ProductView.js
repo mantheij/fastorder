@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
     Alert,
     Avatar, Badge,
     Button,
@@ -48,11 +44,17 @@ const ProductView = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
     const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState({});
+    const [selectedProduct, setSelectedProduct] = useState({
+        name: '',
+        imgName: '',
+        availableSizes: [],
+        size: '',
+        price: 0,
+        quantity: 1
+    });
     const [openDialog, setOpenDialog] = useState(false);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [extras, setExtras] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -76,17 +78,33 @@ const ProductView = () => {
             navigate(`/product/${tableId}/card`);
         }
     };
+
     const handleCloseDialog = () => setOpenDialog(false);
 
     const handleAddToCart = () => {
-        const newCart = [...cart, { ...selectedProduct, imgName: `${selectedProduct.imgName}`, extras }];
+        if (!selectedProduct.size) {
+            setAlertMessage('Please select a size');
+            setAlertSeverity('error');
+            setAlertOpen(true);
+            return;
+        }
+        console.log(selectedProduct.size)
+
+        const newCart = [...cart, {
+            ...selectedProduct,
+            imgName: `${selectedProduct.imgName}`,
+            size: selectedProduct.size, // Größe hinzufügen
+            price: selectedProduct.price, // Preis hinzufügen
+            productId: selectedProduct.productId // Stellen Sie sicher, dass productId hinzugefügt wird
+        }];
+        console.log(newCart)
+
         setCart(newCart);
         saveCartToCookies(tableId, newCart);
         setAlertMessage('Added drink to cart');
         setAlertSeverity('success');
         setAlertOpen(true);
         setBottomSheetOpen(false);
-        setExtras('');
     };
 
     const handleOpenBottomSheet = (product) => {
@@ -94,13 +112,19 @@ const ProductView = () => {
             ...product,
             imgName: `/images/products/${product.imgName}`
         };
+        const availableSizes = drinks.filter(p => p.name === product.name);
         setSelectedProduct({
             ...productWithImage,
-            availableSizes: drinks.filter(p => p.name === product.name),
+            availableSizes,
+            size: availableSizes[0]?.size || '', // Setze die erste verfügbare Größe oder eine leere Größe
+            price: availableSizes[0]?.price || 0, // Setze den Preis der ersten verfügbaren Größe oder 0
+            productId: product.productId, // Stellen Sie sicher, dass productId gesetzt ist
             quantity: 1
         });
         setBottomSheetOpen(true);
     };
+
+
 
     const handleCloseBottomSheet = () => {
         setBottomSheetOpen(false);
@@ -109,19 +133,26 @@ const ProductView = () => {
     const handleSizeChange = (event) => {
         const newSize = event.target.value;
         const selectedSize = drinks.find(p => p.name === selectedProduct.name && p.size === newSize);
-        setSelectedProduct({ ...selectedProduct, size: newSize, price: selectedSize.price });
+
+        if (selectedSize) {
+            setSelectedProduct(prevProduct => ({
+                ...prevProduct,
+                size: newSize,
+                price: selectedSize.price,
+                productId: selectedSize.productId
+            }));
+        }
     };
+
+
 
     const handleQuantityChange = (increment) => {
         const newQuantity = selectedProduct.quantity + increment;
         if (newQuantity > 0) {
-            setSelectedProduct({ ...selectedProduct, quantity: newQuantity });
+            setSelectedProduct(prevProduct => ({ ...prevProduct, quantity: newQuantity }));
         }
     };
 
-    const handleExtraChange = (event) => {
-        setExtras(event.target.value);
-    };
 
     const handleRemoveFromCart = (index) => {
         const newCart = [...cart];
@@ -146,7 +177,7 @@ const ProductView = () => {
                         <ListItemAvatar>
                             <Avatar src={`${item.imgName}`} alt={`${item.name} Logo`} />
                         </ListItemAvatar>
-                        <ListItemText primary={`${item.name} - ${item.size}`} secondary={`Quantity: ${item.quantity}, Price: $${item.price}`} />
+                        <ListItemText primary={`${item.name} - ${item.size}`} secondary={`Quantity: ${item.quantity}, Price: €${item.price}`} />
                         <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
                             <DeleteIcon />
                         </IconButton>
@@ -270,7 +301,7 @@ const ProductView = () => {
                             >
                                 {selectedProduct.availableSizes && selectedProduct.availableSizes.map((option) => (
                                     <MenuItem key={option.size} value={option.size}>
-                                        {option.size} - ${option.price}
+                                        {option.size} - €{option.price}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -289,15 +320,6 @@ const ProductView = () => {
                             <IconButton onClick={() => handleQuantityChange(1)}>
                                 <AddIcon />
                             </IconButton>
-                        </Grid>
-                        <Grid item xs={12} container justifyContent="center" alignItems="center">
-                            <TextField
-                                label="Extras"
-                                variant="outlined"
-                                value={extras}
-                                onChange={handleExtraChange}
-                                style={{ minWidth: '300px', textAlign: 'center', width: 'fit-content' }}
-                            />
                         </Grid>
                         <Grid item xs={12} container justifyContent="center" alignItems="center">
                             <Button

@@ -48,9 +48,12 @@ const CardView = () => {
             const orderDetails = cart.map(item => ({
                 quantity: item.quantity,
                 product: {
-                    productId: item.productId
-                }
+                    productId: item.productId,
+                },
+                price: item.price, // Preis des Produkts hinzufügen
+                productName: item.name // Name des Produkts hinzufügen
             }));
+            console.log(orderDetails)
 
             const orderData = {
                 orderDetails,
@@ -98,7 +101,7 @@ const CardView = () => {
                     imgName: productData.imgName,
                     quantity: newQuantity,
                     productCategoryId: productData.categoryId,
-                    size: productData.size
+                    size: productData.size // Hier sicherstellen, dass die Größe korrekt ist
                 }, {
                     headers: {
                         Authorization: `Bearer ${authToken}`
@@ -121,6 +124,9 @@ const CardView = () => {
             setAlertOpen(true);
         }
     };
+
+
+
 
     const calculateTotalCost = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
@@ -145,7 +151,7 @@ const CardView = () => {
             }}>
                 <Box style={{ width: '100%' }}>
                     <Typography variant="h6" component="div" style={{ marginBottom: '16px' }}>
-                        Total Cost: ${calculateTotalCost()}
+                        Total Cost: €{calculateTotalCost()}
                     </Typography>
                     <List style={{ width: '100%' }}>
                         {cart.length > 0 ? (
@@ -158,7 +164,7 @@ const CardView = () => {
                                         primary={`${item.name} - ${item.size}`}
                                         secondary={
                                             <React.Fragment>
-                                                <div>Quantity: {item.quantity}, Price: ${item.price}</div>
+                                                <div>Quantity: {item.quantity}, Price: €{item.price}</div>
                                                 {item.extras && <div>Extras: {item.extras}</div>}
                                             </React.Fragment>
                                         }
