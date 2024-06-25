@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import LabelBottomNavigation from "./navigation";
 import ProductView from "./views/Customer/ProductView";
 import CustomerView from "./views/Customer/CustomerView";
@@ -17,7 +17,7 @@ import ProductSettings from "./views/Settings/ProductSettings";
 import HomeView from "./views/Chef/HomeView";
 import Cookies from "js-cookie";
 import { AuthProvider } from './AuthContext';
-import EmployeeSettings from "./views/Settings/EmployeeSettings"; // Import the AuthProvider
+import EmployeeSettings from "./views/Settings/EmployeeSettings";
 import EmployeeView from "./views/Employee/EmployeeView"
 
 function App() {
@@ -75,12 +75,22 @@ function App() {
                                 <Route path="*" element={<Navigate to="/" />} />
                             )}
                         </Routes>
-                        {accessGranted && <LabelBottomNavigation userRole={userRole} onLogout={handleLogout} />}
+                        <NavigationWrapper accessGranted={accessGranted} userRole={userRole} handleLogout={handleLogout} />
                     </TablesProvider>
                 </div>
             </Router>
         </AuthProvider>
     );
 }
+
+const NavigationWrapper = ({ accessGranted, userRole, handleLogout }) => {
+    const location = useLocation();
+    const hideNavBar = userRole === "guest" && ["/customerStart", "/product"].some(path => location.pathname.startsWith(path));
+
+    if (accessGranted && !hideNavBar) {
+        return <LabelBottomNavigation userRole={userRole} onLogout={handleLogout} />;
+    }
+    return null;
+};
 
 export default App;
