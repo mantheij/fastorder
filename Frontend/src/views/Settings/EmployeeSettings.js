@@ -214,18 +214,16 @@ function EmployeeSettings() {
                     alignItems: 'center',
                 }}
             >
-                <Typography component="h1" variant="h5">
-                    Employee Settings
-                </Typography>
+                <h1 style={{ color: "#0383E2", fontSize: "3vh" }}> Employee Settings </h1>
                 <IconButton
                     color="primary"
                     aria-label="add employee"
                     onClick={handleOpenAddDialog}
-                    sx={{ alignSelf: 'flex-end' }}
+                    sx={{ alignSelf: 'flex-end', marginTop: 2 }}
                 >
                     <AddIcon />
                 </IconButton>
-                <TableContainer component={Paper} sx={{ mt: 4 }}>
+                <TableContainer component={Paper} sx={{ mt: 4, boxShadow: 3 }}>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -252,7 +250,7 @@ function EmployeeSettings() {
                                             <EditIcon />
                                         </IconButton>
                                         <IconButton
-                                            color="secondary"
+                                            color="error"
                                             aria-label="delete user"
                                             onClick={() => handleOpenDeleteDialog(user.id)}
                                         >
@@ -311,15 +309,18 @@ function EmployeeSettings() {
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
                     >
-                        <MenuItem value="admin">ROLE_ADMIN</MenuItem>
+                        <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
                         <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
                     </Select>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseAddDialog} color="secondary">
+                    <Button onClick={handleCloseAddDialog} sx={{ color: 'secondary' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleAddEmployee} color="primary">
+                    <Button
+                        onClick={handleAddEmployee}
+                        sx={{ background: 'linear-gradient(to top, #0383E2, #5DADF0)', color: 'white' }}
+                    >
                         Add
                     </Button>
                 </DialogActions>
@@ -327,18 +328,34 @@ function EmployeeSettings() {
             <Dialog open={openEditTypeDialog} onClose={handleCloseEditTypeDialog}>
                 <DialogTitle>Choose Edit Type</DialogTitle>
                 <DialogContent>
-                    <Button onClick={() => handleOpenEditDialog('username')} fullWidth variant="outlined" sx={{ mt: 2 }}>
+                    <Button
+                        onClick={() => handleOpenEditDialog('username')}
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mt: 2 }}
+                    >
                         Edit Username
                     </Button>
-                    <Button onClick={() => handleOpenEditDialog('role')} fullWidth variant="outlined" sx={{ mt: 2 }} disabled={isEditRoleDisabled}>
+                    <Button
+                        onClick={() => handleOpenEditDialog('role')}
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mt: 2 }}
+                        disabled={isEditRoleDisabled}
+                    >
                         Edit Role
                     </Button>
-                    <Button onClick={() => handleOpenEditDialog('password')} fullWidth variant="outlined" sx={{ mt: 2 }}>
+                    <Button
+                        onClick={() => handleOpenEditDialog('password')}
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mt: 2 }}
+                    >
                         Edit Password
                     </Button>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseEditTypeDialog} color="secondary">
+                    <Button onClick={handleCloseEditTypeDialog} sx={{ color: 'secondary' }}>
                         Cancel
                     </Button>
                 </DialogActions>
@@ -366,8 +383,8 @@ function EmployeeSettings() {
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                         >
-                            <MenuItem value="admin">ROLE_ADMIN</MenuItem>
-                            <MenuItem value="">ROLE_USER</MenuItem>
+                            <MenuItem value="ROLE_ADMIN">ROLE_ADMIN</MenuItem>
+                            <MenuItem value="ROLE_USER">ROLE_USER</MenuItem>
                         </Select>
                     )}
                     {editType === 'password' && (
@@ -398,10 +415,13 @@ function EmployeeSettings() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseEditDialog} color="secondary">
+                    <Button onClick={handleCloseEditDialog} sx={{ color: 'secondary' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleEditUser} color="primary">
+                    <Button
+                        onClick={handleEditUser}
+                        sx={{ background: 'linear-gradient(to top, #0383E2, #5DADF0)', color: 'white' }}
+                    >
                         Save
                     </Button>
                 </DialogActions>
@@ -412,10 +432,13 @@ function EmployeeSettings() {
                     <Typography>Are you sure you want to delete this user?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteDialog} color="secondary">
+                    <Button onClick={handleCloseDeleteDialog} sx={{ color: 'secondary' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleDeleteUser} color="primary">
+                    <Button
+                        onClick={handleDeleteUser}
+                        sx={{ background: 'linear-gradient(to top, #0383E2, #5DADF0)', color: 'white' }}
+                    >
                         Delete
                     </Button>
                 </DialogActions>
