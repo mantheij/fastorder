@@ -304,7 +304,6 @@ const ProductView = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleAddToCart}
-                                sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}
                                 style={{ display: 'block', marginBottom:'20px', margin: '0 auto', minWidth: '300px' }}
                             >
                                 Add to Cart
@@ -323,7 +322,7 @@ const ProductView = () => {
                 </Alert>
             </Snackbar>
             <Fab color="primary" aria-label="cart" onClick={() => setOpenDialog(true)}
-                 sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}} style={{ position: 'fixed', bottom: 16, right: 16 }}>
+                 style={{ position: 'fixed', bottom: 16, right: 16 }}>
                 <Badge badgeContent={cart.length} color="secondary">
                     <ShoppingCartOutlinedIcon />
                 </Badge>
@@ -335,11 +334,11 @@ const ProductView = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Close</Button>
-                    <Button variant="contained" sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}} color="primary" onClick={handleOpenCardView}>Checkout</Button>
+                    <Button variant="contained" color="primary" onClick={handleOpenCardView}>Checkout</Button>
                 </DialogActions>
             </Dialog>
             <Fab color="primary" aria-label="call waiter" onClick={handleCallWaiter}
-                 sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}} style={{ position: 'fixed', bottom: 90, right: 16 }}>
+                 style={{ position: 'fixed', bottom: 90, right: 16 }}>
                 <ContactSupport />
             </Fab>
         </Container>

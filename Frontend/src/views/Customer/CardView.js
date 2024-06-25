@@ -187,7 +187,7 @@ const CardView = () => {
                 </Box>
             </div>
             {cart.length > 0 && (
-                <Button variant="contained" color="primary" onClick={handleCreateOrder} sx={{background: "linear-gradient(to top, #0383E2, #5DADF0)"}}>
+                <Button variant="contained" color="primary" onClick={handleCreateOrder} >
                     Order Now
                 </Button>
             )}
