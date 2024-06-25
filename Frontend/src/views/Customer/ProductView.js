@@ -331,7 +331,7 @@ const ProductView = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleAddToCart}
-                                style={{ display: 'block', marginBottom: '160px', minWidth: '300px', fontSize: '1.1rem' }}
+                                style={{ display: 'block', marginBottom: '100px', minWidth: '300px', fontSize: '1.1rem' }}
                             >
                                 Add to Cart
                             </Button>
