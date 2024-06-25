@@ -8,8 +8,7 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
-    Container, Dialog, DialogActions, DialogContent, DialogTitle,
-    Drawer, Fab,
+    Container, Drawer, Fab,
     Grid,
     IconButton,
     List,
@@ -54,7 +53,6 @@ const ProductView = () => {
         price: 0,
         quantity: 1
     });
-    const [openDialog, setOpenDialog] = useState(false);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
@@ -93,8 +91,6 @@ const ProductView = () => {
             navigate(`/product/${tableId}/card`);
         }
     };
-
-    const handleCloseDialog = () => setOpenDialog(false);
 
     const handleAddToCart = () => {
         if (!selectedProduct.size) {
@@ -159,48 +155,6 @@ const ProductView = () => {
         }
     };
 
-    const handleRemoveFromCart = (index) => {
-        const newCart = [...cart];
-        newCart.splice(index, 1);
-        setCart(newCart);
-        saveCartToCookies(tableId, newCart);
-        setAlertMessage('Item removed from cart');
-        setAlertSeverity('info');
-        setAlertOpen(true);
-    };
-
-    const renderCartItems = () => {
-        if (cart.length === 0) {
-            return <ListItem>
-                <ListItemText primary="Your cart is empty" />
-            </ListItem>;
-        }
-        return (
-            <List>
-                {cart.map((item, index) => (
-                    <ListItem key={index}>
-                        <ListItemAvatar>
-                            <Avatar src={`${item.imgName}`} alt={`${item.name} Logo`} />
-                        </ListItemAvatar>
-                        <ListItemText primary={`${item.name} - ${item.size}`} secondary={`Quantity: ${item.quantity}, Price: €${item.price}`} />
-                        <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </ListItem>
-                ))}
-            </List>
-        );
-    };
-
-    const filterDrinks = (drinks) => {
-        return drinks.filter(drink => {
-            if (!searchQuery) {
-                return true;
-            }
-            return drink[0].name.toLowerCase().includes(searchQuery.toLowerCase());
-        });
-    };
-
     const handleSearchButtonClick = () => {
         setIsSearchVisible(prevState => !prevState);
         handleResetSearch();
@@ -212,6 +166,15 @@ const ProductView = () => {
 
     const handleSearchInputChange = (event) => {
         setSearchQuery(event.target.value);
+    };
+
+    const filterDrinks = (drinks) => {
+        return drinks.filter(drink => {
+            if (!searchQuery) {
+                return true;
+            }
+            return drink[0].name.toLowerCase().includes(searchQuery.toLowerCase());
+        });
     };
 
     const filteredDrinks = Object.values(groupedDrinks).flatMap(group => filterDrinks([group]));
@@ -356,22 +319,12 @@ const ProductView = () => {
                     {alertMessage}
                 </Alert>
             </Snackbar>
-            <Fab color="primary" aria-label="cart" onClick={() => setOpenDialog(true)}
+            <Fab color="primary" aria-label="cart" onClick={handleOpenCardView}
                  style={{ position: 'fixed', bottom: 16, right: 16 }}>
                 <Badge badgeContent={cart.length} color="secondary">
                     <ShoppingCartOutlinedIcon />
                 </Badge>
             </Fab>
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>Cart</DialogTitle>
-                <DialogContent>
-                    {renderCartItems()}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialog}>Close</Button>
-                    <Button variant="contained" color="primary" onClick={handleOpenCardView}>Checkout</Button>
-                </DialogActions>
-            </Dialog>
             <Fab color="primary" aria-label="call waiter" onClick={handleCallWaiter}
                  style={{ position: 'fixed', bottom: 90, right: 16 }}>
                 <ContactSupport />

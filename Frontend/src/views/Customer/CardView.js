@@ -14,8 +14,8 @@ import {
     Typography
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import {useNavigate, useParams} from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { loadCartFromCookies, saveCartToCookies, removeCartFromCookies } from './utils';
 import config from "../../config";
@@ -125,20 +125,17 @@ const CardView = () => {
         }
     };
 
-
-
-
     const calculateTotalCost = () => {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2).replace('.', ',');
     };
 
     return (
         <div>
-            <div style={{ display: "flex" }}>
-                <IconButton onClick={handleBackClick} aria-label="back" style={{ marginLeft: 0 }}>
-                    <ArrowBackIosIcon />
-                    back
-                </IconButton>
+            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10}}>
+                <Button startIcon={<ArrowBackIcon/>} onClick={handleBackClick}
+                        style={{marginTop: '6px', marginLeft: '24px'}}>
+                    Back
+                </Button>
             </div>
             <div style={{
                 display: 'flex',
@@ -149,27 +146,27 @@ const CardView = () => {
                 marginRight: 'auto',
                 width: '100%'
             }}>
-                <Box style={{ width: '100%' }}>
-                    <Typography variant="h6" component="div" style={{ marginBottom: '16px' }}>
-                        Total Cost: €{calculateTotalCost()}
+            <Box style={{ width: '100%' }}>
+                    <Typography variant="h5" component="div" style={{ marginBottom: '16px' }}>
+                        Total Cost: {calculateTotalCost()}€
                     </Typography>
                     <List style={{ width: '100%' }}>
                         {cart.length > 0 ? (
                             cart.map((item, index) => (
-                                <ListItem key={index}>
+                                <ListItem key={index} sx={{ padding: '16px' }}>
                                     <ListItemAvatar>
-                                        <Avatar src={`${item.imgName}`} alt={item.name} />
+                                        <Avatar src={`${item.imgName}`} alt={item.name} sx={{ width: 80, height: 80 }} />
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={`${item.name} - ${item.size}`}
+                                        primary={<Typography variant="h6">{`${item.name} - ${item.size}`}</Typography>}
                                         secondary={
                                             <React.Fragment>
-                                                <div>Quantity: {item.quantity}, Price: €{item.price}</div>
-                                                {item.extras && <div>Extras: {item.extras}</div>}
+                                                <Typography variant="body1">Quantity: {item.quantity}, Price: {item.price.toFixed(2).replace('.', ',')}€</Typography>
+                                                {item.extras && <Typography variant="body2">Extras: {item.extras}</Typography>}
                                             </React.Fragment>
                                         }
                                     />
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}>
+                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(index)}  sx={{ marginRight: 2 }}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </ListItem>
@@ -193,7 +190,7 @@ const CardView = () => {
                 </Box>
             </div>
             {cart.length > 0 && (
-                <Button variant="contained" color="primary" onClick={handleCreateOrder} >
+                <Button variant="contained" color="primary" onClick={handleCreateOrder} sx={{ marginTop: '16px', fontSize: '1.2rem', padding: '10px 20px' }}>
                     Order Now
                 </Button>
             )}
