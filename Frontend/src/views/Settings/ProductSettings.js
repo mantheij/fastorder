@@ -664,6 +664,15 @@ const Settings = () => {
                                        placeholder="0"/>
                         </Grid>
                         <Grid item xs={6}>
+                            <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
+                                       onChange={handleNewProductChange} placeholder="0,0L"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                                       value={newProduct.allergens || ""} onChange={handleNewProductChange}
+                                       placeholder="List of allergens"/>
+                        </Grid>
+                        <Grid item xs={6}>
                             <FormControl fullWidth margin="normal">
                                 <InputLabel id="category-label">Category</InputLabel>
                                 <Select
@@ -681,15 +690,6 @@ const Settings = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField label="Size" name="size" fullWidth margin="normal" value={newProduct.size}
-                                       onChange={handleNewProductChange} placeholder="0,0L"/>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
-                                       value={newProduct.allergens || ""} onChange={handleNewProductChange}
-                                       placeholder="List of allergens"/>
                         </Grid>
                         <Grid item xs={6}>
                             <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
@@ -715,7 +715,7 @@ const Settings = () => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2}}>
+                            <Button variant="contained" color="primary" onClick={handleAddProduct} sx={{mt: 2, width: "100%"}}>
                                 Submit
                             </Button>
                         </Grid>
@@ -739,46 +739,79 @@ const Settings = () => {
                             <CloseIcon/>
                         </IconButton>
                     </Typography>
-                    <TextField label="Name" name="name" fullWidth margin="normal" value={productToEdit?.name || ''}
-                               onChange={handleEditProductChange}/>
-                    <TextField label="Price €" name="price" fullWidth margin="normal"
-                               value={productToEdit?.price || ''}
-                               onChange={handleEditProductChange} placeholder="0.00"/>
-                    <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
-                               value={productToEdit?.quantity || ''} onChange={handleEditProductChange}
-                               placeholder="0"/>
 
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel id="category-label">Category</InputLabel>
-                        <Select
-                            labelId="category-label"
-                            id="category-select"
-                            name="productCategoryId"
-                            value={productToEdit?.productCategoryId || ''}
-                            label="Category"
-                            onChange={handleEditProductChange}
-                        >
-                            {categories.map((category) => (
-                                <MenuItem key={category.categoryId} value={category.categoryId}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={6}>
+                            <TextField label="Name" name="name" fullWidth margin="normal" value={productToEdit?.name || ''}
+                                       onChange={handleEditProductChange}/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Price €" name="price" fullWidth margin="normal"
+                                       value={productToEdit?.price || ''}
+                                       onChange={handleEditProductChange} placeholder="0.00"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Quantity" name="quantity" type="number" fullWidth margin="normal"
+                                       value={productToEdit?.quantity || ''} onChange={handleEditProductChange}
+                                       placeholder="0"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Size" name="size" fullWidth margin="normal" value={productToEdit?.size || ''}
+                                       onChange={handleEditProductChange} placeholder="0,0L"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Allergens" name="allergens" fullWidth margin="normal"
+                                       value={productToEdit?.allergens || ""} onChange={handleEditProductChange}
+                                       placeholder="List of allergens"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="category-label">Category</InputLabel>
+                                <Select
+                                    labelId="category-label"
+                                    id="category-select"
+                                    name="productCategoryId"
+                                    value={productToEdit?.productCategoryId || ''}
+                                    label="Category"
+                                    onChange={handleEditProductChange}
+                                >
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.categoryId} value={category.categoryId}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
+                                       value={productToEdit?.ingredients || ""} onChange={handleEditProductChange}
+                                       placeholder="List of ingredients"/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
+                                       value={productToEdit?.nutrition || ""} onChange={handleEditProductChange}
+                                       placeholder="List of nutrition"/>
+                        </Grid>
 
-                    <TextField label="Size" name="size" fullWidth margin="normal" value={productToEdit?.size || ''}
-                               onChange={handleEditProductChange} placeholder="0,0L"/>
-                    <TextField label="Allergens" name="allergens" fullWidth margin="normal"
-                               value={productToEdit?.allergens || ""} onChange={handleEditProductChange} disabled/>
-                    <TextField label="Ingredients" name="ingredients" fullWidth margin="normal"
-                               value={productToEdit?.ingredients || ""} onChange={handleEditProductChange}
-                               disabled/>
-                    <TextField label="Nutrition" name="nutrition" fullWidth margin="normal"
-                               value={productToEdit?.nutrition || ""} onChange={handleEditProductChange} disabled/>
+                        <Grid item xs={12} sm={9}>
+                            <TextField label="Image URL" name="imageUrl" fullWidth margin="normal"
+                                       value={productToEdit?.imageUrl || ""} onChange={handleEditProductChange}
+                                       placeholder="http://example.com/image.jpg"/>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <Button variant="contained" component="label" startIcon={<UploadIcon/>} fullWidth>
+                                Upload Local
+                                <input type="file" hidden name="productImage" onChange={handleFileChange}/>
+                            </Button>
+                        </Grid>
 
-                    <Button variant="contained" color="primary" onClick={handleUpdateProduct} sx={{mt: 2}}>
-                        Submit
-                    </Button>
+                        <Grid item xs={12}>
+                            <Button variant="contained" color="primary" onClick={handleUpdateProduct} sx={{mt: 2, width: "100%"} }>
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Modal>
 
