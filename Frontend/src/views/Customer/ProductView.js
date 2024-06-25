@@ -244,7 +244,13 @@ const ProductView = () => {
                 anchor="bottom"
                 open={bottomSheetOpen}
                 onClose={handleCloseBottomSheet}
-                sx={{ '& .MuiDrawer-paper': { width: '100%', height: '55%', margin: 'auto' } }}
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        width: '100%',
+                        height: isMobile ? '75%' : '55%',
+                        margin: 'auto'
+                    }
+                }}
             >
                 <List>
                     <ListItem sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -320,13 +326,13 @@ const ProductView = () => {
                 </Alert>
             </Snackbar>
             <Fab color="primary" aria-label="cart" onClick={handleOpenCardView}
-                 style={{ position: 'fixed', bottom: 16, right: 16 }}>
+                 style={{ position: 'fixed', bottom: 100, right: 16 }}>
                 <Badge badgeContent={cart.length} color="secondary">
                     <ShoppingCartOutlinedIcon />
                 </Badge>
             </Fab>
             <Fab color="primary" aria-label="call waiter" onClick={handleCallWaiter}
-                 style={{ position: 'fixed', bottom: 90, right: 16 }}>
+                 style={{position: 'fixed', bottom: 170, right: 16 }}>
                 <ContactSupport />
             </Fab>
         </Container>
