@@ -11,9 +11,10 @@ import de.hhn.labfastord.repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -116,7 +117,8 @@ public class OrderController {
         try {
             Order order = new Order();
             order.setStatus("open");
-            order.setDatetime(new Date());
+            ZonedDateTime germanDateTime = ZonedDateTime.now(ZoneId.of("Europe/Berlin"));
+            order.setDatetime(Date.from(germanDateTime.toInstant()));
             order.setTable(tablesRepository.findById(newOrderDTO.getTableId())
                     .orElseThrow(NullPointerException::new));
             orderRepository.save(order);
