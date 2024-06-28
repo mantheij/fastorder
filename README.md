@@ -19,6 +19,11 @@ FastOrder revolutioniert das Erlebnis in Bars grundlegend. Mit unserer benutzerf
 http://3f1e7565-7313-480b-bd1b-7840190dc884.ma.bw-cloud-instance.org/
    ```
 
+### Zugangsdaten
+Benutzername | admin | user
+--- | --- | --- 
+Passwort | admin | user
+
 ## Installation
 
 ### Voraussetzungen
