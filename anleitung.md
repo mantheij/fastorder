@@ -25,7 +25,9 @@ Im Gastzugang haben Sie begrenzte Funktionen: Die Auswahl eines Tisches (Gedacht
 
 Nach der Tischwahl werden Sie im Menü landen, hier können Sie durch Kategorien und eine Such-Funktion die angebotenen Getränke filtern, oder die Gesamtauswahl durchschauen.
 
-Um Getränke zum Warenkorb hinzuzufügen, klicken Sie ihr Icon, und wählen Sie Ihre Größe, Menge und schreiben Sie Zusatzinfos für die Barkeeper hinzu (Noch nicht implementiert; wird nicht an Barkeeper weitergegeben)
+Um Getränke zum Warenkorb hinzuzufügen, klicken Sie auf ein Bild, dann wählen Sie Ihre Größe, die Menge und schreiben 
+Extrawünsche, Hinweise oder sonstiges für die Barkeeper hinzu (Noch nicht implementiert; wird nicht an Barkeeper 
+weitergegeben)
 
 Wenn Sie alle Ihre Getränke ausgewählt haben, gehen Sie einfach in den Warenkorb (Einkaufswagen-Button) und Bestätigen Sie Ihre Bestellung.
 
@@ -47,7 +49,8 @@ Kommen Sie in die uneingeschränkte Version der App.
 Sie starten in der Tisch-Ansicht. Hier können Sie gleich alle Tische sehen, die roten Tische, sind Tische mit offenen (also: nicht bezahlten) Bestellungen.
 
 Mit einem Klick auf einen Tisch erhalten Sie eine Reihe von Aktionen, die Sie für diesen Tisch ausführen können, wie das Bezahlen, Bestellen, etc.  
-Das Bezahlen in diesem Fall setzt einfach den Status der Bestellung auf erledigt; Der Geldwechsel selbst muss in Person durchgeführt werden.
+Das Bezahlen in diesem Fall setzt einfach den Status der Bestellung auf erledigt: Der Bezahlvorgang selbst muss 
+aktuell noch in Person durchgeführt werden.
 
 ### Mitarbeiter-Ansicht
 
