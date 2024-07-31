@@ -1,6 +1,8 @@
 
 # FastOrder
 
+*Eine Anleitung zur Benutzung der App finden Sie in der anleitung.md in diesem Verzeichnis.*
+
 FastOrder revolutioniert das Erlebnis in Bars grundlegend. Mit unserer benutzerfreundlichen Web-App können Gäste ihre Getränke direkt von ihrem Endgerät aus bestellen, ohne auf die Aufmerksamkeit des Personals warten zu müssen. Für Kellner und Barkeeper bedeutet das eine effizientere Arbeitsweise, weniger Stress und die Möglichkeit, sich auf das zu konzentrieren, was wirklich zählt – erstklassigen Service bieten.
 
 ## Features
